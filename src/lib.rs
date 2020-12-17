@@ -1,7 +1,7 @@
 #![feature(min_const_generics)]
 
-mod components;
-mod operators;
+mod comps;
+mod ops;
 mod prelude;
 mod traits;
 
