@@ -1,16 +1,21 @@
 #![feature(min_const_generics)]
 
 mod components;
+mod operators;
+mod prelude;
+mod traits;
 
-/// Represents an N dimensional vector.
+use crate::prelude::Zero;
+
+/// Represents an n-dimensional vector.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct Vector<T, const N: usize> {
     inner: [T; N],
 }
 
-impl<T: Default + Copy, const N: usize> Default for Vector<T, N> {
+impl<T: Copy + Zero, const N: usize> Default for Vector<T, N> {
     fn default() -> Self {
-        let inner = [Default::default(); N];
+        let inner = [Zero::zero(); N];
         Self { inner }
     }
 }
