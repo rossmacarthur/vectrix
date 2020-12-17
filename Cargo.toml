@@ -4,8 +4,13 @@ version = "0.0.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
 description = "An n-dimensional vector type implemented with const generics"
+documentation = "https://docs.rs/vectrs"
+readme = "README.md"
+homepage = "https://github.com/rossmacarthur/vectrs"
+repository = "https://github.com/rossmacarthur/vectrs"
 license = "MIT OR Apache-2.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+keywords = ["math", "vector", "2d", "3d"]
+categories = ["mathematics", "science"]
+include = ["src/**/*", "LICENSE-*", "README.md"]
 
 [dependencies]
