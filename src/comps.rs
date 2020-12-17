@@ -1,6 +1,6 @@
 //! Traits to allow component access for vectors.
 
-use crate::Vector;
+use crate::prelude::*;
 
 pub trait X {}
 pub trait Y {}

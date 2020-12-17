@@ -117,3 +117,24 @@ fn vector_sub_assign() {
     vector -= &b;
     assert_eq!(vector, c);
 }
+
+#[test]
+fn vector_as_slice() {
+    let vector = Vector::from((1, 2, 3, 4));
+    assert_eq!(vector.as_slice(), &[1, 2, 3, 4]);
+}
+
+#[test]
+fn vector_iter(){
+    let vector = Vector::from((1, 2, 3, 4));
+    let values: Vec<_> = vector.iter().collect();
+    assert_eq!(values, vec![&1, &2, &3, &4]);
+}
+
+#[test]
+fn vector_dot(){
+    let a = Vector::from((1, 2, 3));
+    let b = Vector::from((4, 5, 6));
+    assert_eq!(a.dot(&b), 32);
+    assert_eq!(b.dot(&a), 32);
+}
