@@ -41,6 +41,7 @@ pub struct Vector<T, const N: usize> {
 }
 
 impl<T: fmt::Debug, const N: usize> fmt::Debug for Vector<T, N> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_tuple("Vector").field(&self.inner).finish()
     }
@@ -49,12 +50,14 @@ impl<T: fmt::Debug, const N: usize> fmt::Debug for Vector<T, N> {
 impl<T, const N: usize> ops::Deref for Vector<T, N> {
     type Target = [T];
 
+    #[inline]
     fn deref(&self) -> &Self::Target {
         &self.inner
     }
 }
 
 impl<T, const N: usize> ops::DerefMut for Vector<T, N> {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.inner
     }
@@ -68,12 +71,14 @@ impl<T, const N: usize> Default for Vector<T, N>
 where
     T: Copy + Zero,
 {
+    #[inline]
     fn default() -> Self {
         Self::zero()
     }
 }
 
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
+    #[inline]
     fn from(arr: [T; N]) -> Self {
         Self { inner: arr }
     }
@@ -82,6 +87,7 @@ impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
 macro_rules! impl_from_tuple {
     ($tuple:ty, $N:literal, $($n:ident),+) => {
         impl<T> From<$tuple> for Vector<T, $N> {
+            #[inline]
             fn from(($($n,)+): $tuple) -> Self {
                 Self::from([$($n,)+])
             }
@@ -105,6 +111,7 @@ macro_rules! impl_add {
         {
             type Output = $output;
 
+            #[inline]
             fn add(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
@@ -124,6 +131,7 @@ macro_rules! impl_sub {
         {
             type Output = $output;
 
+            #[inline]
             fn sub(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
@@ -143,6 +151,7 @@ macro_rules! impl_mul {
         {
             type Output = $output;
 
+            #[inline]
             fn mul(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
@@ -160,6 +169,7 @@ macro_rules! impl_add_assign {
         where
             T: Copy + ops::AddAssign,
         {
+            #[inline]
             fn add_assign(&mut self, other: $other) {
                 for i in 0..N {
                     self.inner[i] += other.inner[i]
@@ -175,6 +185,7 @@ macro_rules! impl_sub_assign {
         where
             T: Copy + ops::SubAssign,
         {
+            #[inline]
             fn sub_assign(&mut self, other: $other) {
                 for i in 0..N {
                     self.inner[i] -= other.inner[i]
@@ -283,6 +294,7 @@ impl<T: Copy, const N: usize> IntoIterator for Vector<T, N> {
     type Item = T;
     type IntoIter = IntoIter<T, N>;
 
+    #[inline]
     fn into_iter(self) -> Self::IntoIter {
         IntoIter::new(self)
     }
@@ -294,6 +306,7 @@ impl<T: Copy, const N: usize> IntoIterator for Vector<T, N> {
 
 impl<T: Copy + Zero, const N: usize> Vector<T, N> {
     /// Returns a zero vector.
+    #[inline]
     pub fn zero() -> Self {
         let inner = [Zero::zero(); N];
         Self { inner }
@@ -302,11 +315,13 @@ impl<T: Copy + Zero, const N: usize> Vector<T, N> {
 
 impl<T, const N: usize> Vector<T, N> {
     /// Views the underlying vector representation as a slice.
+    #[inline]
     pub fn as_slice(&self) -> &[T] {
         self
     }
 
     /// Views the underlying vector representation as a mutable slice.
+    #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         self
     }
@@ -317,6 +332,7 @@ where
     T: Copy + ops::Mul<Output = T> + iter::Sum<T>,
 {
     /// Calculates the dot-product between `self` and `other`.
+    #[inline]
     pub fn dot(&self, other: &Self) -> T {
         self.into_iter()
             .zip(other.into_iter())
@@ -330,6 +346,7 @@ where
     T: Copy + Abs,
 {
     /// Returns the absolute value of the vector.
+    #[inline]
     pub fn abs(mut self) -> Self {
         for n in self.iter_mut() {
             *n = n.abs();
@@ -346,6 +363,7 @@ where
     ///
     /// Also known as *Manhattan Distance* or *Taxicab norm*. L1 Norm is the sum
     /// of the magnitudes of the vectors in a space.
+    #[inline]
     pub fn l1_norm(&self) -> T {
         self.into_iter().map(|n| n.abs()).sum()
     }
