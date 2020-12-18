@@ -359,11 +359,7 @@ impl<T: Num, const N: usize> Vector<T, N> {
             self
         } else {
             let div = self.into_iter().fold_first(gcd).unwrap();
-            let mut vector = self.clone();
-            for n in vector.iter_mut() {
-                *n /= div;
-            }
-            vector
+            self.into_iter().map(|n| n / div).collect()
         }
     }
 
@@ -382,7 +378,7 @@ impl<T: Num, const N: usize> Vector<T, N> {
     /// of the magnitudes of the vectors in a space.
     #[inline]
     pub fn l1_norm(&self) -> T {
-        self.into_iter().map(|n| n.abs()).sum()
+        self.abs().into_iter().sum()
     }
 }
 

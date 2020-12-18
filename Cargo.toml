@@ -13,4 +13,9 @@ keywords = ["math", "vector", "2d", "3d"]
 categories = ["mathematics", "science"]
 include = ["src/**/*", "LICENSE-*", "README.md"]
 
-[dependencies]
+[dev-dependencies]
+criterion = "0.3.3"
+
+[[bench]]
+name = "main"
+harness = false
