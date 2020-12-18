@@ -161,6 +161,32 @@ fn vector_into_iter_count() {
 }
 
 #[test]
+fn vector_unsigned_abs() {
+    assert_eq!(
+        Vector::<u8, 3>::from((1, 2, 3)).abs(),
+        Vector::<u8, 3>::from((1, 2, 3))
+    );
+}
+
+#[test]
+fn vector_signed_abs() {
+    assert_eq!(
+        Vector::<i8, 3>::from((-1, 2, -3)).abs(),
+        Vector::<i8, 3>::from((1, 2, 3))
+    );
+}
+
+#[test]
+fn vector_unsigned_l1_norm() {
+    assert_eq!(Vector::<u8, 3>::from((1, 2, 3)).l1_norm(), 6);
+}
+
+#[test]
+fn vector_signed_l1_norm() {
+    assert_eq!(Vector::<i8, 3>::from((-1, 2, -3)).l1_norm(), 6);
+}
+
+#[test]
 fn vector_dot() {
     let a = Vector::from((1, 2, 3));
     let b = Vector::from((4, 5, 6));

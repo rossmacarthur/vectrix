@@ -324,3 +324,29 @@ where
             .sum()
     }
 }
+
+impl<T, const N: usize> Vector<T, N>
+where
+    T: Copy + Abs,
+{
+    /// Returns the absolute value of the vector.
+    pub fn abs(mut self) -> Self {
+        for n in self.iter_mut() {
+            *n = n.abs();
+        }
+        self
+    }
+}
+
+impl<T, const N: usize> Vector<T, N>
+where
+    T: Copy + iter::Sum<T> + Abs,
+{
+    /// Returns the L1 norm of the vector.
+    ///
+    /// Also known as *Manhattan Distance* or *Taxicab norm*. L1 Norm is the sum
+    /// of the magnitudes of the vectors in a space.
+    pub fn l1_norm(&self) -> T {
+        self.into_iter().map(|n| n.abs()).sum()
+    }
+}
