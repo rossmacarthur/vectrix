@@ -7,22 +7,56 @@ mod traits;
 use std::fmt;
 use std::iter;
 use std::ops;
-use std::slice::Iter;
 
 use crate::prelude::*;
 
-/// Represents an n-dimensional vector.
+/// Represents a constant size n-dimensional vector.
+///
+/// # Examples
+///
+/// Accessors are provided for small vectors.
+///
+/// ```
+/// # use vectrs::Vector;
+/// #
+/// let vector = Vector::from((1, 2, 3, 4));
+/// assert_eq!(vector.x(), 1);
+/// assert_eq!(vector.y(), 2);
+/// assert_eq!(vector.z(), 3);
+/// ```
+///
+/// Data is represented internally using an array. `Vector<T, N>` implements
+/// `Deref<Target = [T]>` so all slice methods are available.
+///
+/// ```
+/// # use vectrs::Vector;
+/// #
+/// let vector: Vector<u8, 4> = Default::default();
+/// // this uses the `[T]::len()` implementation.
+/// assert_eq!(vector.len(), 4);
+/// ```
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct Vector<T, const N: usize> {
     inner: [T; N],
 }
 
-impl<T, const N: usize> fmt::Debug for Vector<T, N>
-where
-    T: fmt::Debug,
-{
+impl<T: fmt::Debug, const N: usize> fmt::Debug for Vector<T, N> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_tuple("Vector").field(&self.inner).finish()
+    }
+}
+
+impl<T, const N: usize> ops::Deref for Vector<T, N> {
+    type Target = [T];
+
+    fn deref(&self) -> &Self::Target {
+        &self.inner
+    }
+}
+
+impl<T, const N: usize> ops::DerefMut for Vector<T, N> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.inner
     }
 }
 
@@ -35,8 +69,7 @@ where
     T: Copy + Zero,
 {
     fn default() -> Self {
-        let inner = [Zero::zero(); N];
-        Self { inner }
+        Self::zero()
     }
 }
 
@@ -61,7 +94,7 @@ impl_from_tuple!((T, T, T), 3, x, y, z);
 impl_from_tuple!((T, T, T, T), 4, x, y, z, w);
 
 ////////////////////////////////////////////////////////////////////////////////
-// Operator overloading
+// Operators
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! impl_add {
@@ -171,27 +204,111 @@ impl_sub_assign!(Vector<T, N>, Vector<T, N>);
 impl_sub_assign!(Vector<T, N>, &Vector<T, N>);
 
 ////////////////////////////////////////////////////////////////////////////////
+// Iterators
+////////////////////////////////////////////////////////////////////////////////
+
+/// An iterator that moves out of a vector.
+///
+/// This `struct` is created by the `into_iter` method on [`Vector`] (provided
+/// by the [`IntoIterator`] trait).
+///
+/// # Examples
+///
+/// ```
+/// # use vectrs::{IntoIter, Vector};
+/// #
+/// let v = Vector::from([0, 1, 2]);
+/// let iter: IntoIter<_, 3> = v.into_iter();
+/// ```
+#[derive(Debug)]
+pub struct IntoIter<T, const N: usize> {
+    vector: Vector<T, N>,
+    left: usize,
+    right: usize,
+}
+
+impl<T: Copy, const N: usize> IntoIter<T, N> {
+    #[inline]
+    fn new(vector: Vector<T, N>) -> Self {
+        Self {
+            vector,
+            left: 0,
+            right: vector.inner.len(),
+        }
+    }
+}
+
+impl<T: Copy, const N: usize> Iterator for IntoIter<T, N> {
+    type Item = T;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.left == self.right {
+            None
+        } else {
+            let next = unsafe { self.vector.inner.get_unchecked(self.left) };
+            self.left += 1;
+            Some(*next)
+        }
+    }
+
+    #[inline]
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let remaining = self.right - self.left;
+        (remaining, Some(remaining))
+    }
+
+    #[inline]
+    fn count(self) -> usize {
+        self.right - self.left
+    }
+}
+
+impl<T: Copy, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
+    #[inline]
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.left == self.right {
+            None
+        } else {
+            self.right -= 1;
+            let next = unsafe { self.vector.inner.get_unchecked(self.right) };
+            Some(*next)
+        }
+    }
+}
+
+impl<T: Copy, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
+
+impl<T: Copy, const N: usize> IntoIterator for Vector<T, N> {
+    type Item = T;
+    type IntoIter = IntoIter<T, N>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        IntoIter::new(self)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // General methods
 ////////////////////////////////////////////////////////////////////////////////
+
+impl<T: Copy + Zero, const N: usize> Vector<T, N> {
+    /// Returns a zero vector.
+    pub fn zero() -> Self {
+        let inner = [Zero::zero(); N];
+        Self { inner }
+    }
+}
 
 impl<T, const N: usize> Vector<T, N> {
     /// Views the underlying vector representation as a slice.
     pub fn as_slice(&self) -> &[T] {
-        &self.inner
-    }
-}
-
-impl<T, const N: usize> Vector<T, N>
-where
-    T: Copy,
-{
-    /// An iterator visiting each component in dimension order.
-    pub fn iter(&self) -> Iter<T> {
-        self.inner.iter()
+        self
     }
 
-    fn iter_copied(&self) -> iter::Copied<Iter<T>> {
-        self.iter().copied()
+    /// Views the underlying vector representation as a mutable slice.
+    pub fn as_mut_slice(&mut self) -> &mut [T] {
+        self
     }
 }
 
@@ -201,8 +318,8 @@ where
 {
     /// Calculates the dot-product between `self` and `other`.
     pub fn dot(&self, other: &Self) -> T {
-        self.iter_copied()
-            .zip(other.iter_copied())
+        self.into_iter()
+            .zip(other.into_iter())
             .map(|(a, b)| a * b)
             .sum()
     }

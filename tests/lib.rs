@@ -125,14 +125,43 @@ fn vector_as_slice() {
 }
 
 #[test]
-fn vector_iter(){
+fn vector_iter() {
     let vector = Vector::from((1, 2, 3, 4));
     let values: Vec<_> = vector.iter().collect();
     assert_eq!(values, vec![&1, &2, &3, &4]);
 }
 
 #[test]
-fn vector_dot(){
+fn vector_into_iter() {
+    let vector = Vector::from((1, 2, 3, 4));
+    let values: Vec<_> = vector.into_iter().collect();
+    assert_eq!(values, vec![1, 2, 3, 4]);
+}
+
+#[test]
+fn vector_into_iter_rev() {
+    let vector = Vector::from((1, 2, 3, 4));
+    let values: Vec<_> = vector.into_iter().rev().collect();
+    assert_eq!(values, vec![4, 3, 2, 1]);
+}
+
+#[test]
+fn vector_into_iter_skip_rev() {
+    let vector = Vector::from((1, 2, 3, 4));
+    let values: Vec<_> = vector.into_iter().skip(1).rev().skip(1).collect();
+    assert_eq!(values, vec![3, 2]);
+}
+
+#[test]
+fn vector_into_iter_count() {
+    let vector = Vector::from((1, 2, 3, 4));
+    assert_eq!(vector.into_iter().count(), 4);
+    assert_eq!(vector.into_iter().skip(1).count(), 3);
+    assert_eq!(vector.into_iter().skip(1).rev().skip(1).count(), 2);
+}
+
+#[test]
+fn vector_dot() {
     let a = Vector::from((1, 2, 3));
     let b = Vector::from((4, 5, 6));
     assert_eq!(a.dot(&b), 32);
