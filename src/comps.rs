@@ -1,6 +1,7 @@
 //! Traits to allow component access for vectors.
 
-use crate::prelude::*;
+use crate::traits::Num;
+use crate::Vector;
 
 pub trait X {}
 pub trait Y {}
@@ -17,7 +18,7 @@ macro_rules! impl_trait {
 
 macro_rules! impl_accessors {
     ($trait:ident, $get_n:ident, $get_n_ref:ident, $get_n_mut:ident, $n:literal) => {
-        impl<T: Copy, const N: usize> Vector<T, N>
+        impl<T: Num, const N: usize> Vector<T, N>
         where
             Self: $trait,
         {
