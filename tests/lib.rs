@@ -193,3 +193,11 @@ fn vector_dot() {
     assert_eq!(a.dot(&b), 32);
     assert_eq!(b.dot(&a), 32);
 }
+
+#[test]
+fn vector_reduced() {
+    assert_eq!(
+        Vector::from((4, -8, 12)).reduced(),
+        Vector::from([1, -2, 3])
+    )
+}

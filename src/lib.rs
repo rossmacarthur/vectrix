@@ -1,3 +1,4 @@
+#![feature(iterator_fold_self)]
 #![feature(min_const_generics)]
 
 mod comps;
@@ -8,7 +9,7 @@ use std::fmt;
 use std::iter;
 use std::ops;
 
-use crate::prelude::*;
+pub use crate::traits::{Abs, Zero};
 
 /// Represents a constant-size, n-dimensional vector.
 ///
@@ -366,5 +367,41 @@ where
     #[inline]
     pub fn l1_norm(&self) -> T {
         self.into_iter().map(|n| n.abs()).sum()
+    }
+}
+
+/// Returns the greatest common divisor of two numbers.
+fn gcd<T>(mut y: T, mut x: T) -> T
+where
+    T: Copy + PartialEq + Zero + ops::Rem<Output = T> + Abs,
+{
+    while x != T::zero() {
+        let tmp = x;
+        x = y % tmp;
+        y = tmp;
+    }
+    y.abs()
+}
+
+impl<T, const N: usize> Vector<T, N>
+where
+    T: fmt::Debug + Copy + Zero + ops::Rem<Output = T> + PartialEq + Abs + ops::DivAssign,
+{
+    /// Returns the reduced row echelon form of the vector.
+    ///
+    /// This is the same as dividing each element by the greatest common divisor
+    /// of all the elements.
+    #[inline]
+    pub fn reduced(self) -> Self {
+        if self == Self::zero() {
+            self
+        } else {
+            let div = self.into_iter().fold_first(gcd).unwrap();
+            let mut vector = self.clone();
+            for n in vector.iter_mut() {
+                *n /= div;
+            }
+            vector
+        }
     }
 }
