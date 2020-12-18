@@ -5,6 +5,7 @@ mod comps;
 pub mod traits;
 
 use std::fmt;
+use std::iter;
 use std::ops;
 
 use crate::traits::*;
@@ -81,19 +82,30 @@ impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
 }
 
 macro_rules! impl_from_tuple {
-    ($tuple:ty, $N:literal, $($n:ident),+) => {
-        impl<T> From<$tuple> for Vector<T, $N> {
+    ($({ $N:literal: ($($n:ident: $t:ident,)+) },)+) => {$(
+        impl<T> From<($($t,)+)> for Vector<T, $N> {
             #[inline]
-            fn from(($($n,)+): $tuple) -> Self {
+            fn from(($($n,)+): ($($t,)+)) -> Self {
                 Self::from([$($n,)+])
             }
         }
-    };
+    )+}
 }
 
-impl_from_tuple!((T, T), 2, x, y);
-impl_from_tuple!((T, T, T), 3, x, y, z);
-impl_from_tuple!((T, T, T, T), 4, x, y, z, w);
+impl_from_tuple! {
+    {  1: (x: T,) },
+    {  2: (x: T, y: T,) },
+    {  3: (x: T, y: T, z: T,) },
+    {  4: (x: T, y: T, z: T, w: T,) },
+    {  5: (x: T, y: T, z: T, w: T, a: T,) },
+    {  6: (x: T, y: T, z: T, w: T, a: T, b: T,) },
+    {  7: (x: T, y: T, z: T, w: T, a: T, b: T, c: T,) },
+    {  8: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T,) },
+    {  9: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T,) },
+    { 10: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T,) },
+    { 11: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T, g: T,) },
+    { 12: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T, g: T, h: T,) },
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Operators
@@ -278,6 +290,29 @@ impl<T: Num, const N: usize> IntoIterator for Vector<T, N> {
     #[inline]
     fn into_iter(self) -> Self::IntoIter {
         IntoIter::new(self)
+    }
+}
+
+impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
+    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
+        let mut iter = iter.into_iter();
+        let mut vector = Vector::default();
+        for i in 0..N {
+            match iter.next() {
+                Some(value) => vector[i] = value,
+                None => {
+                    panic!("collect iterator of length {} into Vector<_, {}>", i, N);
+                }
+            }
+        }
+        if iter.next() != None {
+            panic!(
+                "collect iterator of length {} into Vector<_, {}>",
+                N + iter.count() + 1,
+                N,
+            );
+        }
+        vector
     }
 }
 

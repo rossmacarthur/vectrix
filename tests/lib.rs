@@ -2,9 +2,39 @@ use vectrs::Vector;
 
 #[test]
 fn vector_constructors() {
-    assert_eq!(Vector::from([1, 2]), Vector::from((1, 2)));
-    assert_eq!(Vector::from([1, 2, 3]), Vector::from((1, 2, 3)));
-    assert_eq!(Vector::from([1, 2, 3, 4]), Vector::from((1, 2, 3, 4)));
+    assert_eq!(Vector::from([0]), Vector::from((0,)));
+    assert_eq!(Vector::from([0, 1]), Vector::from((0, 1)));
+    assert_eq!(Vector::from([0, 1, 2]), Vector::from((0, 1, 2)));
+    assert_eq!(Vector::from([0, 1, 2, 3]), Vector::from((0, 1, 2, 3)));
+    assert_eq!(Vector::from([0, 1, 2, 3, 4]), Vector::from((0, 1, 2, 3, 4)));
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5]),
+        Vector::from((0, 1, 2, 3, 4, 5))
+    );
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5, 6]),
+        Vector::from((0, 1, 2, 3, 4, 5, 6))
+    );
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5, 6, 7]),
+        Vector::from((0, 1, 2, 3, 4, 5, 6, 7))
+    );
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5, 6, 7, 8]),
+        Vector::from((0, 1, 2, 3, 4, 5, 6, 7, 8))
+    );
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]),
+        Vector::from((0, 1, 2, 3, 4, 5, 6, 7, 8, 9))
+    );
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+        Vector::from((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+    );
+    assert_eq!(
+        Vector::from([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]),
+        Vector::from((0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11))
+    );
 }
 
 #[test]
@@ -158,6 +188,24 @@ fn vector_into_iter_count() {
     assert_eq!(vector.into_iter().count(), 4);
     assert_eq!(vector.into_iter().skip(1).count(), 3);
     assert_eq!(vector.into_iter().skip(1).rev().skip(1).count(), 2);
+}
+
+#[test]
+fn vector_collect() {
+    let vector: Vector<_, 4> = vec![1, 2, 3, 4].into_iter().collect();
+    assert_eq!(vector, Vector::from([1, 2, 3, 4]));
+}
+
+#[test]
+#[should_panic]
+fn vector_collect_too_long() {
+    let _vector: Vector<_, 3> = vec![1, 2, 3, 4, 5].into_iter().collect();
+}
+
+#[test]
+#[should_panic]
+fn vector_collect_too_short() {
+    let _vector: Vector<_, 4> = vec![1, 2].into_iter().collect();
 }
 
 #[test]

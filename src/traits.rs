@@ -2,6 +2,7 @@
 //!
 //! Some of code in this module is taken from the `num-traits` crate.
 
+use std::fmt::Debug;
 use std::iter::{Product, Sum};
 use std::ops::*;
 
@@ -36,6 +37,7 @@ impl<T, Rhs> AssignOps<Rhs> for T where
 /// A base trait for numeric types.
 pub trait Num:
     Sized
+    + Debug
     + Copy
     + PartialEq
     + Zero
@@ -51,6 +53,7 @@ pub trait Num:
 
 impl<T> Num for T where
     T: Sized
+        + Debug
         + Copy
         + PartialEq
         + Zero
