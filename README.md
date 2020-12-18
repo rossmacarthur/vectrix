@@ -1,6 +1,6 @@
 # vect*rs*
 
-An n-dimensional vector type implemented with const generics.
+A constant-size, n-dimensional vector type implemented with const generics.
 
 ## License
 

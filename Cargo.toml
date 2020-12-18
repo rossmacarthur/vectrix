@@ -1,9 +1,9 @@
 [package]
 name = "vectrs"
-version = "0.0.0"
+version = "0.0.1"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
-description = "An n-dimensional vector type implemented with const generics"
+description = "A constant-size, n-dimensional vector type implemented with const generics"
 documentation = "https://docs.rs/vectrs"
 readme = "README.md"
 homepage = "https://github.com/rossmacarthur/vectrs"

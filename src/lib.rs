@@ -10,7 +10,7 @@ use std::ops;
 
 use crate::prelude::*;
 
-/// Represents a constant size n-dimensional vector.
+/// Represents a constant-size, n-dimensional vector.
 ///
 /// # Examples
 ///
