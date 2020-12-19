@@ -197,7 +197,6 @@ fn vector_collect() {
 }
 
 #[test]
-#[should_panic]
 fn vector_collect_too_long() {
     let _vector: Vector<_, 3> = vec![1, 2, 3, 4, 5].into_iter().collect();
 }

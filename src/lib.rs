@@ -301,16 +301,9 @@ impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
             match iter.next() {
                 Some(value) => vector[i] = value,
                 None => {
-                    panic!("collect iterator of length {} into Vector<_, {}>", i, N);
+                    panic!("collect iterator of length {} into `Vector<_, {}>`", i, N);
                 }
             }
-        }
-        if iter.next() != None {
-            panic!(
-                "collect iterator of length {} into Vector<_, {}>",
-                N + iter.count() + 1,
-                N,
-            );
         }
         vector
     }
