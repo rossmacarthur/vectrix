@@ -1,6 +1,6 @@
 [package]
 name = "vectrs"
-version = "0.0.1"
+version = "0.0.2"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
 description = "A constant-size, n-dimensional vector type implemented with const generics"
@@ -11,7 +11,7 @@ repository = "https://github.com/rossmacarthur/vectrs"
 license = "MIT OR Apache-2.0"
 keywords = ["math", "vector", "2d", "3d"]
 categories = ["mathematics", "science"]
-include = ["src/**/*", "LICENSE-*", "README.md"]
+include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
 
 [dev-dependencies]
 criterion = "0.3.3"
