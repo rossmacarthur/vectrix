@@ -38,6 +38,19 @@ fn vector_constructors() {
 }
 
 #[test]
+fn vector_from_slice() {
+    assert_eq!(
+        Vector::<_, 3>::from(&[0, 1, 2][..]),
+        Vector::from((0, 1, 2))
+    );
+}
+
+#[test]
+fn vector_from_vec() {
+    assert_eq!(Vector::<_, 3>::from(vec![0, 1, 2]), Vector::from((0, 1, 2)));
+}
+
+#[test]
 fn vector_components() {
     let vector = Vector::from((1, 2, 3, 4));
     assert_eq!(vector.x(), 1);

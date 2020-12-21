@@ -81,12 +81,54 @@ impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     }
 }
 
+impl<T: Num, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T, N> {
+    #[inline]
+    fn from_partial(arr: [T; M], fill: T) -> Self {
+        arr.iter().copied().chain(iter::repeat(fill)).collect()
+    }
+}
+
+impl<'a, T: Num, const N: usize> From<&'a [T]> for Vector<T, N> {
+    #[inline]
+    fn from(slice: &'a [T]) -> Self {
+        slice.iter().copied().collect()
+    }
+}
+
+impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
+    #[inline]
+    fn from_partial(slice: &'a [T], fill: T) -> Self {
+        slice.iter().copied().chain(iter::repeat(fill)).collect()
+    }
+}
+
+impl<T: Num, const N: usize> From<Vec<T>> for Vector<T, N> {
+    #[inline]
+    fn from(vec: Vec<T>) -> Self {
+        vec.into_iter().collect()
+    }
+}
+
+impl<T: Num, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
+    #[inline]
+    fn from_partial(vec: Vec<T>, fill: T) -> Self {
+        vec.into_iter().chain(iter::repeat(fill)).collect()
+    }
+}
+
 macro_rules! impl_from_tuple {
-    ($({ $N:literal: ($($n:ident: $t:ident,)+) },)+) => {$(
-        impl<T> From<($($t,)+)> for Vector<T, $N> {
+    ($({ $N:literal: ($($n:ident: $T:ident,)+) },)+) => {$(
+        impl<T> From<($($T,)+)> for Vector<T, $N> {
             #[inline]
-            fn from(($($n,)+): ($($t,)+)) -> Self {
+            fn from(($($n,)+): ($($T,)+)) -> Self {
                 Self::from([$($n,)+])
+            }
+        }
+
+        impl<T: Num, const N: usize> FromPartial<T, ($($T,)+)> for Vector<T, N> {
+            #[inline]
+            fn from_partial(($($n,)+): ($($T,)+), fill: T) -> Self {
+                FromPartial::from_partial([$($n,)+], fill)
             }
         }
     )+}
@@ -317,8 +359,37 @@ impl<T: Num, const N: usize> Vector<T, N> {
     /// Returns a zero vector.
     #[inline]
     pub fn zero() -> Self {
-        let inner = [Zero::zero(); N];
+        let inner = [T::zero(); N];
         Self { inner }
+    }
+
+    /// Create a vector from various types, filling with zeroes as needed.
+    ///
+    /// # Examples
+    ///
+    /// This function can be used to construct larger vectors from smaller
+    /// tuples or arrays.
+    /// ```
+    /// # use vectrs::Vector;
+    /// #
+    /// let vector = Vector::<_, 3>::from_partial((1, 2));
+    /// assert_eq!(vector, Vector::from([1, 2, 0]));
+    ///
+    /// let vector = Vector::<_, 5>::from_partial([1]);
+    /// assert_eq!(vector, Vector::from([1, 0, 0, 0, 0]));
+    /// ```
+    pub fn from_partial<U>(partial: U) -> Self
+    where
+        Self: FromPartial<T, U>,
+    {
+        FromPartial::from_partial(partial, T::zero())
+    }
+
+    pub fn from_partial_with<U>(partial: U, fill: T) -> Self
+    where
+        Self: FromPartial<T, U>,
+    {
+        FromPartial::from_partial(partial, fill)
     }
 
     /// Views the underlying vector representation as a slice.

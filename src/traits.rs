@@ -6,6 +6,13 @@ use std::fmt::Debug;
 use std::iter::{Product, Sum};
 use std::ops::*;
 
+/// Conversion trait for conversions from incomplete data.
+///
+/// See the [`Vector::from_partial`][crate::Vector::from_partial] function.
+pub trait FromPartial<T, U> {
+    fn from_partial(_: U, fill: T) -> Self;
+}
+
 /// The trait for types implementing basic numeric operations.
 pub trait Ops<Rhs = Self, Output = Self>:
     Add<Rhs, Output = Output>
