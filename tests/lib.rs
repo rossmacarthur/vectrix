@@ -49,7 +49,7 @@ fn vector_components() {
 #[test]
 fn vector_debug() {
     let vector = Vector::from((1, 2, 3, 4));
-    assert_eq!(format!("{:?}", vector), "Vector([1, 2, 3, 4])");
+    assert_eq!(format!("{:?}", vector), "[1, 2, 3, 4]");
 }
 
 #[test]

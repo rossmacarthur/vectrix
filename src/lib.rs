@@ -43,7 +43,7 @@ pub struct Vector<T, const N: usize> {
 impl<T: fmt::Debug, const N: usize> fmt::Debug for Vector<T, N> {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        f.debug_tuple("Vector").field(&self.inner).finish()
+        fmt::Debug::fmt(&self.inner, f)
     }
 }
 
