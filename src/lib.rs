@@ -126,13 +126,13 @@ use crate::traits::*;
 /// See the [crate root][crate] for usage examples.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct Vector<T, const N: usize> {
-    inner: [T; N],
+    arr: [T; N],
 }
 
 impl<T: fmt::Debug, const N: usize> fmt::Debug for Vector<T, N> {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(&self.inner, f)
+        fmt::Debug::fmt(&self.arr, f)
     }
 }
 
@@ -141,14 +141,14 @@ impl<T, const N: usize> ops::Deref for Vector<T, N> {
 
     #[inline]
     fn deref(&self) -> &Self::Target {
-        &self.inner
+        &self.arr
     }
 }
 
 impl<T, const N: usize> ops::DerefMut for Vector<T, N> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.inner
+        &mut self.arr
     }
 }
 
@@ -166,7 +166,7 @@ impl<T: Num, const N: usize> Default for Vector<T, N> {
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     #[inline]
     fn from(arr: [T; N]) -> Self {
-        Self { inner: arr }
+        Self { arr }
     }
 }
 
@@ -251,7 +251,7 @@ macro_rules! impl_add {
             fn add(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
-                    vector.inner[i] = self.inner[i] + other.inner[i];
+                    vector.arr[i] = self.arr[i] + other.arr[i];
                 }
                 vector
             }
@@ -268,7 +268,7 @@ macro_rules! impl_sub {
             fn sub(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
-                    vector.inner[i] = self.inner[i] - other.inner[i];
+                    vector.arr[i] = self.arr[i] - other.arr[i];
                 }
                 vector
             }
@@ -285,7 +285,7 @@ macro_rules! impl_mul {
             fn mul(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
-                    vector.inner[i] = self.inner[i] * other;
+                    vector.arr[i] = self.arr[i] * other;
                 }
                 vector
             }
@@ -299,7 +299,7 @@ macro_rules! impl_add_assign {
             #[inline]
             fn add_assign(&mut self, other: $other) {
                 for i in 0..N {
-                    self.inner[i] += other.inner[i]
+                    self.arr[i] += other.arr[i]
                 }
             }
         }
@@ -312,7 +312,7 @@ macro_rules! impl_sub_assign {
             #[inline]
             fn sub_assign(&mut self, other: $other) {
                 for i in 0..N {
-                    self.inner[i] -= other.inner[i]
+                    self.arr[i] -= other.arr[i]
                 }
             }
         }
@@ -368,7 +368,7 @@ impl<T: Num, const N: usize> IntoIter<T, N> {
         Self {
             vector,
             left: 0,
-            right: vector.inner.len(),
+            right: vector.arr.len(),
         }
     }
 }
@@ -381,7 +381,7 @@ impl<T: Num, const N: usize> Iterator for IntoIter<T, N> {
         if self.left == self.right {
             None
         } else {
-            let next = unsafe { self.vector.inner.get_unchecked(self.left) };
+            let next = unsafe { self.vector.arr.get_unchecked(self.left) };
             self.left += 1;
             Some(*next)
         }
@@ -406,7 +406,7 @@ impl<T: Num, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
             None
         } else {
             self.right -= 1;
-            let next = unsafe { self.vector.inner.get_unchecked(self.right) };
+            let next = unsafe { self.vector.arr.get_unchecked(self.right) };
             Some(*next)
         }
     }
@@ -447,14 +447,14 @@ impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
 impl<T: Num, const N: usize> Vector<T, N> {
     /// Create a new vector.
     pub const fn new(arr: [T; N]) -> Self {
-        Self { inner: arr }
+        Self { arr }
     }
 
     /// Returns a zero vector.
     #[inline]
     pub fn zero() -> Self {
-        let inner = [T::zero(); N];
-        Self { inner }
+        let arr = [T::zero(); N];
+        Self { arr }
     }
 
     /// Create a vector from various types, filling with zeroes as needed.
@@ -488,7 +488,7 @@ impl<T: Num, const N: usize> Vector<T, N> {
     /// Consumes this vector and returns the underlying array.
     #[inline]
     pub fn into_array(self) -> [T; N] {
-        self.inner
+        self.arr
     }
 
     /// Returns the absolute value of the vector.

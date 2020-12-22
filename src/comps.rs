@@ -25,19 +25,19 @@ macro_rules! impl_accessors {
             /// Returns this component of the vector.
             #[inline]
             pub fn $get_n(&self) -> T {
-                self.inner[$n]
+                self.arr[$n]
             }
 
             /// Returns a reference to this component of the vector.
             #[inline]
             pub fn $get_n_ref(&self) -> &T {
-                &self.inner[$n]
+                &self.arr[$n]
             }
 
             /// Returns a mutable reference to this component of the vector.
             #[inline]
             pub fn $get_n_mut(&mut self) -> &mut T {
-                &mut self.inner[$n]
+                &mut self.arr[$n]
             }
         }
     };
