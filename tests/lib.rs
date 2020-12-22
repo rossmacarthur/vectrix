@@ -1,7 +1,7 @@
 use vectrs::Vector;
 
 #[test]
-fn vector_constructors() {
+fn vector_from_array_or_tuple() {
     assert_eq!(Vector::from([0]), Vector::from((0,)));
     assert_eq!(Vector::from([0, 1]), Vector::from((0, 1)));
     assert_eq!(Vector::from([0, 1, 2]), Vector::from((0, 1, 2)));
@@ -218,6 +218,12 @@ fn vector_collect_too_long() {
 #[should_panic]
 fn vector_collect_too_short() {
     let _vector: Vector<_, 4> = vec![1, 2].into_iter().collect();
+}
+
+#[test]
+fn vector_new() {
+    const VECTOR: Vector<i64, 2> = Vector::new([1, 2]);
+    assert_eq!(VECTOR, Vector::from([1, 2]));
 }
 
 #[test]

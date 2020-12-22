@@ -108,6 +108,7 @@
 //! assert_eq!(vector, Vector::from([1, 2, 3, 4]));
 //! ```
 
+#![feature(const_fn)]
 #![feature(iterator_fold_self)]
 #![feature(min_const_generics)]
 
@@ -444,6 +445,11 @@ impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
 ////////////////////////////////////////////////////////////////////////////////
 
 impl<T: Num, const N: usize> Vector<T, N> {
+    /// Create a new vector.
+    pub const fn new(arr: [T; N]) -> Self {
+        Self { inner: arr }
+    }
+
     /// Returns a zero vector.
     #[inline]
     pub fn zero() -> Self {
@@ -477,6 +483,12 @@ impl<T: Num, const N: usize> Vector<T, N> {
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         self
+    }
+
+    /// Consumes this vector and returns the underlying array.
+    #[inline]
+    pub fn into_array(self) -> [T; N] {
+        self.inner
     }
 
     /// Returns the absolute value of the vector.
