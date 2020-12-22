@@ -1,3 +1,113 @@
+//! This crate provides a stack-allocated, constant-size, *n*-dimensional
+//! [`Vector<T, N>`] type.
+//!
+//! # Constructors
+//!
+//! ### Directly using `From`
+//!
+//! A [`Vector`] is backed by an array. The simplest way to construct a
+//! [`Vector`] is to create it directly from an array or tuple. In both of these
+//! cases the size of the `Vector` can be easily inferred by the Rust type
+//! system.
+//!
+//! From an array:
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let v = Vector::from([1, 2, 3, 4]);
+//! //  ^ Rust automatically infers that the type is `Vector<_, 4>`.
+//! ```
+//!
+//! From a tuple:
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! // ... 1 to 12 element tuples are supported
+//! let v = Vector::from((1, 2, 3));
+//! //  ^ Rust automatically infers that the type is `Vector<_, 3>`.
+//! ```
+//!
+//! ### Collecting from an iterator
+//!
+//! The other common method of constructing a [`Vector`] is to use the
+//! `.collect()` method on an iterator. When collecting from an iterator,
+//! `.collect()` will panic if there are not enough elements to fill the
+//! [`Vector`]. If there are extra elements they will be ignored.
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let heap = vec![1, 2, 3, 4, 5];
+//! let stack: Vector<_, 5> = heap.into_iter().collect();
+//! //         ^^^^^^^^^^^^ the type needs to be provided in this case
+//! ```
+//!
+//! ### Using `from_partial{_with}`
+//!
+//! It is common that you do not have enough elements to fill the [`Vector`]. So
+//! the [`.from_partial()`][Vector::from_partial] and
+//! [`.from_partial_with()`][Vector::from_partial_with] methods are provided.
+//! These can be used to construct a [`Vector`] and fill the remaining space
+//! with zeroes or a fill value.
+//!
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let v = Vector::<_, 3>::from_partial((1, 2));
+//! assert_eq!(v, Vector::from([1, 2, 0]));
+//!
+//! let v = Vector::<_, 5>::from_partial_with((3, 2, 1), 1);
+//! assert_eq!(v, Vector::from([3, 2, 1, 1, 1]));     // ^ fill value
+//! ```
+//!
+//! # Accessing and mutating data
+//!
+//! ### Slice representation
+//!
+//! A slice view of the underlying data is provided using `Deref` or
+//! [`.as_slice()`][Vector::as_slice]. This means all slice methods are
+//! available including indexing.
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let vector = Vector::from([1, 3, 3, 7]);
+//! assert_eq!(vector[3], 7);
+//! ```
+//!
+//! A mutable slice view of the underlying data is provide using `DerefMut` or
+//! [`.as_mut_slice()`][Vector::as_mut_slice]. This means you can mutate data
+//! using slice indexing.
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let mut vector = Vector::from([1, 3, 3, 7]);
+//! vector[0] = 2;
+//! assert_eq!(vector, Vector::from([2, 3, 3, 7]));
+//! ```
+//!
+//! ### Component accessor methods
+//!
+//! Component accessor methods are available for small vectors using commonly
+//! recognized names.
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let vector = Vector::from([1, 3, 3, 7]);
+//! assert_eq!(vector.x(), 1);
+//! assert_eq!(vector.y(), 3);
+//! assert_eq!(vector.z(), 3);
+//! assert_eq!(vector.w(), 7);
+//! ```
+//!
+//! Additionally, you can get mutable access using the `*_mut` versions.
+//! ```
+//! # use vectrs::Vector;
+//! #
+//! let mut vector = Vector::from([1, 3, 3, 7]);
+//! *vector.y_mut() = 2;
+//! *vector.w_mut() = 4;
+//! assert_eq!(vector, Vector::from([1, 2, 3, 4]));
+//! ```
+
 #![feature(iterator_fold_self)]
 #![feature(min_const_generics)]
 
@@ -10,31 +120,9 @@ use std::ops;
 
 use crate::traits::*;
 
-/// Represents a constant-size, n-dimensional vector.
+/// Represents a constant-size, *n*-dimensional vector.
 ///
-/// # Examples
-///
-/// Accessors are provided for small vectors.
-///
-/// ```
-/// # use vectrs::Vector;
-/// #
-/// let vector = Vector::from((1, 2, 3, 4));
-/// assert_eq!(vector.x(), 1);
-/// assert_eq!(vector.y(), 2);
-/// assert_eq!(vector.z(), 3);
-/// ```
-///
-/// Data is represented internally using an array. `Vector<T, N>` implements
-/// `Deref<Target = [T]>` so all slice methods are available.
-///
-/// ```
-/// # use vectrs::Vector;
-/// #
-/// let vector: Vector<u8, 4> = Default::default();
-/// // this uses the `[T]::len()` implementation.
-/// assert_eq!(vector.len(), 4);
-/// ```
+/// See the [crate root][crate] for usage examples.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 pub struct Vector<T, const N: usize> {
     inner: [T; N],
@@ -255,8 +343,8 @@ impl_sub_assign!(Vector<T, N>, &Vector<T, N>);
 
 /// An iterator that moves out of a vector.
 ///
-/// This `struct` is created by the `into_iter` method on [`Vector`] (provided
-/// by the [`IntoIterator`] trait).
+/// This `struct` is created by the `.into_iter()` method on [`Vector`]
+/// (provided by the [`IntoIterator`] trait).
 ///
 /// # Examples
 ///
@@ -364,20 +452,6 @@ impl<T: Num, const N: usize> Vector<T, N> {
     }
 
     /// Create a vector from various types, filling with zeroes as needed.
-    ///
-    /// # Examples
-    ///
-    /// This function can be used to construct larger vectors from smaller
-    /// tuples or arrays.
-    /// ```
-    /// # use vectrs::Vector;
-    /// #
-    /// let vector = Vector::<_, 3>::from_partial((1, 2));
-    /// assert_eq!(vector, Vector::from([1, 2, 0]));
-    ///
-    /// let vector = Vector::<_, 5>::from_partial([1]);
-    /// assert_eq!(vector, Vector::from([1, 0, 0, 0, 0]));
-    /// ```
     pub fn from_partial<U>(partial: U) -> Self
     where
         Self: FromPartial<T, U>,
@@ -385,6 +459,7 @@ impl<T: Num, const N: usize> Vector<T, N> {
         FromPartial::from_partial(partial, T::zero())
     }
 
+    /// Create a vector from various types, filling with the given value as needed.
     pub fn from_partial_with<U>(partial: U, fill: T) -> Self
     where
         Self: FromPartial<T, U>,
