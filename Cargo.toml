@@ -1,6 +1,6 @@
 [package]
 name = "vectrs"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
 description = "A stack-allocated, constant-size, n-dimensional vector type"
