@@ -1,12 +1,10 @@
 [package]
 name = "vectrs"
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
 description = "A stack-allocated, constant-size, n-dimensional vector type"
-documentation = "https://docs.rs/vectrs"
 readme = "README.md"
-homepage = "https://github.com/rossmacarthur/vectrs"
 repository = "https://github.com/rossmacarthur/vectrs"
 license = "MIT OR Apache-2.0"
 keywords = ["math", "vector", "2d", "3d"]
