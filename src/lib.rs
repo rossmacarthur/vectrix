@@ -251,7 +251,7 @@ macro_rules! impl_add {
             fn add(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
-                    vector.arr[i] = self.arr[i] + other.arr[i];
+                    vector[i] = self[i] + other[i];
                 }
                 vector
             }
@@ -268,7 +268,7 @@ macro_rules! impl_sub {
             fn sub(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
-                    vector.arr[i] = self.arr[i] - other.arr[i];
+                    vector[i] = self[i] - other[i];
                 }
                 vector
             }
@@ -285,7 +285,7 @@ macro_rules! impl_mul {
             fn mul(self, other: $rhs) -> Self::Output {
                 let mut vector = Vector::default();
                 for i in 0..N {
-                    vector.arr[i] = self.arr[i] * other;
+                    vector[i] = self[i] * other;
                 }
                 vector
             }
@@ -299,7 +299,7 @@ macro_rules! impl_add_assign {
             #[inline]
             fn add_assign(&mut self, other: $other) {
                 for i in 0..N {
-                    self.arr[i] += other.arr[i]
+                    self[i] += other[i]
                 }
             }
         }
@@ -312,7 +312,7 @@ macro_rules! impl_sub_assign {
             #[inline]
             fn sub_assign(&mut self, other: $other) {
                 for i in 0..N {
-                    self.arr[i] -= other.arr[i]
+                    self[i] -= other[i]
                 }
             }
         }
@@ -368,7 +368,7 @@ impl<T: Num, const N: usize> IntoIter<T, N> {
         Self {
             vector,
             left: 0,
-            right: vector.arr.len(),
+            right: vector.len(),
         }
     }
 }
@@ -381,7 +381,7 @@ impl<T: Num, const N: usize> Iterator for IntoIter<T, N> {
         if self.left == self.right {
             None
         } else {
-            let next = unsafe { self.vector.arr.get_unchecked(self.left) };
+            let next = unsafe { self.vector.get_unchecked(self.left) };
             self.left += 1;
             Some(*next)
         }
@@ -406,7 +406,7 @@ impl<T: Num, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
             None
         } else {
             self.right -= 1;
-            let next = unsafe { self.vector.arr.get_unchecked(self.right) };
+            let next = unsafe { self.vector.get_unchecked(self.right) };
             Some(*next)
         }
     }
