@@ -2,9 +2,9 @@
 //!
 //! Some of code in this module is taken from the `num-traits` crate.
 
-use std::fmt::Debug;
-use std::iter::{Product, Sum};
-use std::ops::*;
+use core::fmt::Debug;
+use core::iter::{Product, Sum};
+use core::ops::*;
 
 /// Conversion trait for conversions from incomplete data.
 ///
@@ -116,18 +116,18 @@ macro_rules! impl_zero {
 }
 
 macro_rules! impl_abs {
-    ($($ty:ty)+) => ($(
+    ($($ty:ident)+) => ($(
         impl Abs for $ty {
             #[inline]
             fn abs(self) -> $ty {
-                self.abs()
+                $ty::abs(self)
             }
         }
     )+)
 }
 
 macro_rules! impl_abs_self {
-    ($($ty:ty)+) => ($(
+    ($($ty:ident)+) => ($(
         impl Abs for $ty {
             #[inline]
             fn abs(self) -> $ty {
@@ -137,11 +137,13 @@ macro_rules! impl_abs_self {
     )+)
 }
 
-impl_one!(1 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128);
-impl_one!(1.0 f32 f64);
+impl_one! { 1 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 }
+impl_one! { 1.0 f32 f64 }
 
-impl_zero!(0 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128);
-impl_zero!(0.0 f32 f64);
+impl_zero! { 0 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128 }
+impl_zero! { 0.0 f32 f64 }
 
-impl_abs!(isize i8 i16 i32 i64 i128 f32 f64);
-impl_abs_self!(usize u8 u16 u32 u64 u128);
+impl_abs_self! { usize u8 u16 u32 u64 u128 }
+impl_abs! { isize i8 i16 i32 i64 i128 }
+#[cfg(feature = "std")]
+impl_abs! { f32 f64 }

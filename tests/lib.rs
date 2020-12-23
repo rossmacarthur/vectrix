@@ -28,10 +28,11 @@ fn vector_from_array() {
 
 #[test]
 fn vector_from_slice() {
-    let vector: Vector<_, 4> = Vector::from(vec![1, 3, 3, 7].as_slice());
+    let vector: Vector<_, 4> = Vector::from(&[1, 3, 3, 7][..]);
     assert_eq!(vector, Vector::new([1, 3, 3, 7]));
 }
 
+#[cfg(feature = "std")]
 #[test]
 fn vector_from_vec() {
     let vector: Vector<_, 4> = Vector::from(vec![1, 3, 3, 7]);
@@ -66,10 +67,11 @@ fn vector_from_partial_array() {
 
 #[test]
 fn vector_from_partial_slice() {
-    let vector: Vector<_, 6> = Vector::from_partial(vec![1, 3, 3, 7].as_slice());
+    let vector: Vector<_, 6> = Vector::from_partial(&[1, 3, 3, 7][..]);
     assert_eq!(vector, Vector::new([1, 3, 3, 7, 0, 0]));
 }
 
+#[cfg(feature = "std")]
 #[test]
 fn vector_from_partial_vec() {
     let vector: Vector<_, 6> = Vector::from_partial(vec![1, 3, 3, 7]);
@@ -86,7 +88,7 @@ fn vector_from_partial_tuple() {
         () => ();
         ($($n:literal,)+) => {
             let vector: Vector<_, 13> = Vector::from_partial(($($n,)+));
-            assert_eq!(vector, Vector::from_partial(vec![$($n,)+]));
+            assert_eq!(vector, Vector::from_partial([$($n,)+]));
             peel!($($n,)+);
         };
     }

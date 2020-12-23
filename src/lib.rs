@@ -108,18 +108,23 @@
 //! assert_eq!(vector, Vector::from([1, 2, 3, 4]));
 //! ```
 
+#![no_std]
 #![feature(const_fn)]
 #![feature(iterator_fold_self)]
 #![feature(min_const_generics)]
 
+#[cfg(feature = "std")]
+extern crate std;
+
 mod comps;
+mod prelude;
 pub mod traits;
 
-use std::fmt;
-use std::iter;
-use std::ops;
+use core::fmt;
+use core::iter;
+use core::ops;
 
-use crate::traits::*;
+use crate::prelude::*;
 
 /// Represents a constant-size, *n*-dimensional vector.
 ///
@@ -179,6 +184,7 @@ impl<'a, T: Num, const N: usize> From<&'a [T]> for Vector<T, N> {
     }
 }
 
+#[cfg(feature = "std")]
 impl<T: Num, const N: usize> From<Vec<T>> for Vector<T, N> {
     #[inline]
     fn from(vec: Vec<T>) -> Self {
@@ -202,6 +208,7 @@ impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
     }
 }
 
+#[cfg(feature = "std")]
 impl<T: Num, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
     #[inline]
     fn from_partial(vec: Vec<T>, fill: T) -> Self {
