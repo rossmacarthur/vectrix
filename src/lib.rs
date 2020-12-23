@@ -163,17 +163,12 @@ impl<T: Num, const N: usize> Default for Vector<T, N> {
     }
 }
 
+// `From` implementations
+
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     #[inline]
     fn from(arr: [T; N]) -> Self {
         Self { arr }
-    }
-}
-
-impl<T: Num, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T, N> {
-    #[inline]
-    fn from_partial(arr: [T; M], fill: T) -> Self {
-        arr.iter().copied().chain(iter::repeat(fill)).collect()
     }
 }
 
@@ -184,17 +179,26 @@ impl<'a, T: Num, const N: usize> From<&'a [T]> for Vector<T, N> {
     }
 }
 
-impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
-    #[inline]
-    fn from_partial(slice: &'a [T], fill: T) -> Self {
-        slice.iter().copied().chain(iter::repeat(fill)).collect()
-    }
-}
-
 impl<T: Num, const N: usize> From<Vec<T>> for Vector<T, N> {
     #[inline]
     fn from(vec: Vec<T>) -> Self {
         vec.into_iter().collect()
+    }
+}
+
+// `FromPartial` implementations
+
+impl<T: Num, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T, N> {
+    #[inline]
+    fn from_partial(arr: [T; M], fill: T) -> Self {
+        arr.iter().copied().chain(iter::repeat(fill)).collect()
+    }
+}
+
+impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
+    #[inline]
+    fn from_partial(slice: &'a [T], fill: T) -> Self {
+        slice.iter().copied().chain(iter::repeat(fill)).collect()
     }
 }
 
@@ -204,6 +208,8 @@ impl<T: Num, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
         vec.into_iter().chain(iter::repeat(fill)).collect()
     }
 }
+
+// `From` and `FromPartial` implementations for tuples
 
 macro_rules! impl_from_tuple {
     ($({ $N:literal: ($($n:ident: $T:ident,)+) },)+) => {$(
