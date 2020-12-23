@@ -1,5 +1,9 @@
 # vect*rs*
 
+[![Crates.io Version](https://img.shields.io/crates/v/vectrs.svg)](https://crates.io/crates/vectrs)
+[![Docs.rs Latest](https://img.shields.io/badge/docs.rs-latest-blue.svg)](https://docs.rs/vectrs)
+[![Build Status](https://img.shields.io/github/workflow/status/rossmacarthur/vectrs/build/master)](https://github.com/rossmacarthur/vectrs/actions?query=workflow%3Abuild)
+
 A stack-allocated, constant-size, *n*-dimensional vector type implemented with
 const generics.
 
