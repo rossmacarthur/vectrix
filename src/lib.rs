@@ -414,6 +414,8 @@ impl<T: Num, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
 
 impl<T: Num, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
 
+impl<T: Num, const N: usize> iter::FusedIterator for IntoIter<T, N> {}
+
 impl<T: Num, const N: usize> IntoIterator for Vector<T, N> {
     type Item = T;
     type IntoIter = IntoIter<T, N>;

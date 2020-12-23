@@ -204,6 +204,18 @@ fn vector_into_iter_count() {
 }
 
 #[test]
+fn vector_into_iter_fuse() {
+    let vector = Vector::from((1, 2, 3, 4));
+    let mut iter = vector.into_iter();
+    for _ in 0..4 {
+        assert!(matches!(iter.next(), Some(_)));
+    }
+    for _ in 0..10 {
+        assert!(matches!(iter.next(), None));
+    }
+}
+
+#[test]
 fn vector_collect() {
     let vector: Vector<_, 4> = vec![1, 2, 3, 4].into_iter().collect();
     assert_eq!(vector, Vector::from([1, 2, 3, 4]));
