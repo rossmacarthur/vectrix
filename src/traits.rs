@@ -137,8 +137,8 @@ macro_rules! impl_abs_self {
     )+)
 }
 
-impl_one!(0 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128);
-impl_one!(0.0 f32 f64);
+impl_one!(1 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128);
+impl_one!(1.0 f32 f64);
 
 impl_zero!(0 usize u8 u16 u32 u64 u128 isize i8 i16 i32 i64 i128);
 impl_zero!(0.0 f32 f64);
