@@ -455,6 +455,15 @@ impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
     }
 }
 
+impl<T: Num, const N: usize> iter::Sum<Vector<T, N>> for Vector<T, N> {
+    fn sum<I>(iter: I) -> Self
+    where
+        I: Iterator<Item = Self>,
+    {
+        iter.fold(Vector::zero(), ops::Add::add)
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // General methods
 ////////////////////////////////////////////////////////////////////////////////
