@@ -522,13 +522,25 @@ impl<T: Num, const N: usize> Vector<T, N> {
         self.arr
     }
 
+    /// Returns a vector of the same size as self, with function `f` applied to
+    /// each element in order.
+    #[inline]
+    pub fn map<F, U>(self, mut f: F) -> Vector<U, N>
+    where
+        F: FnMut(T) -> U,
+        U: Num,
+    {
+        let mut vector = Vector::default();
+        for i in 0..N {
+            vector[i] = f(self[i]);
+        }
+        vector
+    }
+
     /// Returns the absolute value of the vector.
     #[inline]
-    pub fn abs(mut self) -> Self {
-        for n in self.iter_mut() {
-            *n = n.abs();
-        }
-        self
+    pub fn abs(self) -> Self {
+        self.map(|n| n.abs())
     }
 
     /// Returns the reduced row echelon form of the vector.

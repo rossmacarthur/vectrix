@@ -17,6 +17,7 @@ std = []
 
 [dev-dependencies]
 criterion = "0.3.3"
+rand = "0.8.0"
 
 [[bench]]
 name = "main"
