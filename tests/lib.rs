@@ -66,6 +66,12 @@ fn vector_from_partial_array() {
 }
 
 #[test]
+fn vector_from_partial_vector() {
+    let vector: Vector<_, 6> = Vector::from_partial(Vector::new([1, 3, 3, 7]));
+    assert_eq!(vector, Vector::new([1, 3, 3, 7, 0, 0]));
+}
+
+#[test]
 fn vector_from_partial_slice() {
     let vector: Vector<_, 6> = Vector::from_partial(&[1, 3, 3, 7][..]);
     assert_eq!(vector, Vector::new([1, 3, 3, 7, 0, 0]));

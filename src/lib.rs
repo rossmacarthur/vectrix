@@ -201,6 +201,13 @@ impl<T: Num, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T
     }
 }
 
+impl<T: Num, const M: usize, const N: usize> FromPartial<T, Vector<T, M>> for Vector<T, N> {
+    #[inline]
+    fn from_partial(vector: Vector<T, M>, fill: T) -> Self {
+        vector.into_iter().chain(iter::repeat(fill)).collect()
+    }
+}
+
 impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
     #[inline]
     fn from_partial(slice: &'a [T], fill: T) -> Self {
