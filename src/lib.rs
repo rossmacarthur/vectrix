@@ -161,10 +161,14 @@ impl<T, const N: usize> ops::DerefMut for Vector<T, N> {
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T: Num, const N: usize> Default for Vector<T, N> {
+impl<T, const N: usize> Default for Vector<T, N>
+where
+    T: Copy + Default,
+{
     #[inline]
     fn default() -> Self {
-        Self::zero()
+        let arr = [T::default(); N];
+        Self { arr }
     }
 }
 
@@ -177,7 +181,7 @@ impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     }
 }
 
-impl<'a, T: Num, const N: usize> From<&'a [T]> for Vector<T, N> {
+impl<'a, T: Base, const N: usize> From<&'a [T]> for Vector<T, N> {
     #[inline]
     fn from(slice: &'a [T]) -> Self {
         slice.iter().copied().collect()
@@ -185,7 +189,7 @@ impl<'a, T: Num, const N: usize> From<&'a [T]> for Vector<T, N> {
 }
 
 #[cfg(feature = "std")]
-impl<T: Num, const N: usize> From<Vec<T>> for Vector<T, N> {
+impl<T: Base, const N: usize> From<Vec<T>> for Vector<T, N> {
     #[inline]
     fn from(vec: Vec<T>) -> Self {
         vec.into_iter().collect()
@@ -194,21 +198,21 @@ impl<T: Num, const N: usize> From<Vec<T>> for Vector<T, N> {
 
 // `FromPartial` implementations
 
-impl<T: Num, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T, N> {
+impl<T: Base, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T, N> {
     #[inline]
     fn from_partial(arr: [T; M], fill: T) -> Self {
         arr.iter().copied().chain(iter::repeat(fill)).collect()
     }
 }
 
-impl<T: Num, const M: usize, const N: usize> FromPartial<T, Vector<T, M>> for Vector<T, N> {
+impl<T: Base, const M: usize, const N: usize> FromPartial<T, Vector<T, M>> for Vector<T, N> {
     #[inline]
     fn from_partial(vector: Vector<T, M>, fill: T) -> Self {
         vector.into_iter().chain(iter::repeat(fill)).collect()
     }
 }
 
-impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
+impl<'a, T: Base, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
     #[inline]
     fn from_partial(slice: &'a [T], fill: T) -> Self {
         slice.iter().copied().chain(iter::repeat(fill)).collect()
@@ -216,7 +220,7 @@ impl<'a, T: Num, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
 }
 
 #[cfg(feature = "std")]
-impl<T: Num, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
+impl<T: Base, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
     #[inline]
     fn from_partial(vec: Vec<T>, fill: T) -> Self {
         vec.into_iter().chain(iter::repeat(fill)).collect()
@@ -227,14 +231,14 @@ impl<T: Num, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
 
 macro_rules! impl_from_tuple {
     ($({ $N:literal: ($($n:ident: $T:ident,)+) },)+) => {$(
-        impl<T> From<($($T,)+)> for Vector<T, $N> {
+        impl<T: Base> From<($($T,)+)> for Vector<T, $N> {
             #[inline]
             fn from(($($n,)+): ($($T,)+)) -> Self {
                 Self::from([$($n,)+])
             }
         }
 
-        impl<T: Num, const N: usize> FromPartial<T, ($($T,)+)> for Vector<T, N> {
+        impl<T: Base, const N: usize> FromPartial<T, ($($T,)+)> for Vector<T, N> {
             #[inline]
             fn from_partial(($($n,)+): ($($T,)+), fill: T) -> Self {
                 FromPartial::from_partial([$($n,)+], fill)
@@ -264,7 +268,10 @@ impl_from_tuple! {
 
 macro_rules! impl_add {
     ($lhs:ty, $rhs:ty, $output:ty) => {
-        impl<T: Num, const N: usize> ops::Add<$rhs> for $lhs {
+        impl<T: Base, const N: usize> ops::Add<$rhs> for $lhs
+        where
+            T: ops::Add<Output = T>,
+        {
             type Output = $output;
 
             #[inline]
@@ -281,7 +288,10 @@ macro_rules! impl_add {
 
 macro_rules! impl_sub {
     ($lhs:ty, $rhs:ty, $output:ty) => {
-        impl<T: Num, const N: usize> ops::Sub<$rhs> for $lhs {
+        impl<T: Base, const N: usize> ops::Sub<$rhs> for $lhs
+        where
+            T: ops::Sub<Output = T>,
+        {
             type Output = $output;
 
             #[inline]
@@ -298,7 +308,10 @@ macro_rules! impl_sub {
 
 macro_rules! impl_mul {
     ($lhs:ty, $rhs:ty, $output:ty) => {
-        impl<'a, T: Num, const N: usize> ops::Mul<$rhs> for $lhs {
+        impl<'a, T: Base, const N: usize> ops::Mul<$rhs> for $lhs
+        where
+            T: ops::Mul<Output = T>,
+        {
             type Output = $output;
 
             #[inline]
@@ -315,7 +328,10 @@ macro_rules! impl_mul {
 
 macro_rules! impl_add_assign {
     ($self:ty, $other:ty) => {
-        impl<T: Num, const N: usize> ops::AddAssign<$other> for $self {
+        impl<T: Base, const N: usize> ops::AddAssign<$other> for $self
+        where
+            T: ops::AddAssign,
+        {
             #[inline]
             fn add_assign(&mut self, other: $other) {
                 for i in 0..N {
@@ -328,7 +344,10 @@ macro_rules! impl_add_assign {
 
 macro_rules! impl_sub_assign {
     ($self:ty, $other:ty) => {
-        impl<T: Num, const N: usize> ops::SubAssign<$other> for $self {
+        impl<T: Base, const N: usize> ops::SubAssign<$other> for $self
+        where
+            T: ops::SubAssign,
+        {
             #[inline]
             fn sub_assign(&mut self, other: $other) {
                 for i in 0..N {
@@ -348,9 +367,9 @@ impl_sub!(Vector<T, N>, &Vector<T, N>, Vector<T, N>);
 impl_sub!(&Vector<T, N>, &Vector<T, N>, Vector<T, N>);
 
 impl_mul!(Vector<T, N>, T, Vector<T, N>);
-impl_mul!(Vector<T, N>, &'a T, Vector<T, N>);
+// impl_mul!(Vector<T, N>, &'a T, Vector<T, N>);
 impl_mul!(&Vector<T, N>, T, Vector<T, N>);
-impl_mul!(&Vector<T, N>, &'a T, Vector<T, N>);
+// impl_mul!(&Vector<T, N>, &'a T, Vector<T, N>);
 
 impl_add_assign!(Vector<T, N>, Vector<T, N>);
 impl_add_assign!(Vector<T, N>, &Vector<T, N>);
@@ -376,24 +395,24 @@ impl_sub_assign!(Vector<T, N>, &Vector<T, N>);
 /// let iter: IntoIter<_, 3> = v.into_iter();
 /// ```
 #[derive(Debug)]
-pub struct IntoIter<T: Num, const N: usize> {
-    vector: Vector<T, N>,
+pub struct IntoIter<T, const N: usize> {
     left: usize,
     right: usize,
+    vector: Vector<T, N>,
 }
 
-impl<T: Num, const N: usize> IntoIter<T, N> {
+impl<T, const N: usize> IntoIter<T, N> {
     #[inline]
     fn new(vector: Vector<T, N>) -> Self {
         Self {
-            vector,
             left: 0,
             right: vector.len(),
+            vector,
         }
     }
 }
 
-impl<T: Num, const N: usize> Iterator for IntoIter<T, N> {
+impl<T: Base, const N: usize> Iterator for IntoIter<T, N> {
     type Item = T;
 
     #[inline]
@@ -419,7 +438,7 @@ impl<T: Num, const N: usize> Iterator for IntoIter<T, N> {
     }
 }
 
-impl<T: Num, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
+impl<T: Base, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.left == self.right {
@@ -432,11 +451,11 @@ impl<T: Num, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
     }
 }
 
-impl<T: Num, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
+impl<T: Base, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
 
-impl<T: Num, const N: usize> iter::FusedIterator for IntoIter<T, N> {}
+impl<T: Base, const N: usize> iter::FusedIterator for IntoIter<T, N> {}
 
-impl<T: Num, const N: usize> IntoIterator for Vector<T, N> {
+impl<T: Base, const N: usize> IntoIterator for Vector<T, N> {
     type Item = T;
     type IntoIter = IntoIter<T, N>;
 
@@ -446,7 +465,7 @@ impl<T: Num, const N: usize> IntoIterator for Vector<T, N> {
     }
 }
 
-impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
+impl<T: Base, const N: usize> iter::FromIterator<T> for Vector<T, N> {
     fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
         let mut iter = iter.into_iter();
         let mut vector = Vector::default();
@@ -462,7 +481,11 @@ impl<T: Num, const N: usize> iter::FromIterator<T> for Vector<T, N> {
     }
 }
 
-impl<T: Num, const N: usize> iter::Sum<Vector<T, N>> for Vector<T, N> {
+impl<T: Base, const N: usize> iter::Sum<Vector<T, N>> for Vector<T, N>
+where
+    Self: ops::Add<Output = Self>,
+    T: Zero,
+{
     fn sum<I>(iter: I) -> Self
     where
         I: Iterator<Item = Self>,
@@ -475,7 +498,7 @@ impl<T: Num, const N: usize> iter::Sum<Vector<T, N>> for Vector<T, N> {
 // General methods
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T: Num, const N: usize> Vector<T, N> {
+impl<T: Base, const N: usize> Vector<T, N> {
     /// Create a new vector.
     pub const fn new(arr: [T; N]) -> Self {
         Self { arr }
@@ -483,7 +506,10 @@ impl<T: Num, const N: usize> Vector<T, N> {
 
     /// Returns a zero vector.
     #[inline]
-    pub fn zero() -> Self {
+    pub fn zero() -> Self
+    where
+        T: Zero,
+    {
         let arr = [T::zero(); N];
         Self { arr }
     }
@@ -492,6 +518,7 @@ impl<T: Num, const N: usize> Vector<T, N> {
     pub fn from_partial<U>(partial: U) -> Self
     where
         Self: FromPartial<T, U>,
+        T: Zero,
     {
         FromPartial::from_partial(partial, T::zero())
     }
@@ -525,10 +552,9 @@ impl<T: Num, const N: usize> Vector<T, N> {
     /// Returns a vector of the same size as self, with function `f` applied to
     /// each element in order.
     #[inline]
-    pub fn map<F, U>(self, mut f: F) -> Vector<U, N>
+    pub fn map<F, U: Base>(self, mut f: F) -> Vector<U, N>
     where
         F: FnMut(T) -> U,
-        U: Num,
     {
         let mut vector = Vector::default();
         for i in 0..N {
@@ -539,7 +565,10 @@ impl<T: Num, const N: usize> Vector<T, N> {
 
     /// Returns the absolute value of the vector.
     #[inline]
-    pub fn abs(self) -> Self {
+    pub fn abs(self) -> Self
+    where
+        T: Abs,
+    {
         self.map(|n| n.abs())
     }
 
@@ -548,7 +577,10 @@ impl<T: Num, const N: usize> Vector<T, N> {
     /// This is the same as dividing each element by the greatest common divisor
     /// of all the elements.
     #[inline]
-    pub fn reduced(self) -> Self {
+    pub fn reduced(self) -> Self
+    where
+        T: PartialEq<T> + Ops<T> + Zero + Abs,
+    {
         if self == Self::zero() {
             self
         } else {
@@ -559,7 +591,10 @@ impl<T: Num, const N: usize> Vector<T, N> {
 
     /// Calculates the dot-product between `self` and `other`.
     #[inline]
-    pub fn dot(&self, other: &Self) -> T {
+    pub fn dot(&self, other: &Self) -> T
+    where
+        T: Ops<T> + Sum<T>,
+    {
         self.into_iter()
             .zip(other.into_iter())
             .map(|(a, b)| a * b)
@@ -571,13 +606,19 @@ impl<T: Num, const N: usize> Vector<T, N> {
     /// Also known as *Manhattan Distance* or *Taxicab norm*. L1 Norm is the sum
     /// of the magnitudes of the vectors in a space.
     #[inline]
-    pub fn l1_norm(&self) -> T {
+    pub fn l1_norm(&self) -> T
+    where
+        T: Abs + Sum<T>,
+    {
         self.abs().into_iter().sum()
     }
 }
 
 /// Returns the greatest common divisor of two numbers.
-fn gcd<T: Num>(mut y: T, mut x: T) -> T {
+fn gcd<T>(mut y: T, mut x: T) -> T
+where
+    T: Base + PartialEq<T> + Ops<T> + Zero + Abs,
+{
     while x != T::zero() {
         let tmp = x;
         x = y % tmp;

@@ -3,7 +3,7 @@
 //! Some of code in this module is taken from the `num-traits` crate.
 
 use core::fmt::Debug;
-use core::iter::{Product, Sum};
+pub use core::iter::{Product, Sum};
 use core::ops::*;
 
 /// Conversion trait for conversions from incomplete data.
@@ -40,6 +40,10 @@ impl<T, Rhs> AssignOps<Rhs> for T where
     T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + RemAssign<Rhs>
 {
 }
+
+/// A base trait for numeric types.
+pub trait Base: Sized + Copy + Default {}
+impl<T> Base for T where T: Sized + Copy + Default + PartialEq {}
 
 /// A base trait for numeric types.
 pub trait Num:

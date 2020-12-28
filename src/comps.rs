@@ -17,7 +17,7 @@ macro_rules! impl_trait {
 
 macro_rules! impl_accessors {
     ($trait:ident, $get_n:ident, $get_n_ref:ident, $get_n_mut:ident, $n:literal) => {
-        impl<T: Num, const N: usize> Vector<T, N>
+        impl<T: Base, const N: usize> Vector<T, N>
         where
             Self: $trait,
         {
