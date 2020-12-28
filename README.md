@@ -7,13 +7,15 @@
 A stack-allocated, constant-size, *n*-dimensional vector type implemented with
 const generics.
 
+This crate will work on stable Rust from Rust v1.51 onwards.
+
 ## Example usage
 
 ```rust
 use vectrs::Vector;
 
 // construct from arrays, tuples, iterators, etc
-let v1 = Vector::from([-1, 0]);
+let v1 = Vector::new([-1, 0]);
 let v2 = Vector::from((3, 2));
 let v3: Vector<_, 2> = std::iter::repeat(2).collect();
 

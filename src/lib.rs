@@ -109,8 +109,6 @@
 //! ```
 
 #![no_std]
-#![feature(const_fn)]
-#![feature(iterator_fold_self)]
 
 #[cfg(feature = "std")]
 extern crate std;
@@ -379,12 +377,14 @@ where
 // General methods
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T: Base, const N: usize> Vector<T, N> {
+impl<T, const N: usize> Vector<T, N> {
     /// Create a new vector.
     pub const fn new(arr: [T; N]) -> Self {
         Self { arr }
     }
+}
 
+impl<T: Base, const N: usize> Vector<T, N> {
     /// Returns a zero vector.
     #[inline]
     pub fn zero() -> Self
@@ -465,7 +465,7 @@ impl<T: Base, const N: usize> Vector<T, N> {
         if self == Self::zero() {
             self
         } else {
-            let div = self.into_iter().fold_first(gcd).unwrap();
+            let div = fold_first(self.into_iter(), gcd).unwrap();
             self.into_iter().map(|n| n / div).collect()
         }
     }
@@ -493,6 +493,17 @@ impl<T: Base, const N: usize> Vector<T, N> {
     {
         self.abs().into_iter().sum()
     }
+}
+
+/// Like rust-lang/rust#57563 but reimplemented so we can support stable Rust.
+#[inline]
+fn fold_first<I, T, F>(mut iter: I, f: F) -> Option<T>
+where
+    I: Iterator<Item = T>,
+    F: FnMut(T, T) -> T,
+{
+    let first = iter.next()?;
+    Some(iter.fold(first, f))
 }
 
 /// Returns the greatest common divisor of two numbers.
