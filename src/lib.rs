@@ -111,7 +111,6 @@
 #![no_std]
 #![feature(const_fn)]
 #![feature(iterator_fold_self)]
-#![feature(min_const_generics)]
 
 #[cfg(feature = "std")]
 extern crate std;
