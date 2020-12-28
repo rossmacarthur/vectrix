@@ -3,7 +3,7 @@
 //! Some of code in this module is taken from the `num-traits` crate.
 
 pub(crate) use core::fmt::Debug;
-pub(crate) use core::iter::{Product, Sum};
+pub(crate) use core::iter::Sum;
 pub(crate) use core::ops::*;
 
 /// Conversion trait for conversions from incomplete data.
@@ -13,71 +13,11 @@ pub trait FromPartial<T, U> {
     fn from_partial(_: U, fill: T) -> Self;
 }
 
-/// The trait for types implementing basic numeric operations.
-pub trait Ops<Rhs = Self, Output = Self>:
-    Add<Rhs, Output = Output>
-    + Sub<Rhs, Output = Output>
-    + Mul<Rhs, Output = Output>
-    + Div<Rhs, Output = Output>
-    + Rem<Rhs, Output = Output>
-{
-}
-impl<T, Rhs, Output> Ops<Rhs, Output> for T where
-    T: Add<Rhs, Output = Output>
-        + Sub<Rhs, Output = Output>
-        + Mul<Rhs, Output = Output>
-        + Div<Rhs, Output = Output>
-        + Rem<Rhs, Output = Output>
-{
-}
-
-/// The trait for types implementing numeric assignment operators.
-pub trait AssignOps<Rhs = Self>:
-    AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + RemAssign<Rhs>
-{
-}
-impl<T, Rhs> AssignOps<Rhs> for T where
-    T: AddAssign<Rhs> + SubAssign<Rhs> + MulAssign<Rhs> + DivAssign<Rhs> + RemAssign<Rhs>
-{
-}
-
 /// A base trait for numeric types.
-pub trait Base: Sized + Copy + Default {}
-impl<T> Base for T where T: Sized + Copy + Default + PartialEq {}
-
-/// A base trait for numeric types.
-pub trait Num:
-    Sized
-    + Debug
-    + Copy
-    + PartialEq
-    + Zero
-    + One
-    + Abs
-    + Ops<Self> // Num + Num
-    + AssignOps<Self> // Num += Num
-    + for<'r> Ops<&'r Self> // Num + &Num
-    + for<'r> AssignOps<&'r Self> // Num += &Num
-    + Sum<Self>
-    + Product<Self>
-{}
-
-impl<T> Num for T where
-    T: Sized
-        + Debug
-        + Copy
-        + PartialEq
-        + Zero
-        + One
-        + Abs
-        + Ops<Self> // Num + Num
-        + AssignOps<Self> // Num += Num
-        + for<'r> Ops<&'r Self> // Num + &Num
-        + for<'r> AssignOps<&'r Self> // Num += &Num
-        + Sum<Self>
-        + Product<Self>
-{
-}
+///
+/// FIXME: once rust-lang/rust#61956 is fixed this can probably be removed.
+pub trait Base: Copy + Default {}
+impl<T> Base for T where T: Copy + Default {}
 
 /// Defines the absolute value for a type.
 pub trait Abs {

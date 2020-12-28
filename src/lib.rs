@@ -460,7 +460,7 @@ impl<T: Base, const N: usize> Vector<T, N> {
     #[inline]
     pub fn reduced(self) -> Self
     where
-        T: PartialEq<T> + Ops<T> + Zero + Abs,
+        T: PartialEq<T> + Div<Output = T> + Rem<Output = T> + Zero + Abs,
     {
         if self == Self::zero() {
             self
@@ -474,7 +474,7 @@ impl<T: Base, const N: usize> Vector<T, N> {
     #[inline]
     pub fn dot(&self, other: &Self) -> T
     where
-        T: Ops<T> + Sum<T>,
+        T: Mul<Output = T> + Sum<T>,
     {
         self.into_iter()
             .zip(other.into_iter())
@@ -509,7 +509,7 @@ where
 /// Returns the greatest common divisor of two numbers.
 fn gcd<T>(mut y: T, mut x: T) -> T
 where
-    T: Base + PartialEq<T> + Ops<T> + Zero + Abs,
+    T: Copy + PartialEq<T> + Rem<Output = T> + Zero + Abs,
 {
     while x != T::zero() {
         let tmp = x;
