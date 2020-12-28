@@ -131,10 +131,24 @@ pub struct Vector<T, const N: usize> {
     arr: [T; N],
 }
 
-impl<T: Debug, const N: usize> fmt::Debug for Vector<T, N> {
+impl<T: Debug, const N: usize> Debug for Vector<T, N> {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(&self.arr, f)
+        const FIELDS: &[&str] = &["x", "y", "z", "w"];
+        const LEN: usize = FIELDS.len();
+        match N {
+            1..=LEN => {
+                let mut dbg = f.debug_struct("Vector");
+                for i in 0..N {
+                    dbg.field(FIELDS[i], &self[i]);
+                }
+                dbg.finish()
+            }
+            _ => {
+                f.write_str("Vector")?;
+                Debug::fmt(&self.arr, f)
+            }
+        }
     }
 }
 

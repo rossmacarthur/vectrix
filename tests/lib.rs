@@ -4,9 +4,21 @@ mod ops;
 use vectrs::Vector;
 
 #[test]
-fn vector_debug() {
+fn vector_debug_2() {
+    let vector = Vector::new([1, 2]);
+    assert_eq!(format!("{:?}", vector), "Vector { x: 1, y: 2 }");
+}
+
+#[test]
+fn vector_debug_4() {
     let vector = Vector::new([1, 3, 3, 7]);
-    assert_eq!(format!("{:?}", vector), "[1, 3, 3, 7]");
+    assert_eq!(format!("{:?}", vector), "Vector { x: 1, y: 3, z: 3, w: 7 }");
+}
+
+#[test]
+fn vector_debug_more() {
+    let vector = Vector::new([1, 3, 3, 7, 0]);
+    assert_eq!(format!("{:?}", vector), "Vector[1, 3, 3, 7, 0]");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
