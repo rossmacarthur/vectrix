@@ -117,12 +117,12 @@
 extern crate std;
 
 mod comps;
+mod ops;
 mod prelude;
 pub mod traits;
 
 use core::fmt;
 use core::iter;
-use core::ops;
 
 use crate::prelude::*;
 
@@ -134,14 +134,14 @@ pub struct Vector<T, const N: usize> {
     arr: [T; N],
 }
 
-impl<T: fmt::Debug, const N: usize> fmt::Debug for Vector<T, N> {
+impl<T: Debug, const N: usize> fmt::Debug for Vector<T, N> {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         fmt::Debug::fmt(&self.arr, f)
     }
 }
 
-impl<T, const N: usize> ops::Deref for Vector<T, N> {
+impl<T, const N: usize> Deref for Vector<T, N> {
     type Target = [T];
 
     #[inline]
@@ -150,7 +150,7 @@ impl<T, const N: usize> ops::Deref for Vector<T, N> {
     }
 }
 
-impl<T, const N: usize> ops::DerefMut for Vector<T, N> {
+impl<T, const N: usize> DerefMut for Vector<T, N> {
     #[inline]
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.arr
@@ -161,10 +161,7 @@ impl<T, const N: usize> ops::DerefMut for Vector<T, N> {
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T, const N: usize> Default for Vector<T, N>
-where
-    T: Copy + Default,
-{
+impl<T: Base, const N: usize> Default for Vector<T, N> {
     #[inline]
     fn default() -> Self {
         let arr = [T::default(); N];
@@ -261,121 +258,6 @@ impl_from_tuple! {
     { 11: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T, g: T,) },
     { 12: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T, g: T, h: T,) },
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// Operators
-////////////////////////////////////////////////////////////////////////////////
-
-macro_rules! impl_add {
-    ($lhs:ty, $rhs:ty, $output:ty) => {
-        impl<T: Base, const N: usize> ops::Add<$rhs> for $lhs
-        where
-            T: ops::Add<Output = T>,
-        {
-            type Output = $output;
-
-            #[inline]
-            fn add(self, other: $rhs) -> Self::Output {
-                let mut vector = Vector::default();
-                for i in 0..N {
-                    vector[i] = self[i] + other[i];
-                }
-                vector
-            }
-        }
-    };
-}
-
-macro_rules! impl_sub {
-    ($lhs:ty, $rhs:ty, $output:ty) => {
-        impl<T: Base, const N: usize> ops::Sub<$rhs> for $lhs
-        where
-            T: ops::Sub<Output = T>,
-        {
-            type Output = $output;
-
-            #[inline]
-            fn sub(self, other: $rhs) -> Self::Output {
-                let mut vector = Vector::default();
-                for i in 0..N {
-                    vector[i] = self[i] - other[i];
-                }
-                vector
-            }
-        }
-    };
-}
-
-macro_rules! impl_mul {
-    ($lhs:ty, $rhs:ty, $output:ty) => {
-        impl<'a, T: Base, const N: usize> ops::Mul<$rhs> for $lhs
-        where
-            T: ops::Mul<Output = T>,
-        {
-            type Output = $output;
-
-            #[inline]
-            fn mul(self, other: $rhs) -> Self::Output {
-                let mut vector = Vector::default();
-                for i in 0..N {
-                    vector[i] = self[i] * other;
-                }
-                vector
-            }
-        }
-    };
-}
-
-macro_rules! impl_add_assign {
-    ($self:ty, $other:ty) => {
-        impl<T: Base, const N: usize> ops::AddAssign<$other> for $self
-        where
-            T: ops::AddAssign,
-        {
-            #[inline]
-            fn add_assign(&mut self, other: $other) {
-                for i in 0..N {
-                    self[i] += other[i]
-                }
-            }
-        }
-    };
-}
-
-macro_rules! impl_sub_assign {
-    ($self:ty, $other:ty) => {
-        impl<T: Base, const N: usize> ops::SubAssign<$other> for $self
-        where
-            T: ops::SubAssign,
-        {
-            #[inline]
-            fn sub_assign(&mut self, other: $other) {
-                for i in 0..N {
-                    self[i] -= other[i]
-                }
-            }
-        }
-    };
-}
-
-impl_add!(Vector<T, N>, Vector<T, N>, Vector<T, N>);
-impl_add!(Vector<T, N>, &Vector<T, N>, Vector<T, N>);
-impl_add!(&Vector<T, N>, &Vector<T, N>, Vector<T, N>);
-
-impl_sub!(Vector<T, N>, Vector<T, N>, Vector<T, N>);
-impl_sub!(Vector<T, N>, &Vector<T, N>, Vector<T, N>);
-impl_sub!(&Vector<T, N>, &Vector<T, N>, Vector<T, N>);
-
-impl_mul!(Vector<T, N>, T, Vector<T, N>);
-// impl_mul!(Vector<T, N>, &'a T, Vector<T, N>);
-impl_mul!(&Vector<T, N>, T, Vector<T, N>);
-// impl_mul!(&Vector<T, N>, &'a T, Vector<T, N>);
-
-impl_add_assign!(Vector<T, N>, Vector<T, N>);
-impl_add_assign!(Vector<T, N>, &Vector<T, N>);
-
-impl_sub_assign!(Vector<T, N>, Vector<T, N>);
-impl_sub_assign!(Vector<T, N>, &Vector<T, N>);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Iterators
@@ -483,14 +365,14 @@ impl<T: Base, const N: usize> iter::FromIterator<T> for Vector<T, N> {
 
 impl<T: Base, const N: usize> iter::Sum<Vector<T, N>> for Vector<T, N>
 where
-    Self: ops::Add<Output = Self>,
+    Self: Add<Output = Self>,
     T: Zero,
 {
     fn sum<I>(iter: I) -> Self
     where
         I: Iterator<Item = Self>,
     {
-        iter.fold(Vector::zero(), ops::Add::add)
+        iter.fold(Vector::zero(), Add::add)
     }
 }
 

@@ -2,9 +2,9 @@
 //!
 //! Some of code in this module is taken from the `num-traits` crate.
 
-use core::fmt::Debug;
-pub use core::iter::{Product, Sum};
-use core::ops::*;
+pub(crate) use core::fmt::Debug;
+pub(crate) use core::iter::{Product, Sum};
+pub(crate) use core::ops::*;
 
 /// Conversion trait for conversions from incomplete data.
 ///

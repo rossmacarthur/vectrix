@@ -1,4 +1,5 @@
 mod comps;
+mod ops;
 
 use vectrs::Vector;
 
@@ -100,90 +101,6 @@ fn vector_from_partial_tuple() {
     }
 
     vector_from_tuples!(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Operators
-////////////////////////////////////////////////////////////////////////////////
-
-#[test]
-fn vector_add() {
-    let a = Vector::new([1, 2, 3]);
-    let b = Vector::new([1, -2, 3]);
-    let c = Vector::new([2, 0, 6]);
-    let vector = a + b;
-    assert_eq!(vector, c);
-
-    let vector = a + &b;
-    assert_eq!(vector, c);
-
-    let vector = &a + &b;
-    assert_eq!(vector, c);
-}
-
-#[test]
-fn vector_sub() {
-    let a = Vector::new([1, 2, 3]);
-    let b = Vector::new([1, -2, 1]);
-    let c = Vector::new([0, 4, 2]);
-
-    let vector = a - b;
-    assert_eq!(vector, c);
-
-    let vector = a - &b;
-    assert_eq!(vector, c);
-
-    let vector = &a - &b;
-    assert_eq!(vector, c);
-}
-
-#[test]
-fn vector_mul() {
-    let a = Vector::new([1, -2, 3]);
-    let b = 2;
-    let c = Vector::new([2, -4, 6]);
-
-    let vector = a * b;
-    assert_eq!(vector, c);
-
-    let vector = &a * b;
-    assert_eq!(vector, c);
-
-    // let vector = a * &b;
-    // assert_eq!(vector, c);
-
-    // let vector = &a * &b;
-    // assert_eq!(vector, c);
-}
-
-#[test]
-fn vector_add_assign() {
-    let a = Vector::new([1, 2, 3]);
-    let b = Vector::new([1, -2, 3]);
-    let c = Vector::new([2, 0, 6]);
-
-    let mut vector = a.clone();
-    vector += b;
-    assert_eq!(vector, c);
-
-    let mut vector = a.clone();
-    vector += &b;
-    assert_eq!(vector, c);
-}
-
-#[test]
-fn vector_sub_assign() {
-    let a = Vector::new([1, 2, 3]);
-    let b = Vector::new([1, -2, 1]);
-    let c = Vector::new([0, 4, 2]);
-
-    let mut vector = a.clone();
-    vector -= b;
-    assert_eq!(vector, c);
-
-    let mut vector = a.clone();
-    vector -= &b;
-    assert_eq!(vector, c);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
