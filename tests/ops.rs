@@ -215,3 +215,21 @@ fn vector_sub_assign() {
     let c = Vector::new([0, 4, 2]);
     for_each_op_assign_assert_eq! { a, -=, b, c }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// -Vector
+////////////////////////////////////////////////////////////////////////////////
+
+#[test]
+fn vector_neg() {
+    let a = Vector::new([1, -3, 3, -7]);
+    assert_eq!(-a, Vector::new([-1, 3, -3, 7]));
+    assert_eq!(-&a, Vector::new([-1, 3, -3, 7]));
+}
+
+#[test]
+fn vector_not() {
+    let a = Vector::new([1, -3, 3, -7]);
+    assert_eq!(!a, Vector::new([-2, 2, -4, 6]));
+    assert_eq!(!&a, Vector::new([-2, 2, -4, 6]));
+}

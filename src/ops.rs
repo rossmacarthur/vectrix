@@ -142,3 +142,28 @@ impl_op_assign! { impl AddAssign< Vector<T, N>>, add_assign }
 impl_op_assign! { impl AddAssign<&Vector<T, N>>, add_assign }
 impl_op_assign! { impl SubAssign< Vector<T, N>>, sub_assign }
 impl_op_assign! { impl SubAssign<&Vector<T, N>>, sub_assign }
+
+////////////////////////////////////////////////////////////////////////////////
+// -Vector
+////////////////////////////////////////////////////////////////////////////////
+
+macro_rules! impl_op_unary {
+    (impl $trt:ident, $meth:ident for $lhs:ty) => {
+        impl<T: Base, const N: usize> $trt for $lhs
+        where
+            T: $trt<Output = T>,
+        {
+            type Output = Vector<T, N>;
+
+            #[inline]
+            fn $meth(self) -> Self::Output {
+                self.map($trt::$meth)
+            }
+        }
+    };
+}
+
+impl_op_unary! { impl Neg, neg for  Vector<T, N> }
+impl_op_unary! { impl Neg, neg for &Vector<T, N> }
+impl_op_unary! { impl Not, not for  Vector<T, N> }
+impl_op_unary! { impl Not, not for &Vector<T, N> }
