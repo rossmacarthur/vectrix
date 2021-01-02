@@ -153,7 +153,7 @@ impl<T: Debug, const N: usize> Debug for Vector<T, N> {
 }
 
 impl<T, const N: usize> Deref for Vector<T, N> {
-    type Target = [T];
+    type Target = [T; N];
 
     #[inline]
     fn deref(&self) -> &Self::Target {
@@ -429,13 +429,13 @@ impl<T: Base, const N: usize> Vector<T, N> {
     /// Views the underlying vector representation as a slice.
     #[inline]
     pub fn as_slice(&self) -> &[T] {
-        self
+        &self.arr
     }
 
     /// Views the underlying vector representation as a mutable slice.
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
-        self
+        &mut self.arr
     }
 
     /// Consumes this vector and returns the underlying array.
