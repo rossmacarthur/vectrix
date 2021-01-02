@@ -14,7 +14,6 @@ macro_rules! _impl_op_scalar {
         {
             type Output = Vector<T, N>;
 
-            #[inline]
             fn $meth(self, other: $rhs) -> Self::Output {
                 self.map(|n| n.$meth(other))
             }
@@ -53,7 +52,6 @@ macro_rules! _impl_op_assign_scalar {
         where
             T: $($bound)+
         {
-            #[inline]
             fn $meth(&mut self, other: $rhs) {
                 for i in 0..N {
                     self[i].$meth(other);
@@ -94,7 +92,6 @@ macro_rules! _impl_op {
         {
             type Output = Vector<T, N>;
 
-            #[inline]
             fn $meth(self, other: $rhs) -> Self::Output {
                 let mut vector = $($deref)? self;
                 for i in 0..N {
@@ -128,7 +125,6 @@ macro_rules! impl_op_assign {
         where
             T: $trt,
         {
-            #[inline]
             fn $meth(&mut self, other: $rhs) {
                 for i in 0..N {
                     self[i].$meth(other[i]);
@@ -155,7 +151,6 @@ macro_rules! impl_op_unary {
         {
             type Output = Vector<T, N>;
 
-            #[inline]
             fn $meth(self) -> Self::Output {
                 self.map($trt::$meth)
             }
