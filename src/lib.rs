@@ -3,7 +3,18 @@
 //!
 //! # Constructors
 //!
-//! ### Directly using `From`
+//! ### `vector!` macro
+//!
+//! Simply use the [`vector!`] macro to construct a new [`Vector`] of any size.
+//!
+//! ```
+//! # use vectrs::vector;
+//! #
+//! let v = vector![1, 3, 3, 7];
+//! //  ^ constructs a `Vector<_, 4>`.
+//! ```
+//!
+//! ### Directly using `new()` or `From`
 //!
 //! A [`Vector`] is backed by an array. The simplest way to construct a
 //! [`Vector`] is to create it directly from an array or tuple. In both of these
@@ -14,7 +25,7 @@
 //! ```
 //! # use vectrs::Vector;
 //! #
-//! let v = Vector::from([1, 2, 3, 4]);
+//! let v = Vector::new([1, 2, 3, 4]);
 //! //  ^ Rust automatically infers that the type is `Vector<_, 4>`.
 //! ```
 //!
@@ -53,10 +64,10 @@
 //! # use vectrs::Vector;
 //! #
 //! let v = Vector::<_, 3>::from_partial((1, 2));
-//! assert_eq!(v, Vector::from([1, 2, 0]));
+//! assert_eq!(v, Vector::new([1, 2, 0]));
 //!
 //! let v = Vector::<_, 5>::from_partial_with((3, 2, 1), 1);
-//! assert_eq!(v, Vector::from([3, 2, 1, 1, 1]));     // ^ fill value
+//! assert_eq!(v, Vector::new([3, 2, 1, 1, 1]));     // ^ fill value
 //! ```
 //!
 //! # Accessing and mutating data
@@ -67,9 +78,9 @@
 //! [`.as_slice()`][Vector::as_slice]. This means all slice methods are
 //! available including indexing.
 //! ```
-//! # use vectrs::Vector;
+//! # use vectrs::vector;
 //! #
-//! let vector = Vector::from([1, 3, 3, 7]);
+//! let vector = vector![1, 3, 3, 7];
 //! assert_eq!(vector[3], 7);
 //! ```
 //!
@@ -77,11 +88,11 @@
 //! [`.as_mut_slice()`][Vector::as_mut_slice]. This means you can mutate data
 //! using slice indexing.
 //! ```
-//! # use vectrs::Vector;
+//! # use vectrs::vector;
 //! #
-//! let mut vector = Vector::from([1, 3, 3, 7]);
+//! let mut vector = vector![1, 3, 3, 7];;
 //! vector[0] = 2;
-//! assert_eq!(vector, Vector::from([2, 3, 3, 7]));
+//! assert_eq!(vector, vector![2, 3, 3, 7]);
 //! ```
 //!
 //! ### Component accessor methods
@@ -89,9 +100,9 @@
 //! Component accessor methods are available for small vectors using commonly
 //! recognized names.
 //! ```
-//! # use vectrs::Vector;
+//! # use vectrs::vector;
 //! #
-//! let vector = Vector::from([1, 3, 3, 7]);
+//! let vector = vector![1, 3, 3, 7];
 //! assert_eq!(vector.x(), 1);
 //! assert_eq!(vector.y(), 3);
 //! assert_eq!(vector.z(), 3);
@@ -100,12 +111,12 @@
 //!
 //! Additionally, you can get mutable access using the `*_mut` versions.
 //! ```
-//! # use vectrs::Vector;
+//! # use vectrs::vector;
 //! #
-//! let mut vector = Vector::from([1, 3, 3, 7]);
+//! let mut vector = vector![1, 3, 3, 7];
 //! *vector.y_mut() = 2;
 //! *vector.w_mut() = 4;
-//! assert_eq!(vector, Vector::from([1, 2, 3, 4]));
+//! assert_eq!(vector, vector![1, 2, 3, 4]);
 //! ```
 
 #![no_std]
@@ -390,6 +401,14 @@ where
 ////////////////////////////////////////////////////////////////////////////////
 // General methods
 ////////////////////////////////////////////////////////////////////////////////
+
+/// Construct a new [`Vector`] of any size.
+#[macro_export]
+macro_rules! vector {
+    ( $($elem:expr),* $(,)? ) => {
+        $crate::Vector::new([$($elem),*])
+    }
+}
 
 impl<T, const N: usize> Vector<T, N> {
     /// Create a new vector.

@@ -15,7 +15,7 @@ pub trait FromPartial<T, U> {
 
 /// A base trait for numeric types.
 ///
-/// FIXME: once rust-lang/rust#61956 is fixed this can probably be removed.
+// FIXME: once rust-lang/rust#61956 is fixed this can probably be removed.
 pub trait Base: Copy + Default {}
 impl<T> Base for T where T: Copy + Default {}
 
