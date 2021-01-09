@@ -140,24 +140,13 @@ pub struct Vector<T, const N: usize> {
     arr: [T; N],
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Formatting
+////////////////////////////////////////////////////////////////////////////////
+
 impl<T: Debug, const N: usize> Debug for Vector<T, N> {
-    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        const FIELDS: &[&str] = &["x", "y", "z", "w", "a", "b"];
-        const LEN: usize = FIELDS.len();
-        match N {
-            1..=LEN => {
-                let mut dbg = f.debug_struct("Vector");
-                for i in 0..N {
-                    dbg.field(FIELDS[i], &self[i]);
-                }
-                dbg.finish()
-            }
-            _ => {
-                f.write_str("Vector")?;
-                Debug::fmt(&self.arr, f)
-            }
-        }
+        fmt::Debug::fmt(&self.arr, f)
     }
 }
 
@@ -172,7 +161,6 @@ impl<T: Base, const N: usize> Default for Vector<T, N> {
         Self { arr }
     }
 }
-
 // `From` implementations
 
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {

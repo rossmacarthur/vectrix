@@ -6,19 +6,19 @@ use vectrs::{vector, Vector};
 #[test]
 fn vector_debug_2() {
     let vector = Vector::new([1, 2]);
-    assert_eq!(format!("{:?}", vector), "Vector { x: 1, y: 2 }");
+    assert_eq!(format!("{:?}", vector), "[1, 2]");
 }
 
 #[test]
 fn vector_debug_4() {
     let vector = Vector::new([1, 3, 3, 7]);
-    assert_eq!(format!("{:?}", vector), "Vector { x: 1, y: 3, z: 3, w: 7 }");
+    assert_eq!(format!("{:?}", vector), "[1, 3, 3, 7]");
 }
 
 #[test]
 fn vector_debug_more() {
     let vector = Vector::new([1, 3, 3, 7, 0, 0, 0]);
-    assert_eq!(format!("{:?}", vector), "Vector[1, 3, 3, 7, 0, 0, 0]");
+    assert_eq!(format!("{:?}", vector), "[1, 3, 3, 7, 0, 0, 0]");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,6 @@ fn vector_macro() {
     assert_eq!(vector, Vector::new([-1, 0]));
     let vector = vector![1; 5];
     assert_eq!(vector, Vector::new([1, 1, 1, 1, 1]));
-
 }
 
 #[test]
