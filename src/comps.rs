@@ -1,53 +1,52 @@
-//! Traits to allow component access for vectors.
+//! Allow component access for vectors.
 
 use crate::prelude::*;
 
-pub trait X {}
-pub trait Y {}
-pub trait Z {}
-pub trait W {}
-
-macro_rules! impl_trait {
-    ($trait:ty, $($N:literal),+) => {
-        $(
-            impl<T> $trait for Vector<T, $N> {}
-        )+
-    }
+macro_rules! struct_coord {
+    ($Coord:ident: $($comps:ident),*) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+        #[repr(C)]
+        pub struct $Coord<T> {
+            $(pub $comps: T),*
+        }
+    };
 }
 
-macro_rules! impl_accessors {
-    ($trait:ident, $get_n:ident, $get_n_ref:ident, $get_n_mut:ident, $n:literal) => {
-        impl<T: Base, const N: usize> Vector<T, N>
-        where
-            Self: $trait,
-        {
-            /// Returns this component of the vector.
-            #[inline]
-            pub fn $get_n(&self) -> T {
-                self.arr[$n]
-            }
+macro_rules! impl_deref {
+    ($N:literal -> $Target:ident) => {
+        impl<T> Deref for Vector<T, $N> {
+            type Target = $Target<T>;
 
-            /// Returns a reference to this component of the vector.
             #[inline]
-            pub fn $get_n_ref(&self) -> &T {
-                &self.arr[$n]
+            fn deref(&self) -> &Self::Target {
+                let ptr = self.arr.as_ptr() as *const $Target<T>;
+                unsafe { &*ptr }
             }
+        }
 
-            /// Returns a mutable reference to this component of the vector.
+        impl<T> DerefMut for Vector<T, $N> {
             #[inline]
-            pub fn $get_n_mut(&mut self) -> &mut T {
-                &mut self.arr[$n]
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                let ptr = self.arr.as_mut_ptr() as *mut $Target<T>;
+                unsafe { &mut *ptr }
             }
         }
     };
 }
 
-impl_trait!(X, 1, 2, 3, 4);
-impl_trait!(Y, 2, 3, 4);
-impl_trait!(Z, 3, 4);
-impl_trait!(W, 4);
+struct_coord! { X: x }
+struct_coord! { XY: x, y }
+struct_coord! { XYZ: x, y, z }
+struct_coord! { XYZW: x, y, z, w }
+struct_coord! { XYZWA: x, y, z, w, a }
+struct_coord! { XYZWAB: x, y, z, w, a, b }
 
-impl_accessors!(X, x, x_ref, x_mut, 0);
-impl_accessors!(Y, y, y_ref, y_mut, 1);
-impl_accessors!(Z, z, z_ref, z_mut, 2);
-impl_accessors!(W, w, w_ref, w_mut, 3);
+// Safety: given $N -> $Target
+// - $Target should be marked #[repr(C)].
+// - $Target<T> should be the same size as [T; $N].
+impl_deref! { 1 -> X }
+impl_deref! { 2 -> XY }
+impl_deref! { 3 -> XYZ }
+impl_deref! { 4 -> XYZW }
+impl_deref! { 5 -> XYZWA }
+impl_deref! { 6 -> XYZWAB }

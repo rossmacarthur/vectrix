@@ -16,10 +16,9 @@
 //!
 //! ### Directly using `new()` or `From`
 //!
-//! A [`Vector`] is backed by an array. The simplest way to construct a
-//! [`Vector`] is to create it directly from an array or tuple. In both of these
-//! cases the size of the `Vector` can be easily inferred by the Rust type
-//! system.
+//! A [`Vector`] is backed by an array. You can construct a [`Vector`] from an
+//! array or tuple. In both of these cases the size of the `Vector` can be
+//! easily inferred by the Rust type system.
 //!
 //! From an array:
 //! ```
@@ -67,56 +66,53 @@
 //! assert_eq!(v, Vector::new([1, 2, 0]));
 //!
 //! let v = Vector::<_, 5>::from_partial_with((3, 2, 1), 1);
-//! assert_eq!(v, Vector::new([3, 2, 1, 1, 1]));     // ^ fill value
+//! assert_eq!(v, Vector::new([3, 2, 1, 1, 1]));      // ^ fill value
 //! ```
 //!
 //! # Accessing and mutating data
 //!
-//! ### Slice representation
+//! ### Indexing
 //!
-//! A slice view of the underlying data is provided using `Deref` or
-//! [`.as_slice()`][Vector::as_slice]. This means all slice methods are
-//! available including indexing.
+//! Data can be accessed and mutated using indexing.
 //! ```
 //! # use vectrs::vector;
 //! #
-//! let vector = vector![1, 3, 3, 7];
+//! let mut vector = vector![1, 2, 3, 4];
+//! vector[1] = 3;
+//! vector[3] = 7;
+//! assert_eq!(vector[0], 1);
+//! assert_eq!(vector[1], 3);
+//! assert_eq!(vector[2], 3);
 //! assert_eq!(vector[3], 7);
 //! ```
 //!
-//! A mutable slice view of the underlying data is provide using `DerefMut` or
-//! [`.as_mut_slice()`][Vector::as_mut_slice]. This means you can mutate data
-//! using slice indexing.
-//! ```
-//! # use vectrs::vector;
-//! #
-//! let mut vector = vector![1, 3, 3, 7];;
-//! vector[0] = 2;
-//! assert_eq!(vector, vector![2, 3, 3, 7]);
-//! ```
+//! ### Component accessors
 //!
-//! ### Component accessor methods
-//!
-//! Component accessor methods are available for small vectors using commonly
+//! Component accessors are available for small vectors using commonly
 //! recognized names.
 //! ```
 //! # use vectrs::vector;
 //! #
-//! let vector = vector![1, 3, 3, 7];
-//! assert_eq!(vector.x(), 1);
-//! assert_eq!(vector.y(), 3);
-//! assert_eq!(vector.z(), 3);
-//! assert_eq!(vector.w(), 7);
+//! let mut vector = vector![1, 2, 3, 4];
+//! vector.y = 3;
+//! vector.w = 7;
+//! assert_eq!(vector.x, 1);
+//! assert_eq!(vector.y, 3);
+//! assert_eq!(vector.z, 3);
+//! assert_eq!(vector.w, 7);
 //! ```
 //!
-//! Additionally, you can get mutable access using the `*_mut` versions.
+//! ### Slice representation
+//!
+//! A slice view of the underlying data is provided using
+//! [`.as_slice()`][Vector::as_slice] and
+//! [`.as_mut_slice()`][Vector::as_mut_slice].
 //! ```
 //! # use vectrs::vector;
 //! #
-//! let mut vector = vector![1, 3, 3, 7];
-//! *vector.y_mut() = 2;
-//! *vector.w_mut() = 4;
-//! assert_eq!(vector, vector![1, 2, 3, 4]);
+//! let mut vector = vector![1, 3, 3, 4];
+//! vector.as_mut_slice()[3] = 7;
+//! assert_eq!(vector.as_slice(), &[1, 3, 3, 7]);
 //! ```
 
 #![no_std]
@@ -131,6 +127,7 @@ pub mod traits;
 
 use core::fmt;
 use core::iter;
+use core::slice;
 
 use crate::prelude::*;
 
@@ -138,6 +135,7 @@ use crate::prelude::*;
 ///
 /// See the [crate root][crate] for usage examples.
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
+#[repr(C)]
 pub struct Vector<T, const N: usize> {
     arr: [T; N],
 }
@@ -145,7 +143,7 @@ pub struct Vector<T, const N: usize> {
 impl<T: Debug, const N: usize> Debug for Vector<T, N> {
     #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        const FIELDS: &[&str] = &["x", "y", "z", "w"];
+        const FIELDS: &[&str] = &["x", "y", "z", "w", "a", "b"];
         const LEN: usize = FIELDS.len();
         match N {
             1..=LEN => {
@@ -160,22 +158,6 @@ impl<T: Debug, const N: usize> Debug for Vector<T, N> {
                 Debug::fmt(&self.arr, f)
             }
         }
-    }
-}
-
-impl<T, const N: usize> Deref for Vector<T, N> {
-    type Target = [T; N];
-
-    #[inline]
-    fn deref(&self) -> &Self::Target {
-        &self.arr
-    }
-}
-
-impl<T, const N: usize> DerefMut for Vector<T, N> {
-    #[inline]
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        &mut self.arr
     }
 }
 
@@ -310,7 +292,7 @@ impl<T, const N: usize> IntoIter<T, N> {
     fn new(vector: Vector<T, N>) -> Self {
         Self {
             left: 0,
-            right: vector.len(),
+            right: vector.arr.len(),
             vector,
         }
     }
@@ -324,7 +306,7 @@ impl<T: Base, const N: usize> Iterator for IntoIter<T, N> {
         if self.left == self.right {
             None
         } else {
-            let next = unsafe { self.vector.get_unchecked(self.left) };
+            let next = unsafe { self.vector.arr.get_unchecked(self.left) };
             self.left += 1;
             Some(*next)
         }
@@ -349,7 +331,7 @@ impl<T: Base, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
             None
         } else {
             self.right -= 1;
-            let next = unsafe { self.vector.get_unchecked(self.right) };
+            let next = unsafe { self.vector.arr.get_unchecked(self.right) };
             Some(*next)
         }
     }
@@ -455,6 +437,18 @@ impl<T: Base, const N: usize> Vector<T, N> {
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         &mut self.arr
+    }
+
+    /// Returns an iterator over the slice.
+    #[inline]
+    pub fn iter(&self) -> slice::Iter<'_, T> {
+        self.arr.iter()
+    }
+
+    /// Returns an iterator that allows modifying each value.
+    #[inline]
+    pub fn iter_mut(&mut self) -> slice::IterMut<'_, T> {
+        self.arr.iter_mut()
     }
 
     /// Consumes this vector and returns the underlying array.

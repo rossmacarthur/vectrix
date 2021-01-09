@@ -17,8 +17,8 @@ fn vector_debug_4() {
 
 #[test]
 fn vector_debug_more() {
-    let vector = Vector::new([1, 3, 3, 7, 0]);
-    assert_eq!(format!("{:?}", vector), "Vector[1, 3, 3, 7, 0]");
+    let vector = Vector::new([1, 3, 3, 7, 0, 0, 0]);
+    assert_eq!(format!("{:?}", vector), "Vector[1, 3, 3, 7, 0, 0, 0]");
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -120,13 +120,6 @@ fn vector_from_partial_tuple() {
 ////////////////////////////////////////////////////////////////////////////////
 
 #[test]
-fn vector_iter() {
-    let vector = Vector::new([1, 3, 3, 7]);
-    let values: Vec<_> = vector.iter().collect();
-    assert_eq!(values, vec![&1, &3, &3, &7]);
-}
-
-#[test]
 fn vector_into_iter() {
     let vector = Vector::new([1, 3, 3, 7]);
     let values: Vec<_> = vector.into_iter().collect();
@@ -226,6 +219,13 @@ fn vector_as_mut_slice() {
     slice[1] = 3;
     slice[3] = 7;
     assert_eq!(vector, Vector::new([1, 3, 3, 7]));
+}
+
+#[test]
+fn vector_iter() {
+    let vector = Vector::new([1, 3, 3, 7]);
+    let values: Vec<_> = vector.iter().collect();
+    assert_eq!(values, vec![&1, &3, &3, &7]);
 }
 
 #[test]

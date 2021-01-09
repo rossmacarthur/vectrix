@@ -12,19 +12,20 @@ This crate will work on stable Rust from Rust v1.51 onwards.
 ## Example usage
 
 ```rust
-use vectrs::Vector;
+use std::iter;
+use vectrs::{vector, Vector};
 
-// construct from arrays, tuples, iterators, etc
-let v1 = Vector::new([-1, 0]);
-let v2 = Vector::from((3, 2));
-let v3: Vector<_, 2> = std::iter::repeat(2).collect();
+// construct using the `vector!` macro, from arrays, tuples, or even iterators
+let v1 = vector![-1, 0]; // shortcut for Vector::new([-1, 0])
+let v2 = Vector::from((4, 2));
+let v3: Vector<_, 2> = iter::repeat(2).collect();
 
 // numeric operations are implemented
-assert_eq!(v1 + v2, v3);
+assert_eq!(v1 * 2 + v2, v3);
 
-// access/mutate components using slice indexing or dedicated methods
-assert_eq!(v2.x(), 3);
-assert_eq!(v2[1], 2);
+// access/mutate components using dedicated accessors or indexing
+assert_eq!(v3.x, 2);
+assert_eq!(v3[1], 2);
 ```
 
 See the [full documentation](https://docs.rs/vectrs) for more.
