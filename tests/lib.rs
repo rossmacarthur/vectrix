@@ -1,7 +1,7 @@
 mod comps;
 mod ops;
 
-use vectrs::Vector;
+use vectrs::{vector, Vector};
 
 #[test]
 fn vector_debug_2() {
@@ -190,6 +190,17 @@ fn vector_sum() {
 ////////////////////////////////////////////////////////////////////////////////
 // General methods
 ////////////////////////////////////////////////////////////////////////////////
+
+#[test]
+fn vector_macro() {
+    const VECTOR: Vector<i64, 4> = vector![1, 3, 3, 7];
+    assert_eq!(VECTOR, Vector::new([1, 3, 3, 7]));
+    let vector = vector![-1, 0];
+    assert_eq!(vector, Vector::new([-1, 0]));
+    let vector = vector![1; 5];
+    assert_eq!(vector, Vector::new([1, 1, 1, 1, 1]));
+
+}
 
 #[test]
 fn vector_new() {

@@ -387,9 +387,12 @@ where
 /// Construct a new [`Vector`] of any size.
 #[macro_export]
 macro_rules! vector {
+    ( $elem:expr; $n:expr ) => {
+        $crate::Vector::new([$elem; $n])
+    };
     ( $($elem:expr),* $(,)? ) => {
         $crate::Vector::new([$($elem),*])
-    }
+    };
 }
 
 impl<T, const N: usize> Vector<T, N> {
