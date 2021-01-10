@@ -159,8 +159,7 @@ impl<T: Debug, const N: usize> Debug for Vector<T, N> {
 impl<T: Base, const N: usize> Default for Vector<T, N> {
     #[inline]
     fn default() -> Self {
-        let array = [T::default(); N];
-        Self { array }
+        Self::new([T::default(); N])
     }
 }
 // `From` implementations
@@ -168,7 +167,7 @@ impl<T: Base, const N: usize> Default for Vector<T, N> {
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     #[inline]
     fn from(array: [T; N]) -> Self {
-        Self { array }
+        Self::new(array)
     }
 }
 
