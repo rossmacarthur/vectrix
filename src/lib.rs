@@ -139,7 +139,7 @@ use crate::prelude::*;
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
 #[repr(C)]
 pub struct Vector<T, const N: usize> {
-    arr: [T; N],
+    array: [T; N],
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -148,7 +148,7 @@ pub struct Vector<T, const N: usize> {
 
 impl<T: Debug, const N: usize> Debug for Vector<T, N> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        fmt::Debug::fmt(&self.arr, f)
+        fmt::Debug::fmt(&self.array, f)
     }
 }
 
@@ -159,16 +159,16 @@ impl<T: Debug, const N: usize> Debug for Vector<T, N> {
 impl<T: Base, const N: usize> Default for Vector<T, N> {
     #[inline]
     fn default() -> Self {
-        let arr = [T::default(); N];
-        Self { arr }
+        let array = [T::default(); N];
+        Self { array }
     }
 }
 // `From` implementations
 
 impl<T, const N: usize> From<[T; N]> for Vector<T, N> {
     #[inline]
-    fn from(arr: [T; N]) -> Self {
-        Self { arr }
+    fn from(array: [T; N]) -> Self {
+        Self { array }
     }
 }
 
@@ -270,8 +270,8 @@ macro_rules! vector {
 
 impl<T, const N: usize> Vector<T, N> {
     /// Create a new vector.
-    pub const fn new(arr: [T; N]) -> Self {
-        Self { arr }
+    pub const fn new(array: [T; N]) -> Self {
+        Self { array }
     }
 }
 
@@ -282,8 +282,7 @@ impl<T: Base, const N: usize> Vector<T, N> {
     where
         T: Zero,
     {
-        let arr = [T::zero(); N];
-        Self { arr }
+        Self::new([T::zero(); N])
     }
 
     /// Create a vector from various types, filling with zeroes as needed.
@@ -306,31 +305,31 @@ impl<T: Base, const N: usize> Vector<T, N> {
     /// Views the underlying vector representation as a slice.
     #[inline]
     pub fn as_slice(&self) -> &[T] {
-        &self.arr
+        &self.array
     }
 
     /// Views the underlying vector representation as a mutable slice.
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
-        &mut self.arr
+        &mut self.array
     }
 
     /// Returns an iterator over the slice.
     #[inline]
     pub fn iter(&self) -> slice::Iter<'_, T> {
-        self.arr.iter()
+        self.array.iter()
     }
 
     /// Returns an iterator that allows modifying each value.
     #[inline]
     pub fn iter_mut(&mut self) -> slice::IterMut<'_, T> {
-        self.arr.iter_mut()
+        self.array.iter_mut()
     }
 
     /// Consumes this vector and returns the underlying array.
     #[inline]
     pub fn into_array(self) -> [T; N] {
-        self.arr
+        self.array
     }
 
     /// Returns a vector of the same size as self, with function `f` applied to

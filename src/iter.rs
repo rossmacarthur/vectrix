@@ -33,7 +33,7 @@ impl<T, const N: usize> IntoIter<T, N> {
     }
 
     fn as_slice(&self) -> &[T] {
-        unsafe { self.vector.arr.get_unchecked(self.alive.clone()) }
+        unsafe { self.vector.array.get_unchecked(self.alive.clone()) }
     }
 }
 
@@ -44,7 +44,7 @@ impl<T: Copy, const N: usize> Iterator for IntoIter<T, N> {
         // Get the next index from the front.
         self.alive
             .next()
-            .map(|idx| *unsafe { self.vector.arr.get_unchecked(idx) })
+            .map(|idx| *unsafe { self.vector.array.get_unchecked(idx) })
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
@@ -66,7 +66,7 @@ impl<T: Copy, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
         // Get the next index from the back.
         self.alive
             .next_back()
-            .map(|idx| *unsafe { self.vector.arr.get_unchecked(idx) })
+            .map(|idx| *unsafe { self.vector.array.get_unchecked(idx) })
     }
 }
 

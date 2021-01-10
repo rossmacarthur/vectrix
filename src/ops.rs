@@ -11,14 +11,14 @@ impl<T, const N: usize> Index<usize> for Vector<T, N> {
 
     #[inline]
     fn index(&self, i: usize) -> &Self::Output {
-        &self.arr[i]
+        &self.array[i]
     }
 }
 
 impl<T, const N: usize> IndexMut<usize> for Vector<T, N> {
     #[inline]
     fn index_mut(&mut self, i: usize) -> &mut Self::Output {
-        &mut self.arr[i]
+        &mut self.array[i]
     }
 }
 
