@@ -121,14 +121,16 @@
 extern crate std;
 
 mod comps;
+mod iter;
 mod ops;
 mod prelude;
 pub mod traits;
 
 use core::fmt;
-use core::iter;
+use core::iter::repeat;
 use core::slice;
 
+pub use crate::iter::IntoIter;
 use crate::prelude::*;
 
 /// Represents a constant-size, *n*-dimensional vector.
@@ -190,21 +192,21 @@ impl<T: Base, const N: usize> From<Vec<T>> for Vector<T, N> {
 impl<T: Base, const M: usize, const N: usize> FromPartial<T, [T; M]> for Vector<T, N> {
     #[inline]
     fn from_partial(arr: [T; M], fill: T) -> Self {
-        arr.iter().copied().chain(iter::repeat(fill)).collect()
+        arr.iter().copied().chain(repeat(fill)).collect()
     }
 }
 
 impl<T: Base, const M: usize, const N: usize> FromPartial<T, Vector<T, M>> for Vector<T, N> {
     #[inline]
     fn from_partial(vector: Vector<T, M>, fill: T) -> Self {
-        vector.into_iter().chain(iter::repeat(fill)).collect()
+        vector.into_iter().chain(repeat(fill)).collect()
     }
 }
 
 impl<'a, T: Base, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
     #[inline]
     fn from_partial(slice: &'a [T], fill: T) -> Self {
-        slice.iter().copied().chain(iter::repeat(fill)).collect()
+        slice.iter().copied().chain(repeat(fill)).collect()
     }
 }
 
@@ -212,7 +214,7 @@ impl<'a, T: Base, const N: usize> FromPartial<T, &'a [T]> for Vector<T, N> {
 impl<T: Base, const N: usize> FromPartial<T, Vec<T>> for Vector<T, N> {
     #[inline]
     fn from_partial(vec: Vec<T>, fill: T) -> Self {
-        vec.into_iter().chain(iter::repeat(fill)).collect()
+        vec.into_iter().chain(repeat(fill)).collect()
     }
 }
 
@@ -249,123 +251,6 @@ impl_from_tuple! {
     { 10: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T,) },
     { 11: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T, g: T,) },
     { 12: (x: T, y: T, z: T, w: T, a: T, b: T, c: T, d: T, e: T, f: T, g: T, h: T,) },
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Iterators
-////////////////////////////////////////////////////////////////////////////////
-
-/// An iterator that moves out of a vector.
-///
-/// This `struct` is created by the `.into_iter()` method on [`Vector`]
-/// (provided by the [`IntoIterator`] trait).
-///
-/// # Examples
-///
-/// ```
-/// # use vectrs::{IntoIter, Vector};
-/// #
-/// let v = Vector::from([0, 1, 2]);
-/// let iter: IntoIter<_, 3> = v.into_iter();
-/// ```
-#[derive(Debug)]
-pub struct IntoIter<T, const N: usize> {
-    left: usize,
-    right: usize,
-    vector: Vector<T, N>,
-}
-
-impl<T, const N: usize> IntoIter<T, N> {
-    #[inline]
-    fn new(vector: Vector<T, N>) -> Self {
-        Self {
-            left: 0,
-            right: vector.arr.len(),
-            vector,
-        }
-    }
-}
-
-impl<T: Base, const N: usize> Iterator for IntoIter<T, N> {
-    type Item = T;
-
-    #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.left == self.right {
-            None
-        } else {
-            let next = unsafe { self.vector.arr.get_unchecked(self.left) };
-            self.left += 1;
-            Some(*next)
-        }
-    }
-
-    #[inline]
-    fn size_hint(&self) -> (usize, Option<usize>) {
-        let remaining = self.right - self.left;
-        (remaining, Some(remaining))
-    }
-
-    #[inline]
-    fn count(self) -> usize {
-        self.right - self.left
-    }
-}
-
-impl<T: Base, const N: usize> DoubleEndedIterator for IntoIter<T, N> {
-    #[inline]
-    fn next_back(&mut self) -> Option<Self::Item> {
-        if self.left == self.right {
-            None
-        } else {
-            self.right -= 1;
-            let next = unsafe { self.vector.arr.get_unchecked(self.right) };
-            Some(*next)
-        }
-    }
-}
-
-impl<T: Base, const N: usize> ExactSizeIterator for IntoIter<T, N> {}
-
-impl<T: Base, const N: usize> iter::FusedIterator for IntoIter<T, N> {}
-
-impl<T: Base, const N: usize> IntoIterator for Vector<T, N> {
-    type Item = T;
-    type IntoIter = IntoIter<T, N>;
-
-    #[inline]
-    fn into_iter(self) -> Self::IntoIter {
-        IntoIter::new(self)
-    }
-}
-
-impl<T: Base, const N: usize> iter::FromIterator<T> for Vector<T, N> {
-    fn from_iter<I: IntoIterator<Item = T>>(iter: I) -> Self {
-        let mut iter = iter.into_iter();
-        let mut vector = Vector::default();
-        for i in 0..N {
-            match iter.next() {
-                Some(value) => vector[i] = value,
-                None => {
-                    panic!("collect iterator of length {} into `Vector<_, {}>`", i, N);
-                }
-            }
-        }
-        vector
-    }
-}
-
-impl<T: Base, const N: usize> iter::Sum<Vector<T, N>> for Vector<T, N>
-where
-    Self: Add<Output = Self>,
-    T: Zero,
-{
-    fn sum<I>(iter: I) -> Self
-    where
-        I: Iterator<Item = Self>,
-    {
-        iter.fold(Vector::zero(), Add::add)
-    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
