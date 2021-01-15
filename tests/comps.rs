@@ -1,4 +1,4 @@
-use vectrs::matrix;
+use vectrix::matrix;
 
 #[test]
 fn row_vector_components() {

@@ -2,7 +2,7 @@ mod comps;
 mod iter;
 mod ops;
 
-use vectrs::{matrix, Matrix};
+use vectrix::{matrix, Matrix};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors

@@ -4,8 +4,8 @@ use criterion::{criterion_group, Criterion};
 use rand::distributions::Standard;
 use rand::prelude::*;
 
-use vectrs::traits::*;
-use vectrs::Vector;
+use vectrix::traits::*;
+use vectrix::Vector;
 
 fn random_vector<T: Base, const N: usize>() -> Vector<T, N>
 where

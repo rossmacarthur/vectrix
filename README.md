@@ -1,8 +1,8 @@
 # vect*rs*
 
-[![Crates.io Version](https://img.shields.io/crates/v/vectrs.svg)](https://crates.io/crates/vectrs)
-[![Docs.rs Latest](https://img.shields.io/badge/docs.rs-latest-blue.svg)](https://docs.rs/vectrs)
-[![Build Status](https://img.shields.io/github/workflow/status/rossmacarthur/vectrs/build/master)](https://github.com/rossmacarthur/vectrs/actions?query=workflow%3Abuild)
+[![Crates.io Version](https://img.shields.io/crates/v/vectrix.svg)](https://crates.io/crates/vectrix)
+[![Docs.rs Latest](https://img.shields.io/badge/docs.rs-latest-blue.svg)](https://docs.rs/vectrix)
+[![Build Status](https://img.shields.io/github/workflow/status/rossmacarthur/vectrix/build/master)](https://github.com/rossmacarthur/vectrix/actions?query=workflow%3Abuild)
 
 A stack-allocated, constant-size, *n*-dimensional vector type implemented with
 const generics.
@@ -13,7 +13,7 @@ This crate will work on stable Rust from Rust v1.51 onwards.
 
 ```rust
 use std::iter;
-use vectrs::{vector, Vector};
+use vectrix::{vector, Vector};
 
 // construct using the `vector!` macro, from arrays, tuples, or even iterators
 let v1 = vector![-1, 0]; // shortcut for Vector::new([-1, 0])
@@ -28,7 +28,7 @@ assert_eq!(v3.x, 2);
 assert_eq!(v3[1], 2);
 ```
 
-See the [full documentation](https://docs.rs/vectrs) for more.
+See the [full documentation](https://docs.rs/vectrix) for more.
 
 ## License
 

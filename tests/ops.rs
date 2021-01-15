@@ -1,4 +1,4 @@
-use vectrs::{matrix, Matrix};
+use vectrix::{matrix, Matrix};
 
 macro_rules! for_each_op_assert_eq {
     ($a:expr, $op:tt, $b:expr, $expected:expr) => {

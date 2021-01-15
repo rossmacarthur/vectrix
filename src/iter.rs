@@ -12,7 +12,7 @@ use crate::prelude::*;
 /// # Examples
 ///
 /// ```
-/// # use vectrs::{matrix, IntoIter};
+/// # use vectrix::{matrix, IntoIter};
 /// #
 /// let m = matrix![
 ///     1, 3, 5;

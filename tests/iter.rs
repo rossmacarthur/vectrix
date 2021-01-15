@@ -1,4 +1,4 @@
-use vectrs::{matrix, Matrix};
+use vectrix::{matrix, Matrix};
 
 #[test]
 fn into_iter_debug() {

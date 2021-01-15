@@ -8,7 +8,7 @@
 //! Simply use the [`matrix!`] macro to construct a new [`Matrix`] of any size.
 //!
 //! ```
-//! # use vectrs::{matrix, Matrix};
+//! # use vectrix::{matrix, Matrix};
 //! #
 //! let m = matrix![
 //!     1, 3, 5;
@@ -24,7 +24,7 @@
 //! Component accessors are available for small vectors using commonly
 //! recognized names.
 //! ```
-//! # use vectrs::matrix;
+//! # use vectrix::matrix;
 //! #
 //! let mut vector = matrix![1, 2, 3, 4];
 //! vector.y = 3;
@@ -41,7 +41,7 @@
 //! [`.as_slice()`][`Matrix::as_slice`] and
 //! [`.as_mut_slice()`][`Matrix::as_mut_slice`].
 //! ```
-//! # use vectrs::matrix;
+//! # use vectrix::matrix;
 //! #
 //! let mut m = matrix![
 //!     1, 3, 5;
@@ -89,7 +89,7 @@ pub struct Matrix<T, const M: usize, const N: usize> {
 /// example:
 ///
 /// ```rust
-/// # use vectrs::matrix;
+/// # use vectrix::matrix;
 /// #
 /// let m = matrix![
 ///     1.0, 4.0;
@@ -117,7 +117,7 @@ pub struct Matrix<T, const M: usize, const N: usize> {
 #[macro_export]
 macro_rules! matrix {
     ($($data:tt)*) => {
-        $crate::Matrix::from_column_major_order(::vectrs_macro::matrix!($($data)*))
+        $crate::Matrix::from_column_major_order(::vectrix_macro::matrix!($($data)*))
     };
 }
 
