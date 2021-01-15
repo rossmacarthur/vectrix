@@ -193,10 +193,8 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         F: FnMut(T) -> U,
     {
         let mut vector = Matrix::default();
-        for i in 0..M {
-            for j in 0..N {
-                vector.data[i][j] = f(self.data[i][j]);
-            }
+        for i in 0..(M * N) {
+            vector[i] = f(self[i]);
         }
         vector
     }

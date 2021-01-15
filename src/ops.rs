@@ -130,8 +130,8 @@ macro_rules! _impl_op {
 
             fn $meth(self, other: $rhs) -> Self::Output {
                 let mut matrix = $($deref)? self;
-                for i in 0..N {
-                    for j in 0..M {
+                for i in 0..M {
+                    for j in 0..N {
                         matrix[(i, j)] = self[(i, j)].$meth(other[(i, j)]);
                     }
                 }

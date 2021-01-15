@@ -1,17 +1,20 @@
-use std::iter;
-
 use criterion::{criterion_group, Criterion};
 use rand::distributions::Standard;
 use rand::prelude::*;
 
-use vectrix::traits::*;
-use vectrix::Vector;
+use vectrix::Matrix;
 
-fn random_vector<T: Base, const N: usize>() -> Vector<T, N>
+type Vector<T, const N: usize> = Matrix<T, N, 1>;
+
+fn random_vector<T: Copy + Default, const N: usize>() -> Vector<T, N>
 where
     Standard: Distribution<T>,
 {
-    iter::repeat_with(random).collect()
+    let mut vector = Vector::default();
+    for i in 0..N {
+        vector[i] = random();
+    }
+    vector
 }
 
 ////////////////////////////////////////////////////////////////////////////////
