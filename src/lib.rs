@@ -64,6 +64,9 @@ pub mod traits;
 
 use core::slice;
 
+#[doc(hidden)]
+pub use vectrix_macro as proc_macro;
+
 pub use crate::iter::IntoIter;
 use crate::prelude::*;
 
@@ -117,7 +120,7 @@ pub struct Matrix<T, const M: usize, const N: usize> {
 #[macro_export]
 macro_rules! matrix {
     ($($data:tt)*) => {
-        $crate::Matrix::from_column_major_order(::vectrix_macro::matrix!($($data)*))
+        $crate::Matrix::from_column_major_order($crate::proc_macro::matrix!($($data)*))
     };
 }
 
