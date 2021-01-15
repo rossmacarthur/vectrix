@@ -3,8 +3,9 @@ name = "vectrix-macro"
 version = "0.1.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+description = "A macro for composing matrices."
+repository = "https://github.com/rossmacarthur/vectrix"
+license = "MIT OR Apache-2.0"
 
 [lib]
 proc_macro = true
