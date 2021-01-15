@@ -11,14 +11,21 @@ keywords = ["math", "vector", "linear-algebra"]
 categories = ["mathematics", "science", "no-std"]
 include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
 
-[features]
-default = ["std"]
-std = []
+[[bench]]
+name = "main"
+harness = false
+
+[dependencies]
+vectrs-macro = { path = "macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.3"
 rand = "0.8.0"
 
-[[bench]]
-name = "main"
-harness = false
+[features]
+default = ["macro", "std"]
+std = []
+macro = ["vectrs-macro"]
+
+[workspace]
+members = ["macro"]

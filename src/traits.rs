@@ -2,22 +2,7 @@
 //!
 //! Some of code in this module is taken from the `num-traits` crate.
 
-pub(crate) use core::fmt::Debug;
-pub(crate) use core::iter::Sum;
 pub(crate) use core::ops::*;
-
-/// Conversion trait for conversions from incomplete data.
-///
-/// See the [`Vector::from_partial`][crate::Vector::from_partial] function.
-pub trait FromPartial<T, U> {
-    fn from_partial(_: U, fill: T) -> Self;
-}
-
-/// A base trait for numeric types.
-///
-// FIXME: once rust-lang/rust#61956 is fixed this can probably be removed.
-pub trait Base: Copy + Default {}
-impl<T> Base for T where T: Copy + Default {}
 
 /// Defines the absolute value for a type.
 pub trait Abs {

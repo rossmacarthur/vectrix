@@ -6,36 +6,51 @@ use crate::prelude::*;
 // Indexing
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T, const N: usize> Index<usize> for Vector<T, N> {
+impl<T, const M: usize, const N: usize> Index<(usize, usize)> for Matrix<T, M, N> {
     type Output = T;
 
     #[inline]
-    fn index(&self, i: usize) -> &Self::Output {
-        &self.array[i]
+    fn index(&self, (i, j): (usize, usize)) -> &Self::Output {
+        &self.data[j][i]
     }
 }
 
-impl<T, const N: usize> IndexMut<usize> for Vector<T, N> {
+impl<T, const M: usize, const N: usize> IndexMut<(usize, usize)> for Matrix<T, M, N> {
     #[inline]
-    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
-        &mut self.array[i]
+    fn index_mut(&mut self, (i, j): (usize, usize)) -> &mut Self::Output {
+        &mut self.data[j][i]
+    }
+}
+
+impl<T, const M: usize, const N: usize> Index<usize> for Matrix<T, M, N> {
+    type Output = T;
+
+    #[inline]
+    fn index(&self, idx: usize) -> &Self::Output {
+        &self.as_slice()[idx]
+    }
+}
+
+impl<T, const M: usize, const N: usize> IndexMut<usize> for Matrix<T, M, N> {
+    fn index_mut(&mut self, idx: usize) -> &mut Self::Output {
+        &mut self.as_mut_slice()[idx]
     }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Vector + T => Vector
+// Matrix + T
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! _impl_op_scalar {
     ($meth:ident, impl $trt:ident<$rhs:ty> for $lhs:ty where T: $($bound:tt)+) => {
-        impl<'a, T: Base, const N: usize> $trt<$rhs> for $lhs
+        impl<'a, T, const M: usize, const N: usize> $trt<$rhs> for $lhs
         where
-            T: $($bound)+
+            T: Copy + Default + $($bound)+
         {
-            type Output = Vector<T, N>;
+            type Output = Matrix<T, M, N>;
 
             fn $meth(self, other: $rhs) -> Self::Output {
-                self.map(|n| n.$meth(other))
+                self.map(|n: T| n.$meth(other))
             }
         }
     };
@@ -43,10 +58,10 @@ macro_rules! _impl_op_scalar {
 
 macro_rules! impl_op_scalar {
     ($trt:ident, $meth:ident) => {
-        _impl_op_scalar! { $meth, impl $trt<    T> for  Vector<T, N> where T: $trt<Output = T>        } //  Vector +  T
-        _impl_op_scalar! { $meth, impl $trt<&'a T> for  Vector<T, N> where T: $trt<&'a T, Output = T> } //  Vector + &T
-        _impl_op_scalar! { $meth, impl $trt<    T> for &Vector<T, N> where T: $trt<Output = T>        } // &Vector +  T
-        _impl_op_scalar! { $meth, impl $trt<&'a T> for &Vector<T, N> where T: $trt<&'a T, Output = T> } // &Vector + &T
+        _impl_op_scalar! { $meth, impl $trt<    T> for  Matrix<T, M, N> where T: $trt<Output = T>        } //  Matrix +  T
+        _impl_op_scalar! { $meth, impl $trt<&'a T> for  Matrix<T, M, N> where T: $trt<&'a T, Output = T> } //  Matrix + &T
+        _impl_op_scalar! { $meth, impl $trt<    T> for &Matrix<T, M, N> where T: $trt<Output = T>        } // &Matrix +  T
+        _impl_op_scalar! { $meth, impl $trt<&'a T> for &Matrix<T, M, N> where T: $trt<&'a T, Output = T> } // &Matrix + &T
     };
 }
 
@@ -63,18 +78,19 @@ impl_op_scalar! { Shl, shl }
 impl_op_scalar! { Shr, shr }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Vector += T
+// Matrix += T
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! _impl_op_assign_scalar {
     ($meth:ident, impl $trt:ident<$rhs:ty> where T: $($bound:tt)+) => {
-        impl<'a, T: Base, const N: usize> $trt<$rhs> for Vector<T, N>
+        impl<'a, T, const M: usize, const N: usize> $trt<$rhs> for Matrix<T, M, N>
         where
-            T: $($bound)+
+            T: Copy + $($bound)+
         {
             fn $meth(&mut self, other: $rhs) {
-                for i in 0..N {
-                    self[i].$meth(other);
+                let slice = self.as_mut_slice();
+                for i in 0..(M * N) {
+                    slice[i].$meth(other);
                 }
             }
         }
@@ -83,8 +99,8 @@ macro_rules! _impl_op_assign_scalar {
 
 macro_rules! impl_op_assign_scalar {
     ($trt:ident, $meth:ident) => {
-        _impl_op_assign_scalar! { $meth, impl $trt<    T> where T: $trt        } // Vector +=  T
-        _impl_op_assign_scalar! { $meth, impl $trt<&'a T> where T: $trt<&'a T> } // Vector += &T
+        _impl_op_assign_scalar! { $meth, impl $trt<    T> where T: $trt        } // Matrix +=  T
+        _impl_op_assign_scalar! { $meth, impl $trt<&'a T> where T: $trt<&'a T> } // Matrix += &T
     };
 }
 
@@ -101,23 +117,25 @@ impl_op_assign_scalar! { ShlAssign, shl_assign }
 impl_op_assign_scalar! { ShrAssign, shr_assign }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Vector + Vector => Vector
+// Matrix + Matrix
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! _impl_op {
     ($meth:ident, impl $trt:ident<$rhs:ty> for $lhs:ty, $($deref:tt)?) => {
-        impl<T: Base, const N: usize> $trt<$rhs> for $lhs
+        impl<T, const M: usize, const N: usize> $trt<$rhs> for $lhs
         where
-            T: $trt<Output = T>
+            T: Copy + $trt<Output = T>
         {
-            type Output = Vector<T, N>;
+            type Output = Matrix<T, M, N>;
 
             fn $meth(self, other: $rhs) -> Self::Output {
-                let mut vector = $($deref)? self;
+                let mut matrix = $($deref)? self;
                 for i in 0..N {
-                    vector[i] = self[i].$meth(other[i]);
+                    for j in 0..M {
+                        matrix[(i, j)] = self[(i, j)].$meth(other[(i, j)]);
+                    }
                 }
-                vector
+                matrix
             }
         }
     };
@@ -125,10 +143,10 @@ macro_rules! _impl_op {
 
 macro_rules! impl_op {
     ($trt:ident, $meth:ident) => {
-        _impl_op! { $meth, impl $trt< Vector<T, N>> for  Vector<T, N>,   } //  Vector +  Vector
-        _impl_op! { $meth, impl $trt< Vector<T, N>> for &Vector<T, N>, * } //  Vector + &Vector
-        _impl_op! { $meth, impl $trt<&Vector<T, N>> for  Vector<T, N>,   } // &Vector +  Vector
-        _impl_op! { $meth, impl $trt<&Vector<T, N>> for &Vector<T, N>, * } // &Vector + &Vector
+        _impl_op! { $meth, impl $trt< Matrix<T, M, N>> for  Matrix<T, M, N>,   } //  Matrix +  Matrix
+        _impl_op! { $meth, impl $trt< Matrix<T, M, N>> for &Matrix<T, M, N>, * } //  Matrix + &Matrix
+        _impl_op! { $meth, impl $trt<&Matrix<T, M, N>> for  Matrix<T, M, N>,   } // &Matrix +  Matrix
+        _impl_op! { $meth, impl $trt<&Matrix<T, M, N>> for &Matrix<T, M, N>, * } // &Matrix + &Matrix
     };
 }
 
@@ -136,40 +154,42 @@ impl_op! { Add, add }
 impl_op! { Sub, sub }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Vector += Vector
+// Matrix += Matrix
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! impl_op_assign {
     (impl $trt:ident<$rhs:ty>, $meth:ident) => {
-        impl<T: Base, const N: usize> $trt<$rhs> for Vector<T, N>
+        impl<T, const M: usize, const N: usize> $trt<$rhs> for Matrix<T, M, N>
         where
-            T: $trt,
+            T: Copy + $trt,
         {
             fn $meth(&mut self, other: $rhs) {
-                for i in 0..N {
-                    self[i].$meth(other[i]);
+                for i in 0..M {
+                    for j in 0..N {
+                        self[(i, j)].$meth(other[(i, j)]);
+                    }
                 }
             }
         }
     };
 }
 
-impl_op_assign! { impl AddAssign< Vector<T, N>>, add_assign }
-impl_op_assign! { impl AddAssign<&Vector<T, N>>, add_assign }
-impl_op_assign! { impl SubAssign< Vector<T, N>>, sub_assign }
-impl_op_assign! { impl SubAssign<&Vector<T, N>>, sub_assign }
+impl_op_assign! { impl AddAssign< Matrix<T, M, N>>, add_assign }
+impl_op_assign! { impl AddAssign<&Matrix<T, M, N>>, add_assign }
+impl_op_assign! { impl SubAssign< Matrix<T, M, N>>, sub_assign }
+impl_op_assign! { impl SubAssign<&Matrix<T, M, N>>, sub_assign }
 
 ////////////////////////////////////////////////////////////////////////////////
-// -Vector
+// -Matrix
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! impl_op_unary {
     (impl $trt:ident, $meth:ident for $lhs:ty) => {
-        impl<T: Base, const N: usize> $trt for $lhs
+        impl<T, const M: usize, const N: usize> $trt for $lhs
         where
-            T: $trt<Output = T>,
+            T: Copy + Default + $trt<Output = T>,
         {
-            type Output = Vector<T, N>;
+            type Output = Matrix<T, M, N>;
 
             fn $meth(self) -> Self::Output {
                 self.map($trt::$meth)
@@ -178,7 +198,7 @@ macro_rules! impl_op_unary {
     };
 }
 
-impl_op_unary! { impl Neg, neg for  Vector<T, N> }
-impl_op_unary! { impl Neg, neg for &Vector<T, N> }
-impl_op_unary! { impl Not, not for  Vector<T, N> }
-impl_op_unary! { impl Not, not for &Vector<T, N> }
+impl_op_unary! { impl Neg, neg for  Matrix<T, M, N> }
+impl_op_unary! { impl Neg, neg for &Matrix<T, M, N> }
+impl_op_unary! { impl Not, not for  Matrix<T, M, N> }
+impl_op_unary! { impl Not, not for &Matrix<T, M, N> }

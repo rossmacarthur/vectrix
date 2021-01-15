@@ -2,4 +2,4 @@
 pub use std::prelude::v1::*;
 
 pub use crate::traits::*;
-pub use crate::Vector;
+pub use crate::Matrix;
