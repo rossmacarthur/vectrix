@@ -66,6 +66,7 @@ use core::iter::Sum;
 use core::slice;
 
 #[doc(hidden)]
+#[cfg(feature = "macro")]
 pub use vectrix_macro as proc_macro;
 
 pub use crate::iter::IntoIter;
