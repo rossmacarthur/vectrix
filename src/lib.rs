@@ -89,6 +89,9 @@ pub type RowVector<T, const N: usize> = Matrix<T, 1, N>;
 /// A matrix with one column and `M` rows.
 pub type ColumnVector<T, const M: usize> = Matrix<T, M, 1>;
 
+/// A matrix with one column and `M` rows.
+pub type Vector<T, const M: usize> = Matrix<T, M, 1>;
+
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors
 ////////////////////////////////////////////////////////////////////////////////
