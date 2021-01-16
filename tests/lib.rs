@@ -1,4 +1,3 @@
-mod comps;
 mod iter;
 mod ops;
 

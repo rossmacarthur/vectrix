@@ -56,11 +56,11 @@
 #[cfg(feature = "std")]
 extern crate std;
 
-mod comps;
 mod iter;
 mod ops;
 mod prelude;
 pub mod traits;
+mod vector;
 
 use core::slice;
 
@@ -138,7 +138,7 @@ where
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// General methods
+// Matrix<T, M, N> methods
 ////////////////////////////////////////////////////////////////////////////////
 
 impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
