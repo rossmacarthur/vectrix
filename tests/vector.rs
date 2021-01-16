@@ -1,7 +1,7 @@
-use vectrix::{matrix, ColumnVector, RowVector};
+use vectrix::{column_vector, matrix, row_vector, vector, ColumnVector, RowVector};
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Accessors
+// Accessors
 ////////////////////////////////////////////////////////////////////////////////
 
 #[test]
@@ -61,8 +61,14 @@ fn column_vector_components_mut() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Constructors
+// Constructors
 ////////////////////////////////////////////////////////////////////////////////
+
+#[test]
+fn row_vector_macro() {
+    let vector = row_vector![1, 3, 3, 7];
+    assert_eq!(vector, matrix![1, 3, 3, 7]);
+}
 
 #[test]
 fn row_vector_new() {
@@ -84,6 +90,18 @@ fn row_vector_from_array() {
     assert_eq!(V::from([1, 2, 3, 4]), matrix![1, 2, 3, 4]);
     assert_eq!(V::from([1, 2, 3, 4, 5]), matrix![1, 2, 3, 4, 5]);
     assert_eq!(V::from([1, 2, 3, 4, 5, 6]), matrix![1, 2, 3, 4, 5, 6]);
+}
+
+#[test]
+fn column_vector_macro() {
+    let vector = column_vector![1, 3, 3, 7];
+    assert_eq!(vector, matrix![1; 3; 3; 7]);
+}
+
+#[test]
+fn vector_macro() {
+    let vector = vector![1, 3, 3, 7];
+    assert_eq!(vector, matrix![1; 3; 3; 7]);
 }
 
 #[test]

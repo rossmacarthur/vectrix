@@ -3,7 +3,7 @@
 use crate::prelude::*;
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Accessors
+// Accessors
 ////////////////////////////////////////////////////////////////////////////////
 
 macro_rules! struct_coord {
@@ -63,8 +63,32 @@ impl_deref! { (5, 1) -> XYZWA }
 impl_deref! { (6, 1) -> XYZWAB }
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Constructors
+// Constructors
 ////////////////////////////////////////////////////////////////////////////////
+
+/// A macro for composing row vectors.
+#[macro_export]
+macro_rules! row_vector {
+    ($($v:expr),*) => {
+        $crate::RowVector::from_column_major_order([$([$v]),*])
+    };
+}
+
+/// A macro for composing column vectors.
+#[macro_export]
+macro_rules! column_vector {
+    ($($v:expr),*) => {
+        $crate::ColumnVector::from_column_major_order([[$($v),*]])
+    };
+}
+
+/// A macro for composing vectors.
+#[macro_export]
+macro_rules! vector {
+    ($($v:expr),*) => {
+        $crate::ColumnVector::from_column_major_order([[$($v),*]])
+    };
+}
 
 macro_rules! impl_row_vector {
     ($N:literal: $($comp:ident),+) => {
