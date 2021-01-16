@@ -1,39 +1,116 @@
 //! This crate provides a stack-allocated, constant-size [`Matrix<T, M, N>`]
-//! type.
+//! type implemented using const generics.
 //!
-//! # Constructors
+//! ### Types
 //!
-//! ### `matrix!` macro
+//! The base [`Matrix<T, M, N>`] type represents a matrix with `M` rows and `N`
+//! columns. This type is a backed by an array of arrays. The data is stored in
+//! column-major order. Some convenient aliases are provided for common
+//! matrices, like vectors.
 //!
-//! Simply use the [`matrix!`] macro to construct a new [`Matrix`] of any size.
+//! - [`Matrix<T, M, N>`] → a generic matrix type with `M` rows and `N` columns.
+//! - [`Vector<T, M>`] → a column vector with `M` rows.
+//! - [`RowVector<T, M>`] → a row vector with `N` columns.
 //!
+//! ### Macros
+//!
+//! Macros are provided for easy construction of the provided types. These
+//! macros will also work in `const` contexts.
+//!
+//! The [`matrix!`] macro can be used to construct a new [`Matrix`] of any size.
 //! ```
-//! # use vectrix::{matrix, Matrix};
+//! # use vectrix::*;
 //! #
-//! let m = matrix![
+//! let matrix = matrix![
 //!     1, 3, 5;
 //!     2, 4, 6;
 //! ];
 //! ```
 //!
-//! In the above example `m` is a `Matrix<_, 2, 3>` type, having 2 rows and 3
-//! columns. The `matrix!` macro will also work in `const` contexts.
+//! In the above example `matrix` is a `Matrix<_, 2, 3>` type, having 2 rows and
+//! 3 columns.
 //!
-//! ### Component accessors
+//! The [`vector!`] and [`row_vector!`] macros can be used to to construct
+//! vectors.
 //!
-//! Component accessors are available for small vectors using commonly
-//! recognized names.
 //! ```
-//! # use vectrix::matrix;
+//! # use vectrix::*;
 //! #
-//! let mut vector = matrix![1, 2, 3, 4];
+//! let vector = vector![1, 3, 3, 7];
+//! //  ^^^^^^ type `Vector<_, 4>`
+//! assert_eq!(vector, matrix![1; 3; 3; 7]);
+//!
+//! let vector = row_vector![1, 3, 3, 7];
+//! //  ^^^^^^ type `RowVector<_, 4>`
+//! assert_eq!(vector, matrix![1, 3, 3, 7]);
+//! ```
+//!
+//! ### Constructors
+//!
+//! Commonly used constructors are listed below.
+//!
+//! - [`::default()`][`Matrix::default()`] → constructs a new matrix filled with
+//!   [`T::default()`][`Default::default()`].
+//! - [`::zero()`][`Matrix::zero()`] → constructs a new matrix filled with
+//!   [`T::zero()`][`Zero::zero()`].
+//! - [`::new(..)`][`Matrix::new()`] → constructs a new vector using the
+//!   provided components.
+//!
+//! ### Accessing elements
+//!
+//! Two types of indexing is available:
+//!
+//! Firstly, `usize` indexing which selects the nth element in the matrix as
+//! viewed in column-major order.
+//! ```
+//! # use vectrix::*;
+//! #
+//! let matrix = matrix![
+//!     1, 2, 3;
+//!     4, 5, 6;
+//! ];
+//! assert_eq!(matrix[1], 4);
+//! ```
+//!
+//! Secondly, `(usize, usize)` indexing which selects the element at a
+//! particular row and column position.
+//! ```
+//! # use vectrix::*;
+//! #
+//! let matrix = matrix![
+//!     1, 2, 3;
+//!     4, 5, 6;
+//! ];
+//! assert_eq!(matrix[(1, 0)], 4);
+//! ```
+//!
+//! Additionally, component accessors are available for small vectors using
+//! commonly recognized names.
+//! ```
+//! # use vectrix::*;
+//! #
+//! let mut vector = vector![1, 2, 3, 4, 0, 0];
 //! vector.y = 3;
 //! vector.w = 7;
 //! assert_eq!(vector.x, 1);
 //! assert_eq!(vector.y, 3);
 //! assert_eq!(vector.z, 3);
 //! assert_eq!(vector.w, 7);
+//! assert_eq!(vector.a, 0);
+//! assert_eq!(vector.b, 0);
 //! ```
+//!
+//! ### Iteration
+//!
+//! Element-wise, column-major order iteration is provided using the following
+//! methods.
+//!
+//! - [`.iter()`][`Matrix::iter()`] → returns an iterator over a reference to
+//!   each element.
+//! - [`.iter_mut()`][`Matrix::iter_mut()`] → returns an iterator over a mutable
+//!   reference to each element.
+//! - [`.into_iter()`][`Matrix::into_iter()`] → consumes the matrix and returns
+//!   an owned iterator over each element.
 //!
 //! ### Slice representation
 //!
@@ -41,14 +118,53 @@
 //! [`.as_slice()`][`Matrix::as_slice`] and
 //! [`.as_mut_slice()`][`Matrix::as_mut_slice`].
 //! ```
-//! # use vectrix::matrix;
+//! # use vectrix::*;
 //! #
-//! let mut m = matrix![
+//! let mut matrix = matrix![
 //!     1, 3, 5;
 //!     2, 3, 6;
 //! ];
-//! m.as_mut_slice()[3] = 4;
-//! assert_eq!(m.as_slice(), &[1, 2, 3, 4, 5, 6]);
+//! matrix.as_mut_slice()[3] = 4;
+//! assert_eq!(matrix.as_slice(), &[1, 2, 3, 4, 5, 6]);
+//! ```
+//!
+//! ### Operations
+//!
+//! [`Matrix`] implements many built-in operators. With scalar operands almost
+//! all operators are implement and they simply apply the operation to each
+//! element in the matrix. Unary operators will do the equivalent. In the
+//! following example each element in the matrix is multiplied by 2.
+//!
+//! ```
+//! # use vectrix::*;
+//! #
+//! let matrix = matrix![
+//!     1, -3;
+//!     3, -7;
+//! ];
+//! let expected = matrix![
+//!     2, -6;
+//!     6, -14;
+//! ];
+//! assert_eq!(matrix * 2, expected);
+//! ```
+//!
+//! [`Matrix`] supports addition and subtraction with same size matrices for
+//! element-wise addition and subtraction. In the following example a matrix
+//! is added to itself.
+//!
+//! ```
+//! # use vectrix::*;
+//! #
+//! let matrix = matrix![
+//!     1, -3;
+//!     3, -7;
+//! ];
+//! let expected = matrix![
+//!     2, -6;
+//!     6, -14;
+//! ];
+//! assert_eq!(matrix + matrix, expected);
 //! ```
 
 #![no_std]
