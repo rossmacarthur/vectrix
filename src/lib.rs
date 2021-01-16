@@ -62,6 +62,7 @@ mod prelude;
 pub mod traits;
 mod vector;
 
+use core::iter::Sum;
 use core::slice;
 
 #[doc(hidden)]
@@ -215,5 +216,32 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         T: Copy + Default + Abs,
     {
         self.map(Abs::abs)
+    }
+
+    /// Returns the L1 norm of the matrix.
+    ///
+    /// Also known as *Manhattan Distance* or *Taxicab norm*. L1 Norm is the sum
+    /// of the magnitudes of the vectors in a space.
+    ///
+    /// Note: if the matrix is a *row vector* this method might not do what you
+    /// what you expect. For example:
+    ///
+    /// ```
+    /// # use vectrix::matrix;
+    /// #
+    /// let row_vector = matrix![1, 2, 3];
+    /// assert_eq!(row_vector.l1_norm(), 3);
+    ///
+    /// let column_vector = matrix![1; 2; 3];
+    /// assert_eq!(column_vector.l1_norm(), 6);
+    /// ```
+    pub fn l1_norm(&self) -> T
+    where
+        T: Copy + Ord + Abs + Zero + Sum<T>,
+    {
+        (0..N)
+            .map(|idx| self.data[idx].iter().copied().map(Abs::abs).sum())
+            .max()
+            .unwrap_or_else(Zero::zero)
     }
 }

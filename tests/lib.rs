@@ -30,7 +30,7 @@ fn matrix_default() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// General methods
+// Matrix<T, M, N> methods
 ////////////////////////////////////////////////////////////////////////////////
 
 #[test]
@@ -80,4 +80,19 @@ fn matrix_unsigned_abs() {
 fn matrix_signed_abs() {
     let matrix = matrix![-1, 3; -3, 7];
     assert_eq!(matrix.abs(), matrix![1, 3; 3, 7]);
+}
+
+#[test]
+fn matrix_l1_norm() {
+    let matrix = matrix![-1, 3; -3, 7];
+    assert_eq!(matrix.l1_norm(), 10);
+}
+
+#[test]
+fn matrix_l1_norm_vectors() {
+    let matrix = matrix![-1, 3, -3, 7];
+    assert_eq!(matrix.l1_norm(), 7);
+
+    let matrix = matrix![-1; 3; -3; 7];
+    assert_eq!(matrix.l1_norm(), 14);
 }
