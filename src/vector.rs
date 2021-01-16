@@ -68,14 +68,14 @@ impl_deref! { (6, 1) -> XYZWAB }
 
 macro_rules! impl_row_vector {
     ($N:literal: $($comp:ident),+) => {
-        impl<T> Matrix<T, 1, $N> {
+        impl<T> RowVector<T, $N> {
             /// Creates a new vector from the given components.
             pub fn new($($comp: T),+) -> Self {
                 Self { data: [$([$comp]),+]}
             }
         }
 
-        impl<T> From<[T; $N]> for Matrix<T, 1, $N> {
+        impl<T> From<[T; $N]> for RowVector<T, $N>  {
             fn from([$($comp),*]: [T; $N]) -> Self {
                 Self { data: [$([$comp]),+] }
             }
@@ -85,14 +85,14 @@ macro_rules! impl_row_vector {
 
 macro_rules! impl_column_vector {
     ($M:literal: $($comp:ident),+) => {
-        impl<T> Matrix<T, $M, 1> {
+        impl<T> ColumnVector<T, $M> {
             /// Creates a new vector from the given components.
             pub fn new($($comp: T),+) -> Self {
                 Self { data: [[$($comp),+]]}
             }
         }
 
-        impl<T> From<[T; $M]> for Matrix<T, $M, 1> {
+        impl<T> From<[T; $M]> for ColumnVector<T, $M> {
             fn from(data: [T; $M]) -> Self {
                 Self { data: [data] }
             }
