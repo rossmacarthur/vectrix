@@ -70,7 +70,7 @@ macro_rules! impl_row_vector {
     ($N:literal: $($comp:ident),+) => {
         impl<T> RowVector<T, $N> {
             /// Creates a new vector from the given components.
-            pub fn new($($comp: T),+) -> Self {
+            pub const fn new($($comp: T),+) -> Self {
                 Self { data: [$([$comp]),+]}
             }
         }
@@ -87,7 +87,7 @@ macro_rules! impl_column_vector {
     ($M:literal: $($comp:ident),+) => {
         impl<T> ColumnVector<T, $M> {
             /// Creates a new vector from the given components.
-            pub fn new($($comp: T),+) -> Self {
+            pub const fn new($($comp: T),+) -> Self {
                 Self { data: [[$($comp),+]]}
             }
         }
