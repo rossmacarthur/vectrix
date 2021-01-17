@@ -1,9 +1,9 @@
 [package]
 name = "vectrix"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
-description = "A stack-allocated, constant-size, n-dimensional vector type"
+description = "A stack-allocated matrix type implemented with const generics."
 readme = "README.md"
 repository = "https://github.com/rossmacarthur/vectrix"
 license = "MIT OR Apache-2.0"
@@ -16,7 +16,7 @@ name = "main"
 harness = false
 
 [dependencies]
-vectrix-macro = { version = "=0.1.0", path = "macro", optional = true }
+vectrix-macro = { version = "=0.1.1", path = "macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.3"
