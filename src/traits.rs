@@ -1,6 +1,4 @@
 //! Abstractions over number types.
-//!
-//! Some of code in this module is taken from the `num-traits` crate.
 
 pub(crate) use core::ops::*;
 

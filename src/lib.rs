@@ -10,7 +10,7 @@
 //!
 //! - [`Matrix<T, M, N>`] → a generic matrix type with `M` rows and `N` columns.
 //! - [`Vector<T, M>`] → a column vector with `M` rows.
-//! - [`RowVector<T, M>`] → a row vector with `N` columns.
+//! - [`RowVector<T, N>`] → a row vector with `N` columns.
 //!
 //! ### Macros
 //!
@@ -204,6 +204,7 @@ pub struct Matrix<T, const M: usize, const N: usize> {
 pub type RowVector<T, const N: usize> = Matrix<T, 1, N>;
 
 /// A matrix with one column and `M` rows.
+#[doc(hidden)]
 pub type ColumnVector<T, const M: usize> = Matrix<T, M, 1>;
 
 /// A matrix with one column and `M` rows.

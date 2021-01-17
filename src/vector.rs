@@ -75,6 +75,7 @@ macro_rules! row_vector {
 }
 
 /// A macro for composing column vectors.
+#[doc(hidden)]
 #[macro_export]
 macro_rules! column_vector {
     ($($v:expr),*) => {

@@ -130,10 +130,8 @@ macro_rules! _impl_op {
 
             fn $meth(self, other: $rhs) -> Self::Output {
                 let mut matrix = $($deref)? self;
-                for i in 0..M {
-                    for j in 0..N {
-                        matrix[(i, j)] = self[(i, j)].$meth(other[(i, j)]);
-                    }
+                for idx in 0..(M * N) {
+                    matrix[idx] = self[idx].$meth(other[idx]);
                 }
                 matrix
             }
@@ -164,10 +162,8 @@ macro_rules! impl_op_assign {
             T: Copy + $trt,
         {
             fn $meth(&mut self, other: $rhs) {
-                for i in 0..M {
-                    for j in 0..N {
-                        self[(i, j)].$meth(other[(i, j)]);
-                    }
+                for idx in 0..(M * N) {
+                    self[idx].$meth(other[idx]);
                 }
             }
         }
