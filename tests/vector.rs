@@ -71,6 +71,12 @@ fn row_vector_macro() {
 }
 
 #[test]
+fn row_vector_macro_repeat() {
+    let vector = row_vector![7; 4];
+    assert_eq!(vector, matrix![7, 7, 7, 7]);
+}
+
+#[test]
 fn row_vector_new() {
     type V<const N: usize> = RowVector<i64, N>;
     assert_eq!(V::<1>::new(1), matrix![1]);
@@ -96,6 +102,12 @@ fn row_vector_from_array() {
 fn vector_macro() {
     let vector = vector![1, 3, 3, 7];
     assert_eq!(vector, matrix![1; 3; 3; 7]);
+}
+
+#[test]
+fn vector_macro_repeat() {
+    let vector = vector![7; 4];
+    assert_eq!(vector, matrix![7; 7; 7; 7]);
 }
 
 #[test]

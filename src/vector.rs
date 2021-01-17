@@ -69,6 +69,9 @@ impl_deref! { (6, 1) -> XYZWAB }
 /// A macro for composing row vectors.
 #[macro_export]
 macro_rules! row_vector {
+    ($repeat:expr; $n:expr) => {
+        $crate::RowVector::from_column_major_order([[$repeat]; $n])
+    };
     ($($value:expr),* $(,)?) => {
         $crate::RowVector::from_column_major_order([$([$value]),*])
     };
@@ -77,6 +80,9 @@ macro_rules! row_vector {
 /// A macro for composing vectors.
 #[macro_export]
 macro_rules! vector {
+    ($repeat:expr; $n:expr) => {
+        $crate::Vector::from_column_major_order([[$repeat; $n]])
+    };
     ($($value:expr),* $(,)?) => {
         $crate::Vector::from_column_major_order([[$($value),*]])
     };
