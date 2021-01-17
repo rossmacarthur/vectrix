@@ -96,3 +96,37 @@ fn matrix_l1_norm_vectors() {
     let matrix = matrix![-1; 3; -3; 7];
     assert_eq!(matrix.l1_norm(), 14);
 }
+
+////////////////////////////////////////////////////////////////////////////////
+// Matrix<T, N, N> methods
+////////////////////////////////////////////////////////////////////////////////
+
+#[test]
+fn matrix_identity() {
+    assert_eq!(
+        Matrix::identity(),
+        matrix![
+            1, 0;
+            0, 1;
+        ]
+    );
+
+    assert_eq!(
+        Matrix::identity(),
+        matrix![
+            1, 0, 0;
+            0, 1, 0;
+            0, 0, 1;
+        ]
+    );
+
+    assert_eq!(
+        Matrix::identity(),
+        matrix![
+            1, 0, 0, 0;
+            0, 1, 0, 0;
+            0, 0, 1, 0;
+            0, 0, 0, 1;
+        ]
+    );
+}

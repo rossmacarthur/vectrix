@@ -53,6 +53,7 @@
 //!   [`T::default()`][`Default::default()`].
 //! - [`::zero()`][`Matrix::zero()`] → constructs a new matrix filled with
 //!   [`T::zero()`][`Zero::zero()`].
+//! - [`::identity()`][`Matrix::identity()`] → constructs a new identity matrix.
 //! - [`::new(..)`][`Matrix::new()`] → constructs a new vector using the
 //!   provided components.
 //!
@@ -272,7 +273,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         Self { data }
     }
 
-    /// Returns a zero vector.
+    /// Returns a zero matrix.
     #[inline]
     #[must_use]
     pub fn zero() -> Self
@@ -319,11 +320,11 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         U: Copy + Default,
         F: FnMut(T) -> U,
     {
-        let mut vector = Matrix::default();
-        for i in 0..(M * N) {
-            vector[i] = f(self[i]);
+        let mut matrix = Matrix::default();
+        for idx in 0..(M * N) {
+            matrix[idx] = f(self[idx]);
         }
-        vector
+        matrix
     }
 
     /// Returns the absolute value of the matrix.
@@ -360,5 +361,24 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
             .map(|idx| self.data[idx].iter().copied().map(Abs::abs).sum())
             .max()
             .unwrap_or_else(Zero::zero)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Matrix<T, N, N> methods
+////////////////////////////////////////////////////////////////////////////////
+
+impl<T, const N: usize> Matrix<T, N, N> {
+    /// Returns an identity matrix.
+    #[must_use]
+    pub fn identity() -> Self
+    where
+        T: Copy + Default + One,
+    {
+        let mut matrix = Self::default();
+        for idx in 0..N {
+            matrix[(idx, idx)] = T::one();
+        }
+        matrix
     }
 }
