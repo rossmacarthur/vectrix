@@ -71,18 +71,6 @@ fn matrix_iter_mut() {
 }
 
 #[test]
-fn matrix_unsigned_abs() {
-    let matrix: Matrix<u64, 2, 2> = matrix![1, 3; 3, 7];
-    assert_eq!(matrix.abs(), matrix);
-}
-
-#[test]
-fn matrix_signed_abs() {
-    let matrix = matrix![-1, 3; -3, 7];
-    assert_eq!(matrix.abs(), matrix![1, 3; 3, 7]);
-}
-
-#[test]
 fn matrix_l1_norm() {
     let matrix = matrix![-1, 3; -3, 7];
     assert_eq!(matrix.l1_norm(), 10);
