@@ -19,7 +19,7 @@ fn matrix_macro_row_vector() {
 }
 
 #[test]
-fn matrix_macro_column_vector() {
+fn matrix_macro_vector() {
     let _matrix: Matrix<i64, 4, 1> = matrix![1; 3; 3; 7];
 }
 

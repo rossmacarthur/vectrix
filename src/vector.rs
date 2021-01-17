@@ -69,25 +69,16 @@ impl_deref! { (6, 1) -> XYZWAB }
 /// A macro for composing row vectors.
 #[macro_export]
 macro_rules! row_vector {
-    ($($v:expr),*) => {
-        $crate::RowVector::from_column_major_order([$([$v]),*])
-    };
-}
-
-/// A macro for composing column vectors.
-#[doc(hidden)]
-#[macro_export]
-macro_rules! column_vector {
-    ($($v:expr),*) => {
-        $crate::ColumnVector::from_column_major_order([[$($v),*]])
+    ($($value:expr),* $(,)?) => {
+        $crate::RowVector::from_column_major_order([$([$value]),*])
     };
 }
 
 /// A macro for composing vectors.
 #[macro_export]
 macro_rules! vector {
-    ($($v:expr),*) => {
-        $crate::ColumnVector::from_column_major_order([[$($v),*]])
+    ($($value:expr),* $(,)?) => {
+        $crate::Vector::from_column_major_order([[$($value),*]])
     };
 }
 
@@ -108,16 +99,16 @@ macro_rules! impl_row_vector {
     }
 }
 
-macro_rules! impl_column_vector {
+macro_rules! impl_vector {
     ($M:literal: $($comp:ident),+) => {
-        impl<T> ColumnVector<T, $M> {
+        impl<T> Vector<T, $M> {
             /// Creates a new vector from the given components.
             pub const fn new($($comp: T),+) -> Self {
                 Self { data: [[$($comp),+]]}
             }
         }
 
-        impl<T> From<[T; $M]> for ColumnVector<T, $M> {
+        impl<T> From<[T; $M]> for Vector<T, $M> {
             fn from(data: [T; $M]) -> Self {
                 Self { data: [data] }
             }
@@ -132,8 +123,8 @@ impl_row_vector! { 4: x, y, z, w }
 impl_row_vector! { 5: x, y, z, w, a }
 impl_row_vector! { 6: x, y, z, w, a, b }
 
-impl_column_vector! { 2: x, y }
-impl_column_vector! { 3: x, y, z }
-impl_column_vector! { 4: x, y, z, w }
-impl_column_vector! { 5: x, y, z, w, a }
-impl_column_vector! { 6: x, y, z, w, a, b }
+impl_vector! { 2: x, y }
+impl_vector! { 3: x, y, z }
+impl_vector! { 4: x, y, z, w }
+impl_vector! { 5: x, y, z, w, a }
+impl_vector! { 6: x, y, z, w, a, b }

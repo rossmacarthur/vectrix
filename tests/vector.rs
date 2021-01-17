@@ -1,4 +1,4 @@
-use vectrix::{column_vector, matrix, row_vector, vector, ColumnVector, RowVector};
+use vectrix::{matrix, row_vector, vector, RowVector, Vector};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Accessors
@@ -33,7 +33,7 @@ fn row_vector_components_mut() {
 }
 
 #[test]
-fn column_vector_components() {
+fn vector_components() {
     let vector = matrix![1; 3; 3; 7; 0; 0];
     assert_eq!(vector.x, 1);
     assert_eq!(vector.y, 3);
@@ -44,7 +44,7 @@ fn column_vector_components() {
 }
 
 #[test]
-fn column_vector_components_mut() {
+fn vector_components_mut() {
     let mut vector = matrix![1; 2; 3; 4; 5; 6];
     vector.x = 1;
     vector.y = 3;
@@ -93,20 +93,14 @@ fn row_vector_from_array() {
 }
 
 #[test]
-fn column_vector_macro() {
-    let vector = column_vector![1, 3, 3, 7];
-    assert_eq!(vector, matrix![1; 3; 3; 7]);
-}
-
-#[test]
 fn vector_macro() {
     let vector = vector![1, 3, 3, 7];
     assert_eq!(vector, matrix![1; 3; 3; 7]);
 }
 
 #[test]
-fn column_vector_new() {
-    type V<const M: usize> = ColumnVector<i64, M>;
+fn vector_new() {
+    type V<const M: usize> = Vector<i64, M>;
     assert_eq!(V::<1>::new(1), matrix![1]);
     assert_eq!(V::<2>::new(1, 2), matrix![1; 2]);
     assert_eq!(V::<3>::new(1, 2, 3), matrix![1; 2; 3]);
@@ -116,8 +110,8 @@ fn column_vector_new() {
 }
 
 #[test]
-fn column_vector_from_array() {
-    type V<const M: usize> = ColumnVector<i64, M>;
+fn vector_from_array() {
+    type V<const M: usize> = Vector<i64, M>;
     assert_eq!(V::from([1]), matrix![1]);
     assert_eq!(V::from([1, 2]), matrix![1; 2]);
     assert_eq!(V::from([1, 2, 3]), matrix![1; 2; 3]);
