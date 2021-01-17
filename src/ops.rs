@@ -35,6 +35,7 @@ impl<T, const M: usize, const N: usize> Index<usize> for Matrix<T, M, N> {
 }
 
 impl<T, const M: usize, const N: usize> IndexMut<usize> for Matrix<T, M, N> {
+    #[inline]
     fn index_mut(&mut self, idx: usize) -> &mut Self::Output {
         &mut self.as_mut_slice()[idx]
     }

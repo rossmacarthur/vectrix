@@ -269,13 +269,14 @@ where
 impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     /// Create a new matrix from an array of arrays in column-major order.
     #[doc(hidden)]
+    #[inline]
     pub const fn from_column_major_order(data: [[T; M]; N]) -> Self {
         Self { data }
     }
 
     /// Returns a zero matrix.
-    #[inline]
     #[must_use]
+    #[inline]
     pub fn zero() -> Self
     where
         T: Copy + Zero,
@@ -362,6 +363,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
 impl<T, const N: usize> Matrix<T, N, N> {
     /// Returns an identity matrix.
     #[must_use]
+    #[inline]
     pub fn identity() -> Self
     where
         T: Copy + Default + One,
