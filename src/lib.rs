@@ -314,7 +314,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     /// Returns a matrix of the same size as self, with function `f` applied to
     /// each element in order.
     #[inline]
-    fn map<F, U>(self, mut f: F) -> Matrix<U, M, N>
+    pub fn map<F, U>(self, mut f: F) -> Matrix<U, M, N>
     where
         T: Copy,
         U: Copy + Default,
@@ -325,15 +325,6 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
             matrix[idx] = f(self[idx]);
         }
         matrix
-    }
-
-    /// Returns the absolute value of the matrix.
-    #[inline]
-    pub fn abs(self) -> Self
-    where
-        T: Copy + Default + Abs,
-    {
-        self.map(Abs::abs)
     }
 
     /// Returns the L1 norm of the matrix.
