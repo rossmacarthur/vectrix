@@ -1,3 +1,6 @@
+#![allow(clippy::suspicious_arithmetic_impl)]
+#![allow(clippy::suspicious_op_assign_impl)]
+
 use core::ops::*;
 
 use crate::prelude::*;
@@ -88,9 +91,8 @@ macro_rules! _impl_op_assign_scalar {
             T: Copy + $($bound)+
         {
             fn $meth(&mut self, other: $rhs) {
-                let slice = self.as_mut_slice();
-                for i in 0..(M * N) {
-                    slice[i].$meth(other);
+                for idx in 0..(M * N) {
+                    self[idx].$meth(other);
                 }
             }
         }

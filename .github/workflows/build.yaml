@@ -22,7 +22,7 @@ jobs:
       run: cargo fmt -- --check
 
     - name: Clippy
-      run: cargo clippy --workspace --all-targets -- -D warnings -A clippy::suspicious_op_assign_impl -A clippy::assign_op_pattern
+      run: cargo clippy --workspace --all-targets
 
   test:
     runs-on: ubuntu-latest

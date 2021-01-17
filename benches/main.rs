@@ -1,3 +1,5 @@
+#![allow(clippy::assign_op_pattern)]
+
 use criterion::{criterion_group, Criterion};
 use rand::distributions::Standard;
 use rand::prelude::*;
