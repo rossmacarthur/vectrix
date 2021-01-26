@@ -354,6 +354,22 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
             .max()
             .unwrap_or_else(Zero::zero)
     }
+
+    /// Matrix multiplication
+    pub fn matmul<const P: usize>(&self, other: &Matrix<T, N, P>) -> Matrix<T, M, P>
+    where
+        T: Copy + Default + core::ops::AddAssign + core::ops::Mul<Output = T>,
+    {
+        let mut mat = Matrix::default();
+        for i in 0..M {
+            for j in 0..P {
+                for k in 0..N {
+                    mat[(i, j)] += self[(i, k)] * other[(k, j)];
+                }
+            }
+        }
+        mat
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
