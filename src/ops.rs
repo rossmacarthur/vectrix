@@ -233,3 +233,23 @@ where
         &self * &rhs
     }
 }
+
+impl<T, const N: usize, const M: usize, const P: usize> Mul<&Matrix<T, M, P>> for Matrix<T, N, M>
+where
+    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
+{
+    type Output = Matrix<T, N, P>;
+    fn mul(self, rhs: &Matrix<T, M, P>) -> Self::Output {
+        &self * rhs
+    }
+}
+
+impl<T, const N: usize, const M: usize, const P: usize> Mul<Matrix<T, M, P>> for &Matrix<T, N, M>
+where
+    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
+{
+    type Output = Matrix<T, N, P>;
+    fn mul(self, rhs: Matrix<T, M, P>) -> Self::Output {
+        self * &rhs
+    }
+}
