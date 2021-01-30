@@ -270,29 +270,26 @@ mod matrix_multiplication {
     use super::*;
     #[test]
     fn dot_product() {
-        let matrix = matrix![-1, 3, -3, 7];
-        let other = matrix![-4; 4; 5; 2];
+        let a = matrix![-1, 3, -3, 7];
+        let b = matrix![-4; 4; 5; 2];
+        let c = matrix![15];
 
-        let m = matrix * other;
-        assert_eq!(m, matrix![15]);
-
-        let m = (&matrix) * (&other);
-        assert_eq!(m, matrix![15]);
+        for_each_op_assert_eq! { a, *, b, c }
     }
     #[test]
     fn n_by_n() {
-        let matrix = matrix![1, 2; 4, 5];
-        let other = matrix![6, 7; 8, 9];
+        let a = matrix![1, 2; 4, 5];
+        let b = matrix![6, 7; 8, 9];
+        let c = matrix![22, 25; 64, 73];
 
-        let m = matrix * other;
-        assert_eq!(m, matrix![22, 25; 64, 73]);
+        for_each_op_assert_eq! { a, *, b, c }
     }
     #[test]
     fn n_by_m() {
-        let matrix = matrix![1, 2, 3; 4, 5, 6];
-        let other = matrix![6, 7, 8, 9; 10, 11, 12, 13; 14, 15, 16, 17];
+        let a = matrix![1, 2, 3; 4, 5, 6];
+        let b = matrix![6, 7, 8, 9; 10, 11, 12, 13; 14, 15, 16, 17];
+        let c = matrix![68, 74, 80, 86; 158, 173, 188, 203];
 
-        let m = matrix * other;
-        assert_eq!(m, matrix![68, 74, 80, 86; 158, 173, 188, 203]);
+        for_each_op_assert_eq! { a, *, b, c }
     }
 }
