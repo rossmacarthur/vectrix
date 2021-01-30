@@ -206,50 +206,43 @@ impl_op_unary! { impl Not, not for &Matrix<T, M, N> }
 // Matrix * Matrix
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T, const N: usize, const M: usize, const P: usize> Mul<&Matrix<T, M, P>> for &Matrix<T, N, M>
-where
-    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
-{
-    type Output = Matrix<T, N, P>;
-    fn mul(self, rhs: &Matrix<T, M, P>) -> Self::Output {
-        let mut mat = Matrix::default();
-        for (j, mat) in mat.data.iter_mut().enumerate() {
-            for (i, mat) in mat.iter_mut().enumerate() {
+impl<T, const N: usize, const M: usize> Matrix<T, N, M> {
+    pub(crate) fn matmul_into<const P: usize>(
+        &self,
+        rhs: &Matrix<T, M, P>,
+        out: &mut Matrix<T, N, P>,
+    ) where
+        T: Copy + Default + Mul<Output = T> + Add<Output = T>,
+    {
+        for (j, out) in out.data.iter_mut().enumerate() {
+            for (i, out) in out.iter_mut().enumerate() {
+                let mut acc = T::default();
                 for k in 0..M {
-                    *mat = *mat + self[(i, k)] * rhs[(k, j)];
+                    acc = acc + self[(i, k)] * rhs[(k, j)];
                 }
+                *out = acc;
             }
         }
-        mat
     }
 }
 
-impl<T, const N: usize, const M: usize, const P: usize> Mul<Matrix<T, M, P>> for Matrix<T, N, M>
-where
-    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
-{
-    type Output = Matrix<T, N, P>;
-    fn mul(self, rhs: Matrix<T, M, P>) -> Self::Output {
-        &self * &rhs
-    }
+macro_rules! impl_op_mul_mul {
+    ($lhs:ty, $rhs:ty) => {
+        impl<T, const N: usize, const M: usize, const P: usize> Mul<$rhs> for $lhs
+        where
+            T: Copy + Default + Add<Output = T> + Mul<Output = T>,
+        {
+            type Output = Matrix<T, N, P>;
+            fn mul(self, rhs: $rhs) -> Self::Output {
+                let mut out = Self::Output::default();
+                self.matmul_into(&rhs, &mut out);
+                out
+            }
+        }
+    };
 }
 
-impl<T, const N: usize, const M: usize, const P: usize> Mul<&Matrix<T, M, P>> for Matrix<T, N, M>
-where
-    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
-{
-    type Output = Matrix<T, N, P>;
-    fn mul(self, rhs: &Matrix<T, M, P>) -> Self::Output {
-        &self * rhs
-    }
-}
-
-impl<T, const N: usize, const M: usize, const P: usize> Mul<Matrix<T, M, P>> for &Matrix<T, N, M>
-where
-    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
-{
-    type Output = Matrix<T, N, P>;
-    fn mul(self, rhs: Matrix<T, M, P>) -> Self::Output {
-        self * &rhs
-    }
-}
+impl_op_mul_mul! { Matrix<T, N, M>, Matrix<T, M, P> }
+impl_op_mul_mul! { &Matrix<T, N, M>, Matrix<T, M, P> }
+impl_op_mul_mul! { Matrix<T, N, M>, &Matrix<T, M, P> }
+impl_op_mul_mul! { &Matrix<T, N, M>, &Matrix<T, M, P> }
