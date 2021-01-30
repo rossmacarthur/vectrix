@@ -201,3 +201,31 @@ impl_op_unary! { impl Neg, neg for  Matrix<T, M, N> }
 impl_op_unary! { impl Neg, neg for &Matrix<T, M, N> }
 impl_op_unary! { impl Not, not for  Matrix<T, M, N> }
 impl_op_unary! { impl Not, not for &Matrix<T, M, N> }
+
+impl<T, const N: usize, const M: usize, const P: usize> Mul<&Matrix<T, M, P>> for &Matrix<T, N, M>
+where
+    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
+{
+    type Output = Matrix<T, N, P>;
+    fn mul(self, rhs: &Matrix<T, M, P>) -> Self::Output {
+        let mut mat = Matrix::default();
+        for i in 0..N {
+            for j in 0..P {
+                for k in 0..M {
+                    mat[(i, j)] = mat[(i, j)] + self[(i, k)] * rhs[(k, j)];
+                }
+            }
+        }
+        mat
+    }
+}
+
+impl<T, const N: usize, const M: usize, const P: usize> Mul<Matrix<T, M, P>> for Matrix<T, N, M>
+where
+    T: Copy + Default + Mul<Output = T> + Add<Output = T>,
+{
+    type Output = Matrix<T, N, P>;
+    fn mul(self, rhs: Matrix<T, M, P>) -> Self::Output {
+        &self * &rhs
+    }
+}

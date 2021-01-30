@@ -265,3 +265,34 @@ fn matrix_not() {
     assert_eq!(!a, matrix![-2, 2; -4, 6]);
     assert_eq!(!&a, matrix![-2, 2; -4, 6]);
 }
+
+mod matrix_multiplication {
+    use super::*;
+    #[test]
+    fn dot_product() {
+        let matrix = matrix![-1, 3, -3, 7];
+        let other = matrix![-4; 4; 5; 2];
+
+        let m = matrix * other;
+        assert_eq!(m, matrix![15]);
+
+        let m = (&matrix) * (&other);
+        assert_eq!(m, matrix![15]);
+    }
+    #[test]
+    fn n_by_n() {
+        let matrix = matrix![1, 2; 4, 5];
+        let other = matrix![6, 7; 8, 9];
+
+        let m = matrix * other;
+        assert_eq!(m, matrix![22, 25; 64, 73]);
+    }
+    #[test]
+    fn n_by_m() {
+        let matrix = matrix![1, 2, 3; 4, 5, 6];
+        let other = matrix![6, 7, 8, 9; 10, 11, 12, 13; 14, 15, 16, 17];
+
+        let m = matrix * other;
+        assert_eq!(m, matrix![68, 74, 80, 86; 158, 173, 188, 203]);
+    }
+}
