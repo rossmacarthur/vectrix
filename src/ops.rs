@@ -206,37 +206,31 @@ impl_op_unary! { impl Not, not for &Matrix<T, M, N> }
 // Matrix * Matrix
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T, const N: usize, const M: usize> Matrix<T, N, M> {
-    pub(crate) fn matmul_into<const P: usize>(
-        &self,
-        rhs: &Matrix<T, M, P>,
-        out: &mut Matrix<T, N, P>,
-    ) where
-        T: Copy + Default + Mul<Output = T> + Add<Output = T>,
-    {
-        for (j, out) in out.data.iter_mut().enumerate() {
-            for (i, out) in out.iter_mut().enumerate() {
-                let mut acc = T::default();
-                for k in 0..M {
-                    acc = acc + self[(i, k)] * rhs[(k, j)];
-                }
-                *out = acc;
-            }
+fn matrix_mul<T, const N: usize, const M: usize, const P: usize>(
+    lhs: &Matrix<T, N, M>,
+    rhs: &Matrix<T, M, P>,
+) -> Matrix<T, N, P>
+where
+    T: Copy + Default + Add<Output = T> + Mul<Output = T> + core::iter::Sum,
+{
+    let mut out = Matrix::default();
+    for (j, out) in out.data.iter_mut().enumerate() {
+        for (i, out) in out.iter_mut().enumerate() {
+            *out = (0..M).map(|k| lhs[(i, k)] * rhs[(k, j)]).sum();
         }
     }
+    out
 }
 
 macro_rules! impl_op_mul_mul {
     ($lhs:ty, $rhs:ty) => {
         impl<T, const N: usize, const M: usize, const P: usize> Mul<$rhs> for $lhs
         where
-            T: Copy + Default + Add<Output = T> + Mul<Output = T>,
+            T: Copy + Default + Add<Output = T> + Mul<Output = T> + core::iter::Sum,
         {
             type Output = Matrix<T, N, P>;
             fn mul(self, rhs: $rhs) -> Self::Output {
-                let mut out = Self::Output::default();
-                self.matmul_into(&rhs, &mut out);
-                out
+                matrix_mul(&self, &rhs)
             }
         }
     };
