@@ -163,7 +163,7 @@ fn matrix_mul<T, const N: usize, const M: usize, const P: usize>(
     rhs: &Matrix<T, M, P>,
 ) -> Matrix<T, N, P>
 where
-    T: Copy + Default + Add<Output = T> + Mul<Output = T> + core::iter::Sum,
+    T: Copy + Default + Mul<Output = T> + core::iter::Sum,
 {
     let mut out = Matrix::default();
     for (j, out) in out.data.iter_mut().enumerate() {
@@ -178,7 +178,7 @@ macro_rules! impl_op_mul_mul {
     ($lhs:ty, $rhs:ty) => {
         impl<T, const N: usize, const M: usize, const P: usize> Mul<$rhs> for $lhs
         where
-            T: Copy + Default + Add<Output = T> + Mul<Output = T> + core::iter::Sum,
+            T: Copy + Default + Mul<Output = T> + core::iter::Sum,
         {
             type Output = Matrix<T, N, P>;
             fn mul(self, rhs: $rhs) -> Self::Output {
