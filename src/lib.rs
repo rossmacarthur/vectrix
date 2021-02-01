@@ -366,9 +366,9 @@ impl<T, const N: usize> Matrix<T, N, N> {
     #[inline]
     pub fn identity() -> Self
     where
-        T: Copy + Default + One,
+        T: Copy + Default + One + Zero,
     {
-        let mut matrix = Self::default();
+        let mut matrix = Self::zero();
         for idx in 0..N {
             matrix[(idx, idx)] = T::one();
         }
