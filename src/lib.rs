@@ -196,7 +196,7 @@ use crate::prelude::*;
 ///
 /// See the [crate root][crate] for usage examples.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
-#[repr(C)]
+#[repr(transparent)]
 pub struct Matrix<T, const M: usize, const N: usize> {
     data: [[T; M]; N],
 }
