@@ -1,6 +1,8 @@
 mod iter;
 mod ops;
 
+use core::iter::FromIterator;
+
 use vectrix::{matrix, Matrix};
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +31,24 @@ fn matrix_default() {
     assert_eq!(matrix, matrix![0, 0; 0, 0]);
 }
 
+#[test]
+fn matrix_from_iter() {
+    let matrix = Matrix::<i64, 2, 2>::from_iter(vec![1, 2, 3, 4]);
+    assert_eq!(matrix, matrix![1, 3; 2, 4]);
+}
+
+#[test]
+fn matrix_from_iter_long() {
+    let matrix = Matrix::<i64, 2, 2>::from_iter(vec![1, 2, 3, 4, 5]);
+    assert_eq!(matrix, matrix![1, 3; 2, 4]);
+}
+
+#[test]
+#[should_panic]
+fn matrix_from_iter_short() {
+    let _matrix = Matrix::<i64, 2, 2>::from_iter(vec![1, 2, 3]);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Matrix<T, M, N> methods
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,6 +57,22 @@ fn matrix_default() {
 fn matrix_zero() {
     let matrix = Matrix::zero();
     assert_eq!(matrix, matrix![0, 0; 0, 0]);
+}
+
+#[test]
+fn matrix_repeat() {
+    let matrix = Matrix::repeat(7);
+    assert_eq!(matrix, matrix![7, 7; 7, 7]);
+}
+
+#[test]
+fn matrix_repeat_with() {
+    let mut state = 1;
+    let matrix = Matrix::repeat_with(|| {
+        state *= 2;
+        state
+    });
+    assert_eq!(matrix, matrix![2, 8; 4, 16]);
 }
 
 #[test]

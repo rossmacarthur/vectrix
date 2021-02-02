@@ -54,6 +54,12 @@
 //! - [`::zero()`][`Matrix::zero()`] → constructs a new matrix filled with
 //!   [`T::zero()`][`Zero::zero()`].
 //! - [`::identity()`][`Matrix::identity()`] → constructs a new identity matrix.
+//! - [`::repeat(..)`][`Matrix::repeat()`] → constructs a new matrix filled with
+//!   the provided value.
+//! - [`::repeat_with(..)`][`Matrix::repeat_with()`] → constructs a new matrix
+//!   filled with values from the provided closure.
+//! - [`::from_iter(..)`][`FromIterator::from_iter`] → constructs a new matrix
+//!   from an iterator. See also [`collect()`][`Iterator::collect()`].
 //! - [`::new(..)`][`Matrix::new()`] → constructs a new vector using the
 //!   provided components.
 //!
@@ -179,7 +185,7 @@ mod prelude;
 pub mod traits;
 mod vector;
 
-use core::iter::Sum;
+use core::iter::{repeat_with, FromIterator, Sum};
 use core::slice;
 
 #[doc(hidden)]
@@ -253,12 +259,37 @@ impl<T, const M: usize, const N: usize> Default for Matrix<T, M, N>
 where
     T: Copy + Default,
 {
-    /// Creates a new matrix using `T::default()` as an initializer.
+    /// Create a new matrix using `T::default()` as an initializer.
     #[inline]
     fn default() -> Self {
-        Self {
-            data: [[T::default(); M]; N],
+        Self::repeat(T::default())
+    }
+}
+
+impl<T, const M: usize, const N: usize> FromIterator<T> for Matrix<T, M, N>
+where
+    T: Copy + Default,
+{
+    /// Create a new matrix from an iterator. Elements will be filled in
+    /// column-major order.
+    fn from_iter<I>(iter: I) -> Self
+    where
+        I: IntoIterator<Item = T>,
+    {
+        let mut iter = iter.into_iter();
+        let mut matrix = Self::default();
+        for idx in 0..(M * N) {
+            match iter.next() {
+                Some(value) => matrix[idx] = value,
+                None => {
+                    panic!(
+                        "collect iterator of length {} into `Matrix<_, {}, {}>`",
+                        idx, M, N
+                    );
+                }
+            }
         }
+        matrix
     }
 }
 
@@ -281,9 +312,29 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     where
         T: Copy + Zero,
     {
+        Self::repeat(T::zero())
+    }
+
+    /// Create a new matrix filled with the given element.
+    #[must_use]
+    #[inline]
+    pub fn repeat(element: T) -> Self
+    where
+        T: Copy,
+    {
         Self {
-            data: [[T::zero(); M]; N],
+            data: [[element; M]; N],
         }
+    }
+
+    /// Create a new matrix filled with elements computed from the given closure.
+    #[inline]
+    pub fn repeat_with<F>(repeater: F) -> Self
+    where
+        T: Copy + Default,
+        F: FnMut() -> T,
+    {
+        repeat_with(repeater).collect()
     }
 
     /// Views the underlying data as a contiguous slice.
