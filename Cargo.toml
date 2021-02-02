@@ -1,6 +1,6 @@
 [package]
 name = "vectrix"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
 description = "A stack-allocated matrix type implemented with const generics."
@@ -16,7 +16,7 @@ name = "main"
 harness = false
 
 [dependencies]
-vectrix-macro = { version = "=0.1.1", path = "macro", optional = true }
+vectrix-macro = { version = "=0.1.2", path = "macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.3"
