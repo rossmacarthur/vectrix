@@ -107,6 +107,48 @@ fn matrix_iter_mut() {
 }
 
 #[test]
+fn matrix_row() {
+    let matrix = matrix![1, 3; -3, 7];
+    let row = matrix.row(0);
+    let vec: Vec<_> = row.iter().collect();
+    assert_eq!(vec, &[&1, &3]);
+    let row = matrix.row(1);
+    let vec: Vec<_> = row.iter().collect();
+    assert_eq!(vec, &[&-3, &7]);
+}
+
+#[test]
+fn matrix_row_mut() {
+    let mut matrix = matrix![2, 3; -3, 8];
+    let row = matrix.row_mut(0);
+    row[0] = 1;
+    let row = matrix.row_mut(1);
+    row[1] = 7;
+    assert_eq!(matrix, matrix![1, 3; -3, 7]);
+}
+
+#[test]
+fn matrix_column() {
+    let matrix = matrix![1, 3; -3, 7];
+    let column = matrix.column(0);
+    let vec: Vec<_> = column.iter().collect();
+    assert_eq!(vec, &[&1, &-3]);
+    let column = matrix.column(1);
+    let vec: Vec<_> = column.iter().collect();
+    assert_eq!(vec, &[&3, &7]);
+}
+
+#[test]
+fn matrix_column_mut() {
+    let mut matrix = matrix![2, 3; -3, 8];
+    let column = matrix.column_mut(0);
+    column[0] = 1;
+    let column = matrix.column_mut(1);
+    column[1] = 7;
+    assert_eq!(matrix, matrix![1, 3; -3, 7]);
+}
+
+#[test]
 fn matrix_l1_norm() {
     let matrix = matrix![-1, 3; -3, 7];
     assert_eq!(matrix.l1_norm(), 10);

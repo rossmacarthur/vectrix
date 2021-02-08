@@ -16,6 +16,7 @@ name = "main"
 harness = false
 
 [dependencies]
+stride = "0.1.0"
 vectrix-macro = { version = "=0.1.2", path = "macro", optional = true }
 
 [dev-dependencies]

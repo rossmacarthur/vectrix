@@ -166,13 +166,13 @@ fn matrix_mul<T, const M: usize, const N: usize, const P: usize>(
 where
     T: Copy + Default + Mul<Output = T> + Sum,
 {
-    let mut out = Matrix::default();
-    for (j, out) in out.data.iter_mut().enumerate() {
-        for (i, out) in out.iter_mut().enumerate() {
-            *out = (0..N).map(|k| lhs[(i, k)] * rhs[(k, j)]).sum();
+    let mut matrix = Matrix::default();
+    for i in 0..M {
+        for j in 0..P {
+            matrix[(i, j)] = lhs.row(i).dot(rhs.column(j));
         }
     }
-    out
+    matrix
 }
 
 macro_rules! impl_op_mul_mul {

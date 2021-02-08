@@ -107,6 +107,23 @@
 //! assert_eq!(vector.b, 0);
 //! ```
 //!
+//! ### Accessing a row or column
+//!
+//! You can lookup a particular row or column using the
+//! [`.row()`][`Matrix::row`] or [`.column()`][`Matrix::column`] methods.
+//!
+//! ```
+//! # use vectrix::*;
+//! #
+//! let mut matrix = matrix![
+//!     1, 2, 3;
+//!     4, 7, 6;
+//! ];
+//! let row = matrix.row_mut(1);
+//! row[1] = 5;
+//! assert_eq!(matrix.column(1), &[2, 5]);
+//! ```
+//!
 //! ### Iteration
 //!
 //! Element-wise, column-major order iteration is provided using the following
@@ -184,6 +201,7 @@ mod ops;
 mod prelude;
 pub mod traits;
 mod vector;
+mod view;
 
 use core::iter::{repeat_with, FromIterator, Sum};
 use core::slice;
@@ -193,6 +211,8 @@ use core::slice;
 pub use vectrix_macro as proc_macro;
 
 pub use crate::iter::IntoIter;
+pub use crate::view::{Column, Row};
+
 use crate::prelude::*;
 
 /// Represents a matrix with constant `M` rows and constant `N` columns.
@@ -201,7 +221,7 @@ use crate::prelude::*;
 /// column-major order.
 ///
 /// See the [crate root][crate] for usage examples.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Ord, PartialOrd)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Matrix<T, const M: usize, const N: usize> {
     data: [[T; M]; N],
@@ -361,6 +381,30 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     #[inline]
     pub fn iter_mut(&mut self) -> slice::IterMut<'_, T> {
         self.as_mut_slice().iter_mut()
+    }
+
+    /// Returns a reference to the `i`-th row of this matrix.
+    #[inline]
+    pub fn row(&self, i: usize) -> &Row<T, M, N> {
+        Row::new(&self.as_slice()[i..])
+    }
+
+    /// Returns a mutable reference to the `i`-th row of this matrix.
+    #[inline]
+    pub fn row_mut(&mut self, i: usize) -> &mut Row<T, M, N> {
+        Row::new_mut(&mut self.as_mut_slice()[i..])
+    }
+
+    /// Returns a reference to the `i`-th column of this matrix.
+    #[inline]
+    pub fn column(&self, i: usize) -> &Column<T, M, N> {
+        Column::new(&self.data[i])
+    }
+
+    /// Returns a mutable reference to the `i`-th column of this matrix.
+    #[inline]
+    pub fn column_mut(&mut self, i: usize) -> &mut Column<T, M, N> {
+        Column::new_mut(&mut self.data[i])
     }
 
     /// Returns a matrix of the same size as self, with function `f` applied to
