@@ -1,4 +1,9 @@
-//! This crate provides a stack-allocated, constant-size, *n*-dimensional
+//! <h1>NOTE: this crate was renamed to `vectrix`, please use it under the new
+//! name.</h1>
+//!
+//! See [`vectrix`](https://docs.rs/vectrix)
+//!
+//!  This crate provides a stack-allocated, constant-size, *n*-dimensional
 //! [`Vector<T, N>`] type.
 //!
 //! # Constructors

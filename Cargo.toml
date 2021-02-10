@@ -1,9 +1,9 @@
 [package]
 name = "vectrs"
-version = "0.0.6"
+version = "0.0.7"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2018"
-description = "A stack-allocated, constant-size, n-dimensional vector type"
+description = "A stack-allocated, constant-size, n-dimensional vector type (NOTE: this crate was renamed to `vectrix`)"
 readme = "README.md"
 repository = "https://github.com/rossmacarthur/vectrs"
 license = "MIT OR Apache-2.0"

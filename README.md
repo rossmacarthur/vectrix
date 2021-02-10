@@ -4,6 +4,8 @@
 [![Docs.rs Latest](https://img.shields.io/badge/docs.rs-latest-blue.svg)](https://docs.rs/vectrs)
 [![Build Status](https://img.shields.io/github/workflow/status/rossmacarthur/vectrs/build/master)](https://github.com/rossmacarthur/vectrs/actions?query=workflow%3Abuild)
 
+# NOTE: this crate was renamed to `vectrix`, please use it under the new name.
+
 A stack-allocated, constant-size, *n*-dimensional vector type implemented with
 const generics.
 
