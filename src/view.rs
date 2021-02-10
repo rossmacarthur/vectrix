@@ -78,7 +78,7 @@ impl_ops! { Column<1> }
 // Methods
 ////////////////////////////////////////////////////////////////////////////////
 
-macro_rules! impl_base {
+macro_rules! impl_view {
     ($ty:ident) => {
         impl<T, const M: usize, const N: usize> $ty<T, M, N> {
             pub(crate) fn new(data: &[T]) -> &Self {
@@ -94,8 +94,8 @@ macro_rules! impl_base {
     };
 }
 
-impl_base! { Row }
-impl_base! { Column }
+impl_view! { Row }
+impl_view! { Column }
 
 impl<T, const M: usize, const N: usize> Row<T, M, N> {
     /// Returns the dot product between a row and column.

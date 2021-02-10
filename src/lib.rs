@@ -109,7 +109,7 @@
 //!
 //! ### Accessing a row or column
 //!
-//! You can lookup a particular row or column using the
+//! You can get a reference to particular row or column using the
 //! [`.row()`][`Matrix::row`] or [`.column()`][`Matrix::column`] methods.
 //!
 //! ```
@@ -129,12 +129,23 @@
 //! Element-wise, column-major order iteration is provided using the following
 //! methods.
 //!
+//! - [`.into_iter()`][`Matrix::into_iter()`] → consumes the matrix and returns
+//!   an owned iterator over each element.
 //! - [`.iter()`][`Matrix::iter()`] → returns an iterator over a reference to
 //!   each element.
 //! - [`.iter_mut()`][`Matrix::iter_mut()`] → returns an iterator over a mutable
 //!   reference to each element.
-//! - [`.into_iter()`][`Matrix::into_iter()`] → consumes the matrix and returns
-//!   an owned iterator over each element.
+//!
+//! Iteration over rows and columns is provide using the following methods.
+//!
+//! - [`.iter_rows()`][`Matrix::iter_rows()`] → returns an iterator over a
+//!   reference to each row.
+//! - [`.iter_rows_mut()`][`Matrix::iter_rows_mut()`] → returns an iterator over
+//!   mutable reference to each row.
+//! - [`.iter_columns()`][`Matrix::iter_columns()`] → returns an iterator over a
+//!   reference to each column.
+//! - [`.iter_columns_mut()`][`Matrix::iter_columns_mut()`] → returns an
+//!   iterator over a mutable reference to each column.
 //!
 //! ### Slice representation
 //!
@@ -155,7 +166,7 @@
 //! ### Operations
 //!
 //! [`Matrix`] implements many built-in operators. With scalar operands almost
-//! all operators are implement and they simply apply the operation to each
+//! all operators are implemented and they simply apply the operation to each
 //! element in the matrix. Unary operators will do the equivalent. In the
 //! following example each element in the matrix is multiplied by 2.
 //!
@@ -210,7 +221,7 @@ use core::slice;
 #[cfg(feature = "macro")]
 pub use vectrix_macro as proc_macro;
 
-pub use crate::iter::IntoIter;
+pub use crate::iter::{IntoIter, IterColumns, IterColumnsMut, IterRows, IterRowsMut};
 pub use crate::view::{Column, Row};
 
 use crate::prelude::*;
@@ -371,18 +382,6 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         unsafe { slice::from_raw_parts_mut(ptr, M * N) }
     }
 
-    /// Returns an iterator over the underlying data.
-    #[inline]
-    pub fn iter(&self) -> slice::Iter<'_, T> {
-        self.as_slice().iter()
-    }
-
-    /// Returns an iterator over the data that allows modifying each value.
-    #[inline]
-    pub fn iter_mut(&mut self) -> slice::IterMut<'_, T> {
-        self.as_mut_slice().iter_mut()
-    }
-
     /// Returns a reference to the `i`-th row of this matrix.
     #[inline]
     pub fn row(&self, i: usize) -> &Row<T, M, N> {
@@ -405,6 +404,42 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     #[inline]
     pub fn column_mut(&mut self, i: usize) -> &mut Column<T, M, N> {
         Column::new_mut(&mut self.data[i])
+    }
+
+    /// Returns an iterator over the underlying data.
+    #[inline]
+    pub fn iter(&self) -> slice::Iter<'_, T> {
+        self.as_slice().iter()
+    }
+
+    /// Returns a mutable iterator over the underlying data.
+    #[inline]
+    pub fn iter_mut(&mut self) -> slice::IterMut<'_, T> {
+        self.as_mut_slice().iter_mut()
+    }
+
+    /// Returns an iterator over the rows in this matrix.
+    #[inline]
+    pub fn iter_rows(&self) -> IterRows<'_, T, M, N> {
+        IterRows::new(self)
+    }
+
+    /// Returns a mutable iterator over the rows in this matrix.
+    #[inline]
+    pub fn iter_rows_mut(&mut self) -> IterRowsMut<'_, T, M, N> {
+        IterRowsMut::new(self)
+    }
+
+    /// Returns an iterator over the columns in this matrix.
+    #[inline]
+    pub fn iter_columns(&self) -> IterColumns<'_, T, M, N> {
+        IterColumns::new(self)
+    }
+
+    /// Returns a mutable iterator over the columns in this matrix.
+    #[inline]
+    pub fn iter_columns_mut(&mut self) -> IterColumnsMut<'_, T, M, N> {
+        IterColumnsMut::new(self)
     }
 
     /// Returns a matrix of the same size as self, with function `f` applied to
