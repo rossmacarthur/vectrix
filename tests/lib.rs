@@ -3,7 +3,7 @@ mod ops;
 
 use core::iter::FromIterator;
 
-use vectrix::{matrix, Matrix};
+use vectrix::{matrix, vector, Matrix};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructors
@@ -195,4 +195,14 @@ fn matrix_identity() {
             0, 0, 0, 1;
         ]
     );
+}
+
+#[test]
+fn matrix_diagonal() {
+    let matrix = matrix![
+        1, 0, 0;
+        0, 2, 0;
+        0, 0, 3;
+    ];
+    assert_eq!(matrix.diagonal(), vector![1, 2, 3]);
 }

@@ -504,4 +504,16 @@ impl<T, const N: usize> Matrix<T, N, N> {
         }
         matrix
     }
+
+    /// Returns the diagonal of the matrix.
+    pub fn diagonal(&self) -> Vector<T, N>
+    where
+        T: Copy + Default,
+    {
+        let mut vector = Vector::default();
+        for idx in 0..N {
+            vector[idx] = self[(idx, idx)];
+        }
+        vector
+    }
 }
