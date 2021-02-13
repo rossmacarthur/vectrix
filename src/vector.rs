@@ -8,6 +8,7 @@ use crate::prelude::*;
 
 macro_rules! struct_coord {
     ($Coord:ident: $($comp:ident),*) => {
+        #[allow(clippy::upper_case_acronyms)]
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         #[repr(C)]
         pub struct $Coord<T> {
