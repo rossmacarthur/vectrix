@@ -12,7 +12,7 @@ categories = ["mathematics", "science", "no-std"]
 include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
 
 [[bench]]
-name = "main"
+name = "euler"
 harness = false
 
 [dependencies]
