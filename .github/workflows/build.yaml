@@ -14,7 +14,7 @@ jobs:
 
     - uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly
+        toolchain: stable
         components: rustfmt, clippy
         override: true
 
@@ -27,12 +27,16 @@ jobs:
   test:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        toolchain: [stable, beta, nightly]
+
     steps:
     - uses: actions/checkout@v2
 
     - uses: actions-rs/toolchain@v1
       with:
-        toolchain: nightly
+        toolchain: ${{ matrix.toolchain }}
         override: true
 
     - name: Test
