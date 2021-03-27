@@ -4,12 +4,52 @@
 [![Docs.rs Latest](https://img.shields.io/badge/docs.rs-latest-blue.svg)](https://docs.rs/vectrix)
 [![Build Status](https://img.shields.io/github/workflow/status/rossmacarthur/vectrix/build/trunk)](https://github.com/rossmacarthur/vectrix/actions?query=workflow%3Abuild)
 
-A stack-allocated, constant-size `Matrix<T, M, N>` type implemented with const
+A stack-allocated, constant-size [`Matrix<T, M, N>`] type implemented with const
 generics.
 
-This crate will work on stable Rust from Rust v1.51 onwards.
+This crate works on stable Rust from v1.51 onwards. It is pretty experimental
+right now and does not have the same level of features as others like it in the
+Rust ecosystem. But it useful for quick and dirty use cases, like [Advent of
+Code][aoc]. Contributions are welcome!
 
-See the [full documentation](https://docs.rs/vectrix) for more.
+### Features
+
+- Generic matrix and vector types.
+- `matrix!` / `vector!` macros that can be used in `const` contexts.
+- Element access using `usize` and `(usize, usize)` indexing.
+- Component access for small vectors (`.x`, `.y`, etc.).
+- Row and column views of matrices.
+- Iteration over elements, rows, and columns.
+- Implementations of scalar operands for any size vectors and matrices.
+- Implementations of addition, subtraction, and multiplication for
+  appropriately sized vectors and matrices.
+- And more ... see the [full documentation][docs].
+
+[aoc]: https://adventofcode.com/
+[docs]: https://docs.rs/vectrix
+[`Matrix<T, M, N>`]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html
+
+### Example usage
+
+The following demonstrates matrix multiplication.
+
+```rust
+use vectrix::{matrix, row_vector, vector};
+
+let v1 = vector![1, 2, 3];     // same as `matrix![1; 2; 3]`
+let v2 = row_vector![4, 5, 6]; // same as `matrix![4, 5, 6]`
+
+assert_eq!(
+    v1 * v2,
+    matrix![
+         4,  5, 6;
+         8, 10, 12;
+        12, 15, 18;
+    ]
+);
+assert_eq!(v2 * v1, matrix![32]);
+```
+
 
 ## License
 
