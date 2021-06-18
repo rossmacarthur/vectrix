@@ -2,9 +2,10 @@
 
 use std::ops::{Add, AddAssign, Mul};
 
-use criterion::{criterion_group, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 use rand::distributions::Standard;
 use rand::prelude::*;
+use rand_isaac::IsaacRng;
 
 use vectrix::traits::Zero;
 use vectrix::Vector;
@@ -23,8 +24,9 @@ where
     where
         Standard: Distribution<T>,
     {
+        let mut rng = IsaacRng::seed_from_u64(0);
         Self {
-            acc: vec![Vector::repeat_with(random); size],
+            acc: vec![Vector::repeat_with(|| rng.gen()); size],
             vel: vec![Vector::zero(); size],
             pos: vec![Vector::zero(); size],
         }
@@ -90,4 +92,4 @@ fn bench_euler_3d(c: &mut Criterion) {
 }
 
 criterion_group!(benches, bench_euler_2d, bench_euler_3d);
-criterion::criterion_main! {benches}
+criterion_main! {benches}

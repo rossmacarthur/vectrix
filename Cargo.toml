@@ -22,6 +22,7 @@ vectrix-macro = { version = "=0.1.2", path = "macro", optional = true }
 [dev-dependencies]
 criterion = "0.3.4"
 rand = "0.8.3"
+rand_isaac = "0.3.0"
 
 [features]
 default = ["macro", "std"]
