@@ -118,6 +118,6 @@ impl<T, const M: usize, const N: usize> Row<T, M, N> {
     where
         T: Copy + Mul<Output = T> + Sum,
     {
-        (0..N).map(|idx| self[idx] * other[idx]).sum()
+        (0..N).map(|i| self[i] * other[i]).sum()
     }
 }

@@ -63,9 +63,9 @@ where
 
     fn next(&mut self) -> Option<Self::Item> {
         // Get the next index from the front.
-        self.alive.next().map(|idx| {
+        self.alive.next().map(|i| {
             let slice = self.matrix.as_slice();
-            *unsafe { slice.get_unchecked(idx) }
+            *unsafe { slice.get_unchecked(i) }
         })
     }
 
@@ -89,9 +89,9 @@ where
 {
     fn next_back(&mut self) -> Option<Self::Item> {
         // Get the next index from the back.
-        self.alive.next_back().map(|idx| {
+        self.alive.next_back().map(|i| {
             let slice = self.matrix.as_slice();
-            *unsafe { slice.get_unchecked(idx) }
+            *unsafe { slice.get_unchecked(i) }
         })
     }
 }
@@ -165,7 +165,7 @@ macro_rules! impl_view {
             type Item = &'a $Item<T, M, N>;
 
             fn next(&mut self) -> Option<Self::Item> {
-                self.alive.next().map(|idx| self.matrix.$meth(idx))
+                self.alive.next().map(|i| self.matrix.$meth(i))
             }
 
             fn size_hint(&self) -> (usize, Option<usize>) {
@@ -184,7 +184,7 @@ macro_rules! impl_view {
 
         impl<T, const M: usize, const N: usize> DoubleEndedIterator for $View<'_, T, M, N> {
             fn next_back(&mut self) -> Option<Self::Item> {
-                self.alive.next_back().map(|idx| self.matrix.$meth(idx))
+                self.alive.next_back().map(|i| self.matrix.$meth(i))
             }
         }
 
@@ -249,10 +249,10 @@ macro_rules! impl_view_mut {
             type Item = &'a mut $Item<T, M, N>;
 
             fn next(&mut self) -> Option<Self::Item> {
-                self.alive.next().map(|idx| {
+                self.alive.next().map(|i| {
                     // Safety: we yield a different row/column each time and
                     // `self.matrix`'s lifetime is asserted by the `PhantomData`.
-                    unsafe { (*self.matrix).$meth(idx) }
+                    unsafe { (*self.matrix).$meth(i) }
                 })
             }
 
@@ -272,10 +272,10 @@ macro_rules! impl_view_mut {
 
         impl<T, const M: usize, const N: usize> DoubleEndedIterator for $View<'_, T, M, N> {
             fn next_back(&mut self) -> Option<Self::Item> {
-                self.alive.next_back().map(|idx| {
+                self.alive.next_back().map(|i| {
                     // Safety: we yield a different row/column each time and
                     // `self.matrix`'s lifetime is asserted by the `PhantomData`.
-                    unsafe { (*self.matrix).$meth(idx) }
+                    unsafe { (*self.matrix).$meth(i) }
                 })
             }
         }

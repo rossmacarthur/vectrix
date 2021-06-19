@@ -30,15 +30,15 @@ impl<T, const M: usize, const N: usize> Index<usize> for Matrix<T, M, N> {
     type Output = T;
 
     #[inline]
-    fn index(&self, idx: usize) -> &Self::Output {
-        &self.as_slice()[idx]
+    fn index(&self, i: usize) -> &Self::Output {
+        &self.as_slice()[i]
     }
 }
 
 impl<T, const M: usize, const N: usize> IndexMut<usize> for Matrix<T, M, N> {
     #[inline]
-    fn index_mut(&mut self, idx: usize) -> &mut Self::Output {
-        &mut self.as_mut_slice()[idx]
+    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
+        &mut self.as_mut_slice()[i]
     }
 }
 
@@ -93,8 +93,8 @@ macro_rules! _impl_op_assign_scalar {
             T: Copy + $($bound)+
         {
             fn $meth(&mut self, other: $rhs) {
-                for idx in 0..(M * N) {
-                    self[idx].$meth(other);
+                for i in 0..(M * N) {
+                    self[i].$meth(other);
                 }
             }
         }
@@ -134,8 +134,8 @@ macro_rules! _impl_op {
 
             fn $meth(self, other: $rhs) -> Self::Output {
                 let mut matrix = $($deref)? self;
-                for idx in 0..(M * N) {
-                    matrix[idx] = self[idx].$meth(other[idx]);
+                for i in 0..(M * N) {
+                    matrix[i] = self[i].$meth(other[i]);
                 }
                 matrix
             }
@@ -206,8 +206,8 @@ macro_rules! impl_op_assign {
             T: Copy + $trt,
         {
             fn $meth(&mut self, other: $rhs) {
-                for idx in 0..(M * N) {
-                    self[idx].$meth(other[idx]);
+                for i in 0..(M * N) {
+                    self[i].$meth(other[i]);
                 }
             }
         }

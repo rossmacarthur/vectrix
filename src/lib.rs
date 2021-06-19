@@ -309,13 +309,13 @@ where
     {
         let mut iter = iter.into_iter();
         let mut matrix = Self::default();
-        for idx in 0..(M * N) {
+        for i in 0..(M * N) {
             match iter.next() {
-                Some(value) => matrix[idx] = value,
+                Some(value) => matrix[i] = value,
                 None => {
                     panic!(
                         "collect iterator of length {} into `Matrix<_, {}, {}>`",
-                        idx, M, N
+                        i, M, N
                     );
                 }
             }
@@ -452,8 +452,8 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         F: FnMut(T) -> U,
     {
         let mut matrix = Matrix::default();
-        for idx in 0..(M * N) {
-            matrix[idx] = f(self[idx]);
+        for i in 0..(M * N) {
+            matrix[i] = f(self[i]);
         }
         matrix
     }
@@ -480,7 +480,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         T: Copy + Ord + Abs + Zero + Sum<T>,
     {
         (0..N)
-            .map(|idx| self.data[idx].iter().copied().map(Abs::abs).sum())
+            .map(|i| self.data[i].iter().copied().map(Abs::abs).sum())
             .max()
             .unwrap_or_else(Zero::zero)
     }
@@ -499,8 +499,8 @@ impl<T, const N: usize> Matrix<T, N, N> {
         T: Copy + Default + One + Zero,
     {
         let mut matrix = Self::zero();
-        for idx in 0..N {
-            matrix[(idx, idx)] = T::one();
+        for i in 0..N {
+            matrix[(i, i)] = T::one();
         }
         matrix
     }
@@ -511,8 +511,8 @@ impl<T, const N: usize> Matrix<T, N, N> {
         T: Copy + Default,
     {
         let mut vector = Vector::default();
-        for idx in 0..N {
-            vector[idx] = self[(idx, idx)];
+        for i in 0..N {
+            vector[i] = self[(i, i)];
         }
         vector
     }
