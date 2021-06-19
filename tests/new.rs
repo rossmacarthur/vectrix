@@ -31,6 +31,14 @@ fn matrix_from_iter() {
 }
 
 #[test]
+fn matrix_from_iter_not_copy_or_default() {
+    #[derive(Debug, PartialEq)]
+    struct Num(i64);
+    let matrix = Matrix::<Num, 2, 2>::from_iter(vec![Num(1), Num(2), Num(3), Num(4)]);
+    assert_eq!(matrix, matrix![Num(1), Num(3); Num(2), Num(4)]);
+}
+
+#[test]
 fn matrix_from_iter_long() {
     let matrix = Matrix::<i64, 2, 2>::from_iter(vec![1, 2, 3, 4, 5]);
     assert_eq!(matrix, matrix![1, 3; 2, 4]);
