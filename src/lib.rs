@@ -203,18 +203,20 @@
 //! ```
 
 #![no_std]
+#![warn(unsafe_op_in_unsafe_fn)]
 
 #[cfg(feature = "std")]
 extern crate std;
 
 mod iter;
+mod new;
 mod ops;
 mod prelude;
 pub mod traits;
 mod vector;
 mod view;
 
-use core::iter::{repeat_with, FromIterator, Sum};
+use core::iter::{repeat_with, Sum};
 use core::slice;
 
 #[doc(hidden)]
@@ -243,86 +245,6 @@ pub type RowVector<T, const N: usize> = Matrix<T, 1, N>;
 
 /// A matrix with one column and `M` rows.
 pub type Vector<T, const M: usize> = Matrix<T, M, 1>;
-
-////////////////////////////////////////////////////////////////////////////////
-// Constructors
-////////////////////////////////////////////////////////////////////////////////
-
-/// A macro for composing matrices.
-///
-/// This macro allows one to write such a matrix in the natural order. For
-/// example:
-///
-/// ```rust
-/// # use vectrix::matrix;
-/// #
-/// let m = matrix![
-///     1.0, 4.0;
-///     2.0, 5.0;
-///     3.0, 6.0;
-/// ];
-/// ```
-///
-/// corresponds to the following matrix with three rows and two columns:
-///
-/// ```text
-/// ┌            ┐
-/// │  1.0  4.0  │
-/// │  2.0  5.0  │
-/// │  3.0  6.0  │
-/// └            ┘
-/// ```
-///
-/// Which is stored as an array of arrays in column-major order.
-///
-/// ```text
-/// Matrix { data: [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]] }
-/// ```
-#[cfg(feature = "macro")]
-#[macro_export]
-macro_rules! matrix {
-    ($($data:tt)*) => {
-        $crate::Matrix::from_column_major_order($crate::proc_macro::matrix!($($data)*))
-    };
-}
-
-impl<T, const M: usize, const N: usize> Default for Matrix<T, M, N>
-where
-    T: Copy + Default,
-{
-    /// Create a new matrix using `T::default()` as an initializer.
-    #[inline]
-    fn default() -> Self {
-        Self::repeat(T::default())
-    }
-}
-
-impl<T, const M: usize, const N: usize> FromIterator<T> for Matrix<T, M, N>
-where
-    T: Copy + Default,
-{
-    /// Create a new matrix from an iterator. Elements will be filled in
-    /// column-major order.
-    fn from_iter<I>(iter: I) -> Self
-    where
-        I: IntoIterator<Item = T>,
-    {
-        let mut iter = iter.into_iter();
-        let mut matrix = Self::default();
-        for i in 0..(M * N) {
-            match iter.next() {
-                Some(value) => matrix[i] = value,
-                None => {
-                    panic!(
-                        "collect iterator of length {} into `Matrix<_, {}, {}>`",
-                        i, M, N
-                    );
-                }
-            }
-        }
-        matrix
-    }
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Matrix<T, M, N> methods
@@ -358,14 +280,17 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         }
     }
 
-    /// Create a new matrix filled with elements computed from the given closure.
+    /// Create a new matrix filled with computed elements.
+    ///
+    /// Elements will be filled in column-major order.
+    #[must_use]
     #[inline]
-    pub fn repeat_with<F>(repeater: F) -> Self
+    pub fn repeat_with<F>(f: F) -> Self
     where
         T: Copy + Default,
         F: FnMut() -> T,
     {
-        repeat_with(repeater).collect()
+        repeat_with(f).collect()
     }
 
     /// Views the underlying data as a contiguous slice.
