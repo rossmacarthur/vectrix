@@ -59,10 +59,22 @@ where
 // Uninit related methods
 ////////////////////////////////////////////////////////////////////////////////
 
+/// Size-heterogeneous transmutation.
+///
+/// This is required because the compiler doesn't yet know how to deal with the
+/// size of const arrays. We should be able to use [`mem::transmute()`] but it
+/// doesn't work yet :(.
+#[inline]
+pub unsafe fn transmute_unchecked<A, B>(a: A) -> B {
+    let b = unsafe { ptr::read(&a as *const A as *const B) };
+    mem::forget(a);
+    b
+}
+
 impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
     /// Create a new matrix with uninitialized contents.
     #[inline]
-    fn uninit() -> Self {
+    pub(crate) fn uninit() -> Self {
         // Safety: The `assume_init` is safe because the type we are claiming to
         // have initialized here is a bunch of `MaybeUninit`s, which do not
         // require initialization. Additionally, `Matrix` is `repr(transparent)`
@@ -86,17 +98,11 @@ impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
     /// this when the contents are not yet fully initialized causes immediate
     /// undefined behavior.
     #[inline]
-    unsafe fn assume_init(self) -> Matrix<T, M, N> {
+    pub(crate) unsafe fn assume_init(self) -> Matrix<T, M, N> {
         // Safety: The caller is responsible for all the elements being
         // initialized. Additionally, we know that `T` is the same size as
         // `MaybeUninit<T>`.
-        //
-        // Note: this is not the most ideal way of doing this. We should be able
-        // to use [`mem::transmute()`] but it doesn't work yet :(.
-        let src = &self as *const Self as *const Matrix<T, M, N>;
-        let matrix = unsafe { ptr::read(src) };
-        mem::forget(self);
-        matrix
+        unsafe { transmute_unchecked(self) }
     }
 }
 
@@ -129,13 +135,12 @@ where
         }
     }
 
-    let mut iter = iter.into_iter();
     let mut matrix: Matrix<MaybeUninit<_>, M, N> = Matrix::uninit();
     let mut guard = Guard {
         ptr: matrix.as_mut_slice().as_mut_ptr(),
         len: 0,
     };
-    while let Some(item) = iter.next() {
+    for item in iter {
         matrix[guard.len] = MaybeUninit::new(item);
         guard.len += 1;
         if guard.len == M * N {

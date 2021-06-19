@@ -11,6 +11,13 @@ fn into_iter_debug() {
 }
 
 #[test]
+fn matrix_from_iter_not_copy_or_default() {
+    #[derive(Debug, PartialEq)]
+    struct Num(i64);
+    let _into_iter = matrix![Num(1), Num(2); Num(3), Num(4)].into_iter();
+}
+
+#[test]
 fn matrix_into_iter() {
     let matrix = matrix![1, 3; 3, 7];
     let values: Vec<_> = matrix.into_iter().collect();
