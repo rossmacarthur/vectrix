@@ -32,6 +32,18 @@ fn matrix_repeat_with() {
 }
 
 #[test]
+fn matrix_repeat_with_not_copy_or_default() {
+    #[derive(Debug, PartialEq)]
+    struct Num(i64);
+    let mut state = 1;
+    let matrix = Matrix::repeat_with(|| {
+        state *= 2;
+        Num(state)
+    });
+    assert_eq!(matrix, matrix![Num(2), Num(8); Num(4), Num(16)]);
+}
+
+#[test]
 fn matrix_as_slice() {
     let matrix = matrix![1, 3, 3, 7];
     assert_eq!(matrix.as_slice(), vec![1, 3, 3, 7].as_slice());

@@ -216,7 +216,8 @@ pub mod traits;
 mod vector;
 mod view;
 
-use core::iter::{repeat_with, Sum};
+use core::hint;
+use core::iter::Sum;
 use core::slice;
 
 #[doc(hidden)]
@@ -287,10 +288,15 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     #[inline]
     pub fn repeat_with<F>(f: F) -> Self
     where
-        T: Copy + Default,
         F: FnMut() -> T,
     {
-        repeat_with(f).collect()
+        match new::collect(core::iter::repeat_with(f)) {
+            Ok(matrix) => matrix,
+            Err(_) =>
+            // Safety: the iterator will yield forever, so this error case can
+            // never be reached.
+            unsafe { hint::unreachable_unchecked() }
+        }
     }
 
     /// Views the underlying data as a contiguous slice.

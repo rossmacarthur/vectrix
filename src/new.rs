@@ -110,7 +110,7 @@ impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
 ///
 /// If `iter.next()` panics, all items already yielded by the iterator are
 /// dropped.
-fn collect<I, const M: usize, const N: usize>(iter: I) -> Result<Matrix<I::Item, M, N>, usize>
+pub fn collect<I, const M: usize, const N: usize>(iter: I) -> Result<Matrix<I::Item, M, N>, usize>
 where
     I: IntoIterator,
 {
