@@ -46,7 +46,7 @@ struct_coord! { XYZW: x, y, z, w }
 struct_coord! { XYZWA: x, y, z, w, a }
 struct_coord! { XYZWAB: x, y, z, w, a, b }
 
-// Safety: given ($M, $N) -> $Target
+// SAFETY: given ($M, $N) -> $Target
 //         - $Target should be marked #[repr(C)].
 //         - $Target<T> should be the same size as [T; $N].
 // row vectors

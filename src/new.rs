@@ -75,7 +75,7 @@ impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
     /// Create a new matrix with uninitialized contents.
     #[inline]
     pub(crate) fn uninit() -> Self {
-        // Safety: The `assume_init` is safe because the type we are claiming to
+        // SAFETY: The `assume_init` is safe because the type we are claiming to
         // have initialized here is a bunch of `MaybeUninit`s, which do not
         // require initialization. Additionally, `Matrix` is `repr(transparent)`
         // with an array of arrays.
@@ -99,7 +99,7 @@ impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
     /// undefined behavior.
     #[inline]
     pub(crate) unsafe fn assume_init(self) -> Matrix<T, M, N> {
-        // Safety: The caller is responsible for all the elements being
+        // SAFETY: The caller is responsible for all the elements being
         // initialized. Additionally, we know that `T` is the same size as
         // `MaybeUninit<T>`.
         unsafe { transmute_unchecked(self) }
@@ -128,7 +128,7 @@ where
     impl<U> Drop for Guard<U> {
         fn drop(&mut self) {
             let partial = ptr::slice_from_raw_parts_mut(self.ptr, self.len);
-            // Safety: this raw slice will contain only the initialized objects.
+            // SAFETY: this raw slice will contain only the initialized objects.
             unsafe {
                 ptr::drop_in_place(partial);
             }
@@ -146,7 +146,7 @@ where
         guard.len += 1;
         if guard.len == M * N {
             mem::forget(guard);
-            // Safety: the condition above asserts that all elements are
+            // SAFETY: the condition above asserts that all elements are
             // initialized.
             return Ok(unsafe { matrix.assume_init() });
         }

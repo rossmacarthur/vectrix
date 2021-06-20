@@ -82,12 +82,12 @@ macro_rules! impl_view {
     ($ty:ident) => {
         impl<T, const M: usize, const N: usize> $ty<T, M, N> {
             pub(crate) fn new(data: &[T]) -> &Self {
-                // Safety: `$ty` and `Stride` are both repr(transparent)
+                // SAFETY: `$ty` and `Stride` are both repr(transparent)
                 unsafe { &*(data as *const [T] as *const Self) }
             }
 
             pub(crate) fn new_mut(data: &mut [T]) -> &mut Self {
-                // Safety: `$ty` and `Stride` are both repr(transparent)
+                // SAFETY: `$ty` and `Stride` are both repr(transparent)
                 unsafe { &mut *(data as *mut [T] as *mut Self) }
             }
         }

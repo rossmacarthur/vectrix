@@ -46,7 +46,7 @@ impl<T, const M: usize, const N: usize> IntoIter<T, M, N> {
     /// Creates a new iterator over the given matrix.
     fn new(matrix: Matrix<T, M, N>) -> Self {
         Self {
-            // Safety: we know that `T` is the same size as `MaybeUninit<T>`.
+            // SAFETY: we know that `T` is the same size as `MaybeUninit<T>`.
             matrix: unsafe { new::transmute_unchecked(matrix) },
             alive: 0..(M * N),
         }
@@ -70,7 +70,7 @@ impl<T, const M: usize, const N: usize> IntoIter<T, M, N> {
     fn as_slice(&self) -> &[T] {
         let slice = &self.matrix.as_slice()[self.alive.clone()];
         let ptr = slice as *const [MaybeUninit<T>] as *const [T];
-        // Safety: `alive` keeps track of the elements that are initialized.
+        // SAFETY: `alive` keeps track of the elements that are initialized.
         unsafe { &*ptr }
     }
 
@@ -79,7 +79,7 @@ impl<T, const M: usize, const N: usize> IntoIter<T, M, N> {
     fn as_mut_slice(&mut self) -> &mut [T] {
         let slice = &mut self.matrix.as_mut_slice()[self.alive.clone()];
         let ptr = slice as *mut [MaybeUninit<T>] as *mut [T];
-        // Safety: `alive` keeps track of the elements that are initialized.
+        // SAFETY: `alive` keeps track of the elements that are initialized.
         unsafe { &mut *ptr }
     }
 }
@@ -90,7 +90,7 @@ impl<T, const M: usize, const N: usize> Iterator for IntoIter<T, M, N> {
     fn next(&mut self) -> Option<Self::Item> {
         // Get the next index from the front.
         self.alive.next().map(|i| {
-            // Safety: `i` is an index into the former "alive" region of the
+            // SAFETY: `i` is an index into the former "alive" region of the
             // array. This is the only time `i` will be yielded .
             unsafe { self.get_unchecked(i) }
         })
@@ -114,7 +114,7 @@ impl<T, const M: usize, const N: usize> DoubleEndedIterator for IntoIter<T, M, N
     fn next_back(&mut self) -> Option<Self::Item> {
         // Get the next index from the back.
         self.alive.next_back().map(|i| {
-            // Safety: `i` is an index into the former "alive" region of the
+            // SAFETY: `i` is an index into the former "alive" region of the
             // array. This is the only time `i` will be yielded .
             unsafe { self.get_unchecked(i) }
         })
@@ -165,7 +165,7 @@ where
 impl<T, const M: usize, const N: usize> Drop for IntoIter<T, M, N> {
     fn drop(&mut self) {
         let slice = self.as_mut_slice();
-        // Safety: `slice` contains only initialized elements.
+        // SAFETY: `slice` contains only initialized elements.
         unsafe { ptr::drop_in_place(slice) }
     }
 }
@@ -299,7 +299,7 @@ macro_rules! impl_view_mut {
 
             fn next(&mut self) -> Option<Self::Item> {
                 self.alive.next().map(|i| {
-                    // Safety: we yield a different row/column each time and
+                    // SAFETY: we yield a different row/column each time and
                     // `self.matrix`'s lifetime is asserted by the `PhantomData`.
                     unsafe { (*self.matrix).$meth(i) }
                 })
@@ -322,7 +322,7 @@ macro_rules! impl_view_mut {
         impl<T, const M: usize, const N: usize> DoubleEndedIterator for $View<'_, T, M, N> {
             fn next_back(&mut self) -> Option<Self::Item> {
                 self.alive.next_back().map(|i| {
-                    // Safety: we yield a different row/column each time and
+                    // SAFETY: we yield a different row/column each time and
                     // `self.matrix`'s lifetime is asserted by the `PhantomData`.
                     unsafe { (*self.matrix).$meth(i) }
                 })

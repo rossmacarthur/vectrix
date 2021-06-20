@@ -293,7 +293,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         match new::collect(core::iter::repeat_with(f)) {
             Ok(matrix) => matrix,
             Err(_) =>
-            // Safety: the iterator will yield forever, so this error case can
+            // SAFETY: the iterator will yield forever, so this error case can
             // never be reached.
             unsafe { hint::unreachable_unchecked() }
         }
