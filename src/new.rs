@@ -116,16 +116,16 @@ impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
 ///
 /// If `iter.next()` panics, all items already yielded by the iterator are
 /// dropped.
-pub fn collect<I, const M: usize, const N: usize>(iter: I) -> Result<Matrix<I::Item, M, N>, usize>
+pub fn collect<I, T, const M: usize, const N: usize>(iter: I) -> Result<Matrix<T, M, N>, usize>
 where
-    I: IntoIterator,
+    I: IntoIterator<Item = T>,
 {
-    struct Guard<T> {
-        ptr: *mut T,
+    struct Guard<U> {
+        ptr: *mut U,
         len: usize,
     }
 
-    impl<T> Drop for Guard<T> {
+    impl<U> Drop for Guard<U> {
         fn drop(&mut self) {
             let partial = ptr::slice_from_raw_parts_mut(self.ptr, self.len);
             // Safety: this raw slice will contain only the initialized objects.
@@ -135,12 +135,13 @@ where
         }
     }
 
-    let mut matrix: Matrix<MaybeUninit<_>, M, N> = Matrix::uninit();
+    let mut matrix: Matrix<MaybeUninit<T>, M, N> = Matrix::uninit();
     let mut guard = Guard {
-        ptr: matrix.as_mut_slice().as_mut_ptr(),
+        ptr: matrix.as_mut_ptr() as *mut T,
         len: 0,
     };
     for item in iter {
+        // FIXME: Use `.get_unchecked_mut(guard.len)` when its implemented.
         matrix[guard.len] = MaybeUninit::new(item);
         guard.len += 1;
         if guard.len == M * N {

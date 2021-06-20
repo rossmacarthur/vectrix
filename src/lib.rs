@@ -299,18 +299,28 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         }
     }
 
+    /// Returns a raw pointer to the underlying data.
+    #[inline]
+    fn as_ptr(&self) -> *const T {
+        self.data.as_ptr() as *const T
+    }
+
+    /// Returns an unsafe mutable pointer to the underlying data.
+    #[inline]
+    fn as_mut_ptr(&mut self) -> *mut T {
+        self.data.as_mut_ptr() as *mut T
+    }
+
     /// Views the underlying data as a contiguous slice.
     #[inline]
     pub fn as_slice(&self) -> &[T] {
-        let ptr = self.data.as_ptr() as *const T;
-        unsafe { slice::from_raw_parts(ptr, M * N) }
+        unsafe { slice::from_raw_parts(self.as_ptr(), M * N) }
     }
 
     /// Views the underlying data as a contiguous mutable slice.
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
-        let ptr = self.data.as_mut_ptr() as *mut T;
-        unsafe { slice::from_raw_parts_mut(ptr, M * N) }
+        unsafe { slice::from_raw_parts_mut(self.as_mut_ptr(), M * N) }
     }
 
     /// Returns a reference to the `i`-th row of this matrix.
