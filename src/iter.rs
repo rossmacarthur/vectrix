@@ -60,8 +60,7 @@ impl<T, const M: usize, const N: usize> IntoIter<T, M, N> {
     /// in the range `alive.start <= alive.end`.
     #[inline]
     unsafe fn get_unchecked(&self, i: usize) -> T {
-        let slice = self.matrix.as_slice();
-        let ptr = unsafe { slice.get_unchecked(i) }.as_ptr();
+        let ptr = unsafe { self.matrix.get_unchecked(i) }.as_ptr();
         unsafe { ptr::read(ptr) }
     }
 

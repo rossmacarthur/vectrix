@@ -10,35 +10,25 @@ use crate::prelude::*;
 // Indexing
 ////////////////////////////////////////////////////////////////////////////////
 
-impl<T, const M: usize, const N: usize> Index<(usize, usize)> for Matrix<T, M, N> {
-    type Output = T;
+impl<T, I, const M: usize, const N: usize> Index<I> for Matrix<T, M, N>
+where
+    I: MatrixIndex<Self>,
+{
+    type Output = I::Output;
 
     #[inline]
-    fn index(&self, (i, j): (usize, usize)) -> &Self::Output {
-        &self.data[j][i]
+    fn index(&self, index: I) -> &I::Output {
+        index.index(self)
     }
 }
 
-impl<T, const M: usize, const N: usize> IndexMut<(usize, usize)> for Matrix<T, M, N> {
+impl<T, I, const M: usize, const N: usize> IndexMut<I> for Matrix<T, M, N>
+where
+    I: MatrixIndex<Self>,
+{
     #[inline]
-    fn index_mut(&mut self, (i, j): (usize, usize)) -> &mut Self::Output {
-        &mut self.data[j][i]
-    }
-}
-
-impl<T, const M: usize, const N: usize> Index<usize> for Matrix<T, M, N> {
-    type Output = T;
-
-    #[inline]
-    fn index(&self, i: usize) -> &Self::Output {
-        &self.as_slice()[i]
-    }
-}
-
-impl<T, const M: usize, const N: usize> IndexMut<usize> for Matrix<T, M, N> {
-    #[inline]
-    fn index_mut(&mut self, i: usize) -> &mut Self::Output {
-        &mut self.as_mut_slice()[i]
+    fn index_mut(&mut self, index: I) -> &mut I::Output {
+        index.index_mut(self)
     }
 }
 

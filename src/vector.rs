@@ -24,7 +24,7 @@ macro_rules! impl_deref {
 
             #[inline]
             fn deref(&self) -> &Self::Target {
-                let ptr = self.data.as_ptr() as *const $Target<T>;
+                let ptr = self.as_ptr() as *const $Target<T>;
                 unsafe { &*ptr }
             }
         }
@@ -32,7 +32,7 @@ macro_rules! impl_deref {
         impl<T> DerefMut for Matrix<T, $M, $N> {
             #[inline]
             fn deref_mut(&mut self) -> &mut Self::Target {
-                let ptr = self.data.as_mut_ptr() as *mut $Target<T>;
+                let ptr = self.as_mut_ptr() as *mut $Target<T>;
                 unsafe { &mut *ptr }
             }
         }

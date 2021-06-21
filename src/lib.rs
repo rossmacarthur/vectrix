@@ -208,6 +208,7 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+mod index;
 mod iter;
 mod new;
 mod ops;
@@ -224,6 +225,7 @@ use core::slice;
 #[cfg(feature = "macro")]
 pub use vectrix_macro as proc_macro;
 
+pub use crate::index::MatrixIndex;
 pub use crate::iter::{IntoIter, IterColumns, IterColumnsMut, IterRows, IterRowsMut};
 pub use crate::view::{Column, Row};
 
@@ -321,6 +323,46 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     #[inline]
     pub fn as_mut_slice(&mut self) -> &mut [T] {
         unsafe { slice::from_raw_parts_mut(self.as_mut_ptr(), M * N) }
+    }
+
+    /// Returns a reference to an element in the matrix or `None` if out of
+    /// bounds.
+    #[inline]
+    pub fn get<I>(&self, i: I) -> Option<&I::Output>
+    where
+        I: MatrixIndex<Self>,
+    {
+        i.get(self)
+    }
+
+    /// Returns a mutable reference to an element in the matrix or `None` if out
+    /// of bounds.
+    #[inline]
+    pub fn get_mut<I>(&mut self, i: I) -> Option<&mut I::Output>
+    where
+        I: MatrixIndex<Self>,
+    {
+        i.get_mut(self)
+    }
+
+    /// Returns a reference to an element in the matrix without doing any bounds
+    /// checking.
+    #[inline]
+    pub unsafe fn get_unchecked<I>(&self, i: I) -> &I::Output
+    where
+        I: MatrixIndex<Self>,
+    {
+        unsafe { &*i.get_unchecked(self) }
+    }
+
+    /// Returns a mutable reference to an element in the matrix without doing
+    /// any bounds checking.
+    #[inline]
+    pub unsafe fn get_unchecked_mut<I>(&mut self, i: I) -> &mut I::Output
+    where
+        I: MatrixIndex<Self>,
+    {
+        unsafe { &mut *i.get_unchecked_mut(self) }
     }
 
     /// Returns a reference to the `i`-th row of this matrix.

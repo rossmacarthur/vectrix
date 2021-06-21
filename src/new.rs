@@ -141,8 +141,8 @@ where
         len: 0,
     };
     for item in iter {
-        // FIXME: Use `.get_unchecked_mut(guard.len)` when its implemented.
-        matrix[guard.len] = MaybeUninit::new(item);
+        let dst = unsafe { matrix.get_unchecked_mut(guard.len) };
+        *dst = MaybeUninit::new(item);
         guard.len += 1;
         if guard.len == M * N {
             mem::forget(guard);
