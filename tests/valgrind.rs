@@ -52,5 +52,6 @@ fn into_iter_clone_no_leak() {
     ]
     .into_iter();
     CLONE_COUNT.store(0, Ordering::SeqCst);
+    #[allow(clippy::redundant_clone)]
     drop(into_iter.clone());
 }

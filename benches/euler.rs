@@ -6,8 +6,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use rand::distributions::Standard;
 use rand::prelude::*;
 use rand_isaac::IsaacRng;
-use vectrix::traits::Zero;
-use vectrix::Vector;
+use vectrix::{Vector, Zero};
 
 struct TestData<T, const M: usize> {
     acc: Vec<Vector<T, M>>,
