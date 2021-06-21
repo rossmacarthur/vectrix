@@ -4,7 +4,7 @@
 use core::iter::Sum;
 use core::ops::*;
 
-use crate::prelude::*;
+use crate::{Matrix, MatrixIndex};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Indexing

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::Matrix;
 
 mod private {
     pub trait Sealed {}

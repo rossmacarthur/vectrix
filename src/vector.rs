@@ -1,6 +1,8 @@
 //! Component access for vectors and constructors from components.
 
-use crate::prelude::*;
+use core::ops::{Deref, DerefMut};
+
+use crate::{Matrix, RowVector, Vector};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Accessors

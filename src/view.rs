@@ -1,19 +1,18 @@
 //! Row and column slices of a matrix.
 
 use core::iter::Sum;
+use core::ops::{Deref, DerefMut, Mul};
 
 use stride::Stride;
 
-use crate::prelude::*;
-
-/// A row in a [`Matrix`].
+/// A row in a [`Matrix`][crate::Matrix].
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Row<T, const M: usize, const N: usize> {
     data: Stride<T, M>,
 }
 
-/// A column in a [`Matrix`].
+/// A column in a [`Matrix`][crate::Matrix].
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Column<T, const M: usize, const N: usize> {

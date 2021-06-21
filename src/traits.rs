@@ -1,7 +1,5 @@
 //! Abstractions over number types.
 
-pub(crate) use core::ops::*;
-
 /// Defines the absolute value for a type.
 pub trait Abs {
     /// Returns the absolute value of this type.

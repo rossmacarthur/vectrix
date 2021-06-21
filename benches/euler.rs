@@ -6,7 +6,6 @@ use criterion::{criterion_group, criterion_main, Criterion};
 use rand::distributions::Standard;
 use rand::prelude::*;
 use rand_isaac::IsaacRng;
-
 use vectrix::traits::Zero;
 use vectrix::Vector;
 

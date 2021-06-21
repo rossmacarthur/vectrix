@@ -57,9 +57,9 @@
 //! - [`::repeat(..)`][`Matrix::repeat()`] → constructs a new matrix filled with
 //!   the provided value.
 //! - [`::repeat_with(..)`][`Matrix::repeat_with()`] → constructs a new matrix
-//!   filled with values from the provided closure.
-//! - [`::from_iter(..)`][`FromIterator::from_iter`] → constructs a new matrix
-//!   from an iterator. See also [`collect()`][`Iterator::collect()`].
+//!   filled with values computed by the provided closure.
+//! - [`::from_iter(..)`][`core::iter::FromIterator::from_iter`] → constructs a
+//!   new matrix from an iterator.
 //! - [`::new(..)`][`Matrix::new()`] → constructs a new vector using the
 //!   provided components.
 //!
@@ -212,14 +212,13 @@ mod index;
 mod iter;
 mod new;
 mod ops;
-mod prelude;
-pub mod traits;
+mod traits;
 mod vector;
 mod view;
 
-use core::hint;
 use core::iter::Sum;
-use core::slice;
+use core::ops::*;
+use core::{hint, slice};
 
 #[doc(hidden)]
 #[cfg(feature = "macro")]
@@ -227,9 +226,8 @@ pub use vectrix_macro as proc_macro;
 
 pub use crate::index::MatrixIndex;
 pub use crate::iter::{IntoIter, IterColumns, IterColumnsMut, IterRows, IterRowsMut};
+pub use crate::traits::{Abs, One, Zero};
 pub use crate::view::{Column, Row};
-
-use crate::prelude::*;
 
 /// Represents a matrix with constant `M` rows and constant `N` columns.
 ///

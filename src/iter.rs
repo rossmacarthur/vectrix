@@ -1,12 +1,10 @@
-use core::fmt;
-use core::iter::*;
+use core::iter::{FusedIterator, Sum};
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
-use core::ops::Range;
-use core::ptr;
+use core::ops::{Add, Range};
+use core::{fmt, ptr};
 
-use crate::new;
-use crate::prelude::*;
+use crate::{new, Column, Matrix, Row, Zero};
 
 ////////////////////////////////////////////////////////////////////////////////
 // T iteration

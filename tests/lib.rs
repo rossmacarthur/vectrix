@@ -1,9 +1,3 @@
-mod iter;
-mod new;
-mod ops;
-mod valgrind;
-mod vector;
-
 use vectrix::{matrix, vector, Matrix};
 
 ////////////////////////////////////////////////////////////////////////////////

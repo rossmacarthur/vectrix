@@ -4,7 +4,7 @@ use core::iter::FromIterator;
 use core::mem::{self, MaybeUninit};
 use core::ptr;
 
-use crate::prelude::*;
+use crate::Matrix;
 
 /// A macro for composing matrices.
 ///
