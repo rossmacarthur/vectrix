@@ -218,7 +218,7 @@ mod view;
 
 use core::iter::Sum;
 use core::ops::*;
-use core::{hint, slice};
+use core::slice;
 
 #[doc(hidden)]
 #[cfg(feature = "macro")]
@@ -290,13 +290,8 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     where
         F: FnMut() -> T,
     {
-        match new::collect(core::iter::repeat_with(f)) {
-            Ok(matrix) => matrix,
-            Err(_) =>
-            // SAFETY: the iterator will yield forever, so this error case can
-            // never be reached.
-            unsafe { hint::unreachable_unchecked() }
-        }
+        // SAFETY: the iterator will yield forever.
+        unsafe { new::collect_unchecked(core::iter::repeat_with(f)) }
     }
 
     /// Returns a raw pointer to the underlying data.
@@ -345,6 +340,13 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
 
     /// Returns a reference to an element in the matrix without doing any bounds
     /// checking.
+    ///
+    /// # Safety
+    ///
+    /// Calling this method with an out-of-bounds index is
+    /// *[undefined behavior]* even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     #[inline]
     pub unsafe fn get_unchecked<I>(&self, i: I) -> &I::Output
     where
@@ -355,6 +357,13 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
 
     /// Returns a mutable reference to an element in the matrix without doing
     /// any bounds checking.
+    ///
+    /// # Safety
+    ///
+    /// Calling this method with an out-of-bounds index is
+    /// *[undefined behavior]* even if the resulting reference is not used.
+    ///
+    /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     #[inline]
     pub unsafe fn get_unchecked_mut<I>(&mut self, i: I) -> &mut I::Output
     where

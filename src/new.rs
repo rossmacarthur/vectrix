@@ -2,7 +2,7 @@
 
 use core::iter::FromIterator;
 use core::mem::{self, MaybeUninit};
-use core::ptr;
+use core::{hint, ptr};
 
 use crate::Matrix;
 
@@ -152,6 +152,22 @@ where
         }
     }
     Err(guard.len)
+}
+
+/// Like [`collect()`] except the caller must guarantee that the iterator will
+/// yield enough elements to fill the matrix.
+pub unsafe fn collect_unchecked<I, T, const M: usize, const N: usize>(iter: I) -> Matrix<T, M, N>
+where
+    I: IntoIterator<Item = T>,
+{
+    match collect(iter) {
+        Ok(matrix) => matrix,
+        Err(_) => {
+            // SAFETY: the caller guarantees the iterator will yield enough
+            // elements, so this error case can never be reached.
+            unsafe { hint::unreachable_unchecked() }
+        }
+    }
 }
 
 impl<T, const M: usize, const N: usize> FromIterator<T> for Matrix<T, M, N> {
