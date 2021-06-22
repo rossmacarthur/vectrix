@@ -261,9 +261,9 @@ fn matrix_mul_n_by_m() {
 
 #[test]
 fn matrix_mul_0_by_m() {
-    let a = Matrix::<_, 0, 3>::default();
+    let a = Matrix::<_, 0, 3>::zero();
     let b = matrix![6, 7, 8, 9; 10, 11, 12, 13; 14, 15, 16, 17];
-    let c = Matrix::default();
+    let c = Matrix::zero();
 
     for_each_op_assert_eq! { a, *, b, c }
 }

@@ -44,14 +44,17 @@ macro_rules! matrix {
     };
 }
 
-impl<T, const M: usize, const N: usize> Default for Matrix<T, M, N>
-where
-    T: Copy + Default,
-{
+impl<T: Default, const M: usize, const N: usize> Default for Matrix<T, M, N> {
     /// Create a new matrix using `T::default()` as an initializer.
+    ///
+    /// **Note:** this implementation will not be as efficient for types that
+    /// are `Copy`. In most cases it would be better to use one of the
+    /// following:
+    /// - [`Matrix::zero()`][Matrix::zero]
+    /// - [`Matrix::repeat(T::default())`][Matrix::repeat]
     #[inline]
     fn default() -> Self {
-        Self::repeat(T::default())
+        Self::repeat_with(T::default)
     }
 }
 

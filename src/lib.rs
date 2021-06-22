@@ -49,8 +49,6 @@
 //!
 //! Commonly used constructors are listed below.
 //!
-//! - [`::default()`][`Matrix::default()`] → constructs a new matrix filled with
-//!   [`T::default()`][`Default::default()`].
 //! - [`::zero()`][`Matrix::zero()`] → constructs a new matrix filled with
 //!   [`T::zero()`][`Zero::zero()`].
 //! - [`::identity()`][`Matrix::identity()`] → constructs a new identity matrix.
@@ -481,7 +479,7 @@ impl<T, const N: usize> Matrix<T, N, N> {
     #[inline]
     pub fn identity() -> Self
     where
-        T: Copy + Default + One + Zero,
+        T: Copy + One + Zero,
     {
         let mut matrix = Self::zero();
         for i in 0..N {
@@ -493,9 +491,9 @@ impl<T, const N: usize> Matrix<T, N, N> {
     /// Returns the diagonal of the matrix.
     pub fn diagonal(&self) -> Vector<T, N>
     where
-        T: Copy + Default,
+        T: Copy + Zero,
     {
-        let mut vector = Vector::default();
+        let mut vector = Vector::zero();
         for i in 0..N {
             vector[i] = self[(i, i)];
         }

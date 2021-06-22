@@ -16,7 +16,7 @@ struct TestData<T, const M: usize> {
 
 impl<T, const M: usize> TestData<T, M>
 where
-    T: Copy + Default + Zero + AddAssign + Add<Output = T> + Mul<Output = T>,
+    T: Copy + Zero + AddAssign + Add<Output = T> + Mul<Output = T>,
 {
     fn random(size: usize) -> Self
     where
