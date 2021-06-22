@@ -433,19 +433,14 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     }
 
     /// Returns a matrix of the same size as self, with function `f` applied to
-    /// each element in order.
+    /// each element in column-major order.
     #[inline]
-    pub fn map<F, U>(self, mut f: F) -> Matrix<U, M, N>
+    pub fn map<F, U>(self, f: F) -> Matrix<U, M, N>
     where
-        T: Copy,
-        U: Copy + Default,
         F: FnMut(T) -> U,
     {
-        let mut matrix = Matrix::default();
-        for i in 0..(M * N) {
-            matrix[i] = f(self[i]);
-        }
-        matrix
+        // SAFETY: the iterator has the exact number of elements required.
+        unsafe { new::collect_unchecked(self.into_iter().map(f)) }
     }
 
     /// Returns the L1 norm of the matrix.
