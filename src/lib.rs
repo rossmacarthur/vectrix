@@ -223,6 +223,7 @@
 #[cfg(feature = "std")]
 extern crate std;
 
+mod data;
 mod fmt;
 mod index;
 mod iter;
@@ -233,17 +234,25 @@ mod vector;
 mod view;
 
 use core::iter::Sum;
+use core::marker::PhantomData;
 use core::ops::*;
 use core::slice;
 
+use stride::Stride;
 #[doc(hidden)]
 #[cfg(feature = "macro")]
 pub use vectrix_macro as proc_macro;
 
 pub use crate::index::MatrixIndex;
-pub use crate::iter::{IntoIter, IterColumns, IterColumnsMut, IterRows, IterRowsMut};
+pub use crate::iter::IntoIter;
 pub use crate::traits::{Abs, One, Zero};
-pub use crate::view::{Column, Row};
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
+#[repr(transparent)]
+pub struct Base<D, T, const M: usize, const N: usize> {
+    data: D,
+    marker: PhantomData<T>,
+}
 
 /// Represents a matrix with constant `M` rows and constant `N` columns.
 ///
@@ -251,17 +260,39 @@ pub use crate::view::{Column, Row};
 /// column-major order.
 ///
 /// See the [crate root][crate] for usage examples.
-#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[repr(transparent)]
-pub struct Matrix<T, const M: usize, const N: usize> {
-    data: [[T; M]; N],
-}
+pub type Matrix<T, const M: usize, const N: usize> = Base<[[T; M]; N], T, M, N>;
 
 /// A matrix with one row and `N` columns.
 pub type RowVector<T, const N: usize> = Matrix<T, 1, N>;
 
 /// A matrix with one column and `M` rows.
 pub type Vector<T, const M: usize> = Matrix<T, M, 1>;
+
+/// A reference to a row in a matrix.
+pub type Row<'a, T, const M: usize, const N: usize> = Base<&'a Stride<T, M>, T, M, 1>;
+
+/// A mutable reference to a row in a matrix.
+pub type RowMut<'a, T, const M: usize, const N: usize> = Base<&'a mut Stride<T, M>, T, M, 1>;
+
+/// A reference to a column in a matrix.
+pub type Column<'a, T, const M: usize, const N: usize> = Base<&'a Stride<T, 1>, T, 1, N>;
+
+/// A mutable reference to a column in a matrix.
+pub type ColumnMut<'a, T, const M: usize, const N: usize> = Base<&'a mut Stride<T, 1>, T, 1, N>;
+
+////////////////////////////////////////////////////////////////////////////////
+// Base methods
+////////////////////////////////////////////////////////////////////////////////
+
+impl<D, T, const M: usize, const N: usize> Base<D, T, M, N> {
+    #[inline]
+    const fn from_data(data: D) -> Self {
+        Self {
+            data,
+            marker: PhantomData,
+        }
+    }
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Matrix<T, M, N> methods
@@ -272,7 +303,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     #[doc(hidden)]
     #[inline]
     pub const fn from_column_major_order(data: [[T; M]; N]) -> Self {
-        Self { data }
+        Self::from_data(data)
     }
 
     /// Returns a zero matrix.
@@ -292,9 +323,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     where
         T: Copy,
     {
-        Self {
-            data: [[element; M]; N],
-        }
+        Self::from_data([[element; M]; N])
     }
 
     /// Create a new matrix filled with computed elements.
@@ -390,26 +419,26 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
 
     /// Returns a reference to the `i`-th row of this matrix.
     #[inline]
-    pub fn row(&self, i: usize) -> &Row<T, M, N> {
-        Row::new(&self.as_slice()[i..])
+    pub fn row(&self, i: usize) -> Row<'_, T, M, N> {
+        Row::from_data(Stride::new(&self.as_slice()[i..]))
     }
 
     /// Returns a mutable reference to the `i`-th row of this matrix.
     #[inline]
-    pub fn row_mut(&mut self, i: usize) -> &mut Row<T, M, N> {
-        Row::new_mut(&mut self.as_mut_slice()[i..])
+    pub fn row_mut(&mut self, i: usize) -> RowMut<'_, T, M, N> {
+        RowMut::from_data(Stride::new_mut(&mut self.as_mut_slice()[i..]))
     }
 
     /// Returns a reference to the `i`-th column of this matrix.
     #[inline]
-    pub fn column(&self, i: usize) -> &Column<T, M, N> {
-        Column::new(&self.data[i])
+    pub fn column(&self, i: usize) -> Column<'_, T, M, N> {
+        Column::from_data(Stride::new(&self.data[i]))
     }
 
     /// Returns a mutable reference to the `i`-th column of this matrix.
     #[inline]
-    pub fn column_mut(&mut self, i: usize) -> &mut Column<T, M, N> {
-        Column::new_mut(&mut self.data[i])
+    pub fn column_mut(&mut self, i: usize) -> ColumnMut<'_, T, M, N> {
+        ColumnMut::from_data(Stride::new_mut(&mut self.data[i]))
     }
 
     /// Returns an iterator over the underlying data.
@@ -424,29 +453,29 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
         self.as_mut_slice().iter_mut()
     }
 
-    /// Returns an iterator over the rows in this matrix.
-    #[inline]
-    pub fn iter_rows(&self) -> IterRows<'_, T, M, N> {
-        IterRows::new(self)
-    }
+    // /// Returns an iterator over the rows in this matrix.
+    // #[inline]
+    // pub fn iter_rows(&self) -> IterRows<'_, T, M, N> {
+    //     IterRows::new(self)
+    // }
 
-    /// Returns a mutable iterator over the rows in this matrix.
-    #[inline]
-    pub fn iter_rows_mut(&mut self) -> IterRowsMut<'_, T, M, N> {
-        IterRowsMut::new(self)
-    }
+    // /// Returns a mutable iterator over the rows in this matrix.
+    // #[inline]
+    // pub fn iter_rows_mut(&mut self) -> IterRowsMut<'_, T, M, N> {
+    //     IterRowsMut::new(self)
+    // }
 
-    /// Returns an iterator over the columns in this matrix.
-    #[inline]
-    pub fn iter_columns(&self) -> IterColumns<'_, T, M, N> {
-        IterColumns::new(self)
-    }
+    // /// Returns an iterator over the columns in this matrix.
+    // #[inline]
+    // pub fn iter_columns(&self) -> IterColumns<'_, T, M, N> {
+    //     IterColumns::new(self)
+    // }
 
-    /// Returns a mutable iterator over the columns in this matrix.
-    #[inline]
-    pub fn iter_columns_mut(&mut self) -> IterColumnsMut<'_, T, M, N> {
-        IterColumnsMut::new(self)
-    }
+    // /// Returns a mutable iterator over the columns in this matrix.
+    // #[inline]
+    // pub fn iter_columns_mut(&mut self) -> IterColumnsMut<'_, T, M, N> {
+    //     IterColumnsMut::new(self)
+    // }
 
     /// Returns a matrix of the same size as self, with function `f` applied to
     /// each element in column-major order.

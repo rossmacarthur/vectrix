@@ -4,7 +4,7 @@ use core::mem::MaybeUninit;
 use core::ops::{Add, Range};
 use core::{fmt, ptr};
 
-use crate::{new, Column, Matrix, Row, Zero};
+use crate::{new, Base, Column, Matrix, Row, Zero};
 
 ////////////////////////////////////////////////////////////////////////////////
 // T iteration
@@ -26,12 +26,12 @@ use crate::{new, Column, Matrix, Row, Zero};
 /// ];
 /// let iter: IntoIter<_, 2, 3> = m.into_iter();
 /// ```
-pub struct IntoIter<T, const M: usize, const N: usize> {
-    matrix: Matrix<MaybeUninit<T>, M, N>,
+pub struct IntoIter<D, T, const M: usize, const N: usize> {
+    matrix: Base<D, MaybeUninit<T>, M, N>,
     alive: Range<usize>,
 }
 
-impl<T, const M: usize, const N: usize> fmt::Debug for IntoIter<T, M, N>
+impl<D, T, const M: usize, const N: usize> fmt::Debug for IntoIter<D, T, M, N>
 where
     T: fmt::Debug,
 {
@@ -40,7 +40,7 @@ where
     }
 }
 
-impl<T, const M: usize, const N: usize> IntoIter<T, M, N> {
+impl<D, T, const M: usize, const N: usize> IntoIter<D, T, M, N> {
     /// Creates a new iterator over the given matrix.
     fn new(matrix: Matrix<T, M, N>) -> Self {
         Self {
@@ -81,7 +81,7 @@ impl<T, const M: usize, const N: usize> IntoIter<T, M, N> {
     }
 }
 
-impl<T, const M: usize, const N: usize> Iterator for IntoIter<T, M, N> {
+impl<D, T, const M: usize, const N: usize> Iterator for IntoIter<D, T, M, N> {
     type Item = T;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -244,20 +244,20 @@ macro_rules! impl_view {
     };
 }
 
-impl_view! {
-    /// An iterator over rows in a matrix.
-    impl Iterator<Item = Row> for IterRows
-    where
-        Dimension = M,
-        Method = row,
-}
-impl_view! {
-    /// An iterator over columns in a matrix.
-    impl Iterator<Item = Column> for IterColumns
-    where
-        Dimension = N,
-        Method = column,
-}
+// impl_view! {
+//     /// An iterator over rows in a matrix.
+//     impl Iterator<Item = Row> for IterRows
+//     where
+//         Dimension = M,
+//         Method = row,
+// }
+// impl_view! {
+//     /// An iterator over columns in a matrix.
+//     impl Iterator<Item = Column> for IterColumns
+//     where
+//         Dimension = N,
+//         Method = column,
+// }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Mutable row/column iteration
@@ -336,17 +336,17 @@ macro_rules! impl_view_mut {
     };
 }
 
-impl_view_mut! {
-    /// A mutable iterator over rows in a matrix.
-    impl Iterator<Item = Row> for IterRowsMut
-    where
-        Dimension = M,
-        Method = row_mut,
-}
-impl_view_mut! {
-    /// A mutable iterator over columns in a matrix.
-    impl Iterator<Item = Column> for IterColumnsMut
-    where
-        Dimension = N,
-        Method = column_mut,
-}
+// impl_view_mut! {
+//     /// A mutable iterator over rows in a matrix.
+//     impl Iterator<Item = Row> for IterRowsMut
+//     where
+//         Dimension = M,
+//         Method = row_mut,
+// }
+// impl_view_mut! {
+//     /// A mutable iterator over columns in a matrix.
+//     impl Iterator<Item = Column> for IterColumnsMut
+//     where
+//         Dimension = N,
+//         Method = column_mut,
+// }

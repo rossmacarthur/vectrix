@@ -95,14 +95,16 @@ macro_rules! impl_row_vector {
     ($N:literal: $($comp:ident),+) => {
         impl<T> RowVector<T, $N> {
             /// Creates a new vector from the given components.
+            #[inline]
             pub const fn new($($comp: T),+) -> Self {
-                Self { data: [$([$comp]),+]}
+                Self::from_data([$([$comp]),+])
             }
         }
 
         impl<T> From<[T; $N]> for RowVector<T, $N>  {
+            #[inline]
             fn from([$($comp),*]: [T; $N]) -> Self {
-                Self { data: [$([$comp]),+] }
+                Self::from_data([$([$comp]),+])
             }
         }
     }
@@ -112,14 +114,16 @@ macro_rules! impl_vector {
     ($M:literal: $($comp:ident),+) => {
         impl<T> Vector<T, $M> {
             /// Creates a new vector from the given components.
+            #[inline]
             pub const fn new($($comp: T),+) -> Self {
-                Self { data: [[$($comp),+]]}
+                Self::from_data([[$($comp),+]])
             }
         }
 
         impl<T> From<[T; $M]> for Vector<T, $M> {
+            #[inline]
             fn from(data: [T; $M]) -> Self {
-                Self { data: [data] }
+                Self::from_data([data])
             }
         }
     }
