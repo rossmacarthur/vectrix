@@ -16,8 +16,8 @@ name = "euler"
 harness = false
 
 [dependencies]
-stride = "0.1.1"
-vectrix-macro = { version = "=0.1.2", path = "macro", optional = true }
+stride = { version = "0.1.1", path = "crates/stride" }
+vectrix-macro = { version = "=0.1.2", path = "crates/macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.4"
@@ -30,4 +30,4 @@ std = []
 macro = ["vectrix-macro"]
 
 [workspace]
-members = ["macro"]
+members = ["crates/macro", "crates/stride"]
