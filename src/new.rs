@@ -23,11 +23,9 @@ use crate::Matrix;
 /// corresponds to the following matrix with three rows and two columns:
 ///
 /// ```text
-/// ┌            ┐
-/// │  1.0  4.0  │
-/// │  2.0  5.0  │
-/// │  3.0  6.0  │
-/// └            ┘
+/// ⎛ 1.0  4.0 ⎞
+/// ⎜ 2.0  5.0 ⎟
+/// ⎝ 3.0  6.0 ⎠
 /// ```
 ///
 /// Which is stored as an array of arrays in column-major order.
