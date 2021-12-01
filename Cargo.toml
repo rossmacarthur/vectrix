@@ -2,7 +2,7 @@
 name = "vectrix"
 version = "0.1.3"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
-edition = "2018"
+edition = "2021"
 description = "A stack-allocated matrix type implemented with const generics."
 readme = "README.md"
 repository = "https://github.com/rossmacarthur/vectrix"

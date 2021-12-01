@@ -1,6 +1,5 @@
 //! Generic constructors.
 
-use core::iter::FromIterator;
 use core::mem::{self, MaybeUninit};
 use core::{hint, ptr};
 

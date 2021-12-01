@@ -1,5 +1,3 @@
-use core::iter::FromIterator;
-
 use vectrix::{matrix, Matrix};
 
 #[test]

@@ -7,13 +7,9 @@
 A stack-allocated, constant-size [`Matrix<T, M, N>`] type implemented with const
 generics.
 
-This crate works on stable Rust from v1.51 onwards. It is pretty experimental
-right now and does not have the same level of features as others like it in the
-Rust ecosystem. But it useful for quick and dirty use cases, like [Advent of
-Code][aoc]. Contributions are welcome!
-
 ### Features
 
+- Stable Rust.
 - Generic matrix and vector types.
 - `matrix!` / `vector!` macros that can be used in `const` contexts.
 - Element access using `usize` and `(usize, usize)` indexing.
@@ -25,7 +21,6 @@ Code][aoc]. Contributions are welcome!
   appropriately sized vectors and matrices.
 - And more ... see the [full documentation][docs].
 
-[aoc]: https://adventofcode.com/
 [docs]: https://docs.rs/vectrix
 [`Matrix<T, M, N>`]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html
 
