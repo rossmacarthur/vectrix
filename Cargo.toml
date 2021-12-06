@@ -30,4 +30,4 @@ std = []
 macro = ["vectrix-macro"]
 
 [workspace]
-members = ["crates/macro", "crates/stride"]
+members = ["crates/macro", "crates/stride", "tools/gen-readme"]

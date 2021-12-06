@@ -1,0 +1,12 @@
+[package]
+name = "gen-readme"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[dependencies]
+anyhow = "1.0.51"
+pulldown-cmark = "0.8.0"
+pulldown-cmark-to-cmark = "7.1.0"
+serde = { version = "1.0.130", features = ["derive"] }
+tinytemplate = "1.2.1"

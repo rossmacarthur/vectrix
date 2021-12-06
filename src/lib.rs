@@ -1,6 +1,23 @@
 //! This crate provides a stack-allocated, constant-size [`Matrix<T, M, N>`]
 //! type implemented using const generics.
 //!
+//! ## 🚀 Getting started
+//!
+//! Add the following to your Cargo manifest.
+//!
+//! ```toml
+//! [dependencies]
+//! vectrix = "0.1"
+//! ```
+//!
+//! `no_std` is also supported by disabling the default std feature.
+//! ```toml
+//! [dependencies]
+//! vectrix = { version = "0.1", default-features = false, features = ["macro"] }
+//! ```
+//!
+//! ## 🤸 Usage
+//!
 //! ### Types
 //!
 //! The base [`Matrix<T, M, N>`] type represents a matrix with `M` rows and `N`
