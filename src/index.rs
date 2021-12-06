@@ -11,6 +11,11 @@ mod private {
 /// This is the [`Matrix`] version of [`SliceIndex`][`core::slice::SliceIndex`].
 /// You should not use or implement this trait directly but instead use the
 /// corresponding methods on [`Matrix`].
+///
+/// # Safety
+///
+/// Implementations of this trait have to promise that if the argument
+/// to `get_(mut_)unchecked` is a safe reference, then so is the result.
 pub unsafe trait MatrixIndex<T: ?Sized>: private::Sealed {
     /// The output type returned by methods.
     type Output: ?Sized;
