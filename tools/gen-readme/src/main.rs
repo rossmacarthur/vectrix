@@ -10,7 +10,7 @@ use serde::Serialize;
 use tinytemplate::TinyTemplate;
 
 const ROOT: &str = env!("CARGO_WORKSPACE_DIR");
-const VERSION: &str = "0.1";
+const VERSION: &str = "0.2";
 
 /// Render Markdown events as Markdown.
 fn to_cmark<'a, I, E>(events: I) -> Result<String>

@@ -7,13 +7,13 @@
 //!
 //! ```toml
 //! [dependencies]
-//! vectrix = "0.1"
+//! vectrix = "0.2"
 //! ```
 //!
 //! `no_std` is also supported by disabling the default std feature.
 //! ```toml
 //! [dependencies]
-//! vectrix = { version = "0.1", default-features = false, features = ["macro"] }
+//! vectrix = { version = "0.2", default-features = false, features = ["macro"] }
 //! ```
 //!
 //! ## 🤸 Usage

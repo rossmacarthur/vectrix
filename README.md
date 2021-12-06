@@ -13,14 +13,14 @@ Add the following to your Cargo manifest.
 
 ```toml
 [dependencies]
-vectrix = "0.1"
+vectrix = "0.2"
 ```
 
 `no_std` is also supported by disabling the default std feature.
 
 ```toml
 [dependencies]
-vectrix = { version = "0.1", default-features = false, features = ["macro"] }
+vectrix = { version = "0.2", default-features = false, features = ["macro"] }
 ```
 
 ## 🤸 Usage
@@ -212,29 +212,29 @@ assert_eq!(matrix + matrix, expected);
 ```
 
 [core::iter::FromIterator::from_iter]: https://doc.rust-lang.org/std/iter/trait.FromIterator.html#tymethod.from_iter
-[macro.matrix]: https://docs.rs/vectrix/0.1/vectrix/macro.matrix.html
-[macro.row_vector]: https://docs.rs/vectrix/0.1/vectrix/macro.row_vector.html
-[macro.vector]: https://docs.rs/vectrix/0.1/vectrix/macro.vector.html
-[struct.Matrix]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html
-[struct.Matrix::as_mut_slice]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.as_mut_slice
-[struct.Matrix::as_slice]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.as_slice
-[struct.Matrix::column]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.column
-[struct.Matrix::identity]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.identity
-[struct.Matrix::into_iter]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.into_iter
-[struct.Matrix::iter]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.iter
-[struct.Matrix::iter_columns]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.iter_columns
-[struct.Matrix::iter_columns_mut]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.iter_columns_mut
-[struct.Matrix::iter_mut]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.iter_mut
-[struct.Matrix::iter_rows]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.iter_rows
-[struct.Matrix::iter_rows_mut]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.iter_rows_mut
-[struct.Matrix::new]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.new
-[struct.Matrix::repeat]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.repeat
-[struct.Matrix::repeat_with]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.repeat_with
-[struct.Matrix::row]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.row
-[struct.Matrix::zero]: https://docs.rs/vectrix/0.1/vectrix/struct.Matrix.html#method.zero
-[struct.RowVector]: https://docs.rs/vectrix/0.1/vectrix/struct.RowVector.html
-[struct.Vector]: https://docs.rs/vectrix/0.1/vectrix/struct.Vector.html
-[Zero::zero]: https://docs.rs/vectrix/0.1/vectrix/traits/trait.Zero.html#tymethod.zero
+[macro.matrix]: https://docs.rs/vectrix/0.2/vectrix/macro.matrix.html
+[macro.row_vector]: https://docs.rs/vectrix/0.2/vectrix/macro.row_vector.html
+[macro.vector]: https://docs.rs/vectrix/0.2/vectrix/macro.vector.html
+[struct.Matrix]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html
+[struct.Matrix::as_mut_slice]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.as_mut_slice
+[struct.Matrix::as_slice]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.as_slice
+[struct.Matrix::column]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.column
+[struct.Matrix::identity]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.identity
+[struct.Matrix::into_iter]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.into_iter
+[struct.Matrix::iter]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.iter
+[struct.Matrix::iter_columns]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.iter_columns
+[struct.Matrix::iter_columns_mut]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.iter_columns_mut
+[struct.Matrix::iter_mut]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.iter_mut
+[struct.Matrix::iter_rows]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.iter_rows
+[struct.Matrix::iter_rows_mut]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.iter_rows_mut
+[struct.Matrix::new]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.new
+[struct.Matrix::repeat]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.repeat
+[struct.Matrix::repeat_with]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.repeat_with
+[struct.Matrix::row]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.row
+[struct.Matrix::zero]: https://docs.rs/vectrix/0.2/vectrix/struct.Matrix.html#method.zero
+[struct.RowVector]: https://docs.rs/vectrix/0.2/vectrix/struct.RowVector.html
+[struct.Vector]: https://docs.rs/vectrix/0.2/vectrix/struct.Vector.html
+[Zero::zero]: https://docs.rs/vectrix/0.2/vectrix/traits/trait.Zero.html#tymethod.zero
 
 
 ## License

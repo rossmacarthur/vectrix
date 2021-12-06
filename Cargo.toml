@@ -1,6 +1,6 @@
 [package]
 name = "vectrix"
-version = "0.1.3"
+version = "0.2.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2021"
 description = "A stack-allocated matrix type implemented with const generics."
@@ -16,8 +16,8 @@ name = "euler"
 harness = false
 
 [dependencies]
-stride = { version = "0.1.1", path = "crates/stride" }
-vectrix-macro = { version = "=0.1.2", path = "crates/macro", optional = true }
+stride = { version = "=0.2.0", path = "crates/stride" }
+vectrix-macro = { version = "=0.2.0", path = "crates/macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.3.4"
