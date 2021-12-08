@@ -245,17 +245,19 @@ pub use crate::iter::{IntoIter, IterColumns, IterColumnsMut, IterRows, IterRowsM
 pub use crate::traits::{Abs, One, Zero};
 pub use crate::view::{Column, Row};
 
+/// A base matrix type.
+#[repr(transparent)]
+pub struct Base<T, const M: usize, const N: usize, const MS: usize, const NS: usize> {
+    data: [[T; M]; N],
+}
+
 /// Represents a matrix with constant `M` rows and constant `N` columns.
 ///
 /// The underlying data is represented as an array and is always stored in
 /// column-major order.
 ///
 /// See the [crate root][crate] for usage examples.
-#[derive(Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
-#[repr(transparent)]
-pub struct Matrix<T, const M: usize, const N: usize> {
-    data: [[T; M]; N],
-}
+pub type Matrix<T, const M: usize, const N: usize> = Base<T, M, N, 1, 1>;
 
 /// A matrix with one row and `N` columns.
 pub type RowVector<T, const N: usize> = Matrix<T, 1, N>;

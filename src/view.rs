@@ -5,7 +5,17 @@ use core::ops::{Deref, DerefMut, Mul};
 
 use stride::Stride;
 
+use crate::Base;
+
+// [
+//  [0, 0, 0],
+//  [1, 1, 1],
+//  [2, 2, 2]
+// ]
+
+
 /// A row in a [`Matrix`][crate::Matrix].
+pub type Row<T, const M: usize, const N: usize> = Base<T, M, N, 1, 1>
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Row<T, const M: usize, const N: usize> {
