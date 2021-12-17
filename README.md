@@ -45,7 +45,7 @@ macros will also work in `const` contexts.
   size.
   
   ```rust
-  let matrix = matrix![
+  let m = matrix![
       1, 3, 5;
       2, 4, 6;
   ];
@@ -58,13 +58,13 @@ macros will also work in `const` contexts.
   column and row vectors respectively.
   
   ```rust
-  let vector = vector![1, 3, 3, 7];
-  //  ^^^^^^ type `Vector<_, 4>`
-  assert_eq!(vector, matrix![1; 3; 3; 7]);
+  let v = vector![1, 3, 3, 7];
+  //  ^ type `Vector<_, 4>`
+  assert_eq!(v, matrix![1; 3; 3; 7]);
   
-  let vector = row_vector![1, 3, 3, 7];
+  let v = row_vector![1, 3, 3, 7];
   //  ^^^^^^ type `RowVector<_, 4>`
-  assert_eq!(vector, matrix![1, 3, 3, 7]);
+  assert_eq!(v, matrix![1, 3, 3, 7]);
   ```
 
 ### Constructors
@@ -91,37 +91,37 @@ Three types of element access are available.
   column-major order.
   
   ```rust
-  let matrix = matrix![
+  let m = matrix![
       1, 2, 3;
       4, 5, 6;
   ];
-  assert_eq!(matrix[1], 4);
+  assert_eq!(m[1], 4);
   ```
 
 * `(usize, usize)` indexing selects the element at a particular row and
   column position.
   
   ```rust
-  let matrix = matrix![
+  let m = matrix![
       1, 2, 3;
       4, 5, 6;
   ];
-  assert_eq!(matrix[(1, 0)], 4);
+  assert_eq!(m[(1, 0)], 4);
   ```
 
 * Component accessors are available for small vectors using traditional
   names.
   
   ```rust
-  let mut vector = vector![1, 2, 3, 4, 0, 0];
-  vector.y = 3;
-  vector.w = 7;
-  assert_eq!(vector.x, 1);
-  assert_eq!(vector.y, 3);
-  assert_eq!(vector.z, 3);
-  assert_eq!(vector.w, 7);
-  assert_eq!(vector.a, 0);
-  assert_eq!(vector.b, 0);
+  let mut v = vector![1, 2, 3, 4, 0, 0];
+  v.y = 3;
+  v.w = 7;
+  assert_eq!(v.x, 1);
+  assert_eq!(v.y, 3);
+  assert_eq!(v.z, 3);
+  assert_eq!(v.w, 7);
+  assert_eq!(v.a, 0);
+  assert_eq!(v.b, 0);
   ```
 
 ### Accessing a row or column
@@ -131,13 +131,13 @@ You can get a reference to particular row or column using the
 can get a mutable reference using the `_mut` variants.
 
 ```rust
-let mut matrix = matrix![
+let mut m = matrix![
     1, 2, 3;
     4, 7, 6;
 ];
-let row = matrix.row_mut(1);
+let row = m.row_mut(1);
 row[1] = 5;
-assert_eq!(matrix.column(1), &[2, 5]);
+assert_eq!(m.column(1), &[2, 5]);
 ```
 
 ### Iteration
@@ -170,12 +170,12 @@ A slice view of the underlying data is provided using
 [`.as_mut_slice()`][struct.Matrix::as_mut_slice].
 
 ```rust
-let mut matrix = matrix![
+let mut m = matrix![
     1, 3, 5;
     2, 3, 6;
 ];
-matrix.as_mut_slice()[3] = 4;
-assert_eq!(matrix.as_slice(), &[1, 2, 3, 4, 5, 6]);
+m.as_mut_slice()[3] = 4;
+assert_eq!(m.as_slice(), &[1, 2, 3, 4, 5, 6]);
 ```
 
 ### Debug
@@ -242,15 +242,15 @@ element in the matrix. Unary operators will do the equivalent. In the
 following example each element in the matrix is multiplied by 2.
 
 ```rust
-let matrix = matrix![
+let m = matrix![
     1, -3;
     3, -7;
 ];
-let expected = matrix![
+let exp = matrix![
     2, -6;
     6, -14;
 ];
-assert_eq!(matrix * 2, expected);
+assert_eq!(m * 2, exp);
 ```
 
 [`Matrix`][struct.Matrix] supports addition and subtraction with same size matrices for
@@ -258,15 +258,15 @@ element-wise addition and subtraction. In the following example a matrix
 is added to itself.
 
 ```rust
-let matrix = matrix![
+let m = matrix![
     1, -3;
     3, -7;
 ];
-let expected = matrix![
+let exp = matrix![
     2, -6;
     6, -14;
 ];
-assert_eq!(matrix + matrix, expected);
+assert_eq!(m + m, exp);
 ```
 
 [core::fmt::Debug]: https://doc.rust-lang.org/std/fmt/trait.Debug.html

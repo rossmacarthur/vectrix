@@ -6,58 +6,58 @@ use vectrix::{matrix, row_vector, vector, RowVector, Vector};
 
 #[test]
 fn row_vector_components() {
-    let vector = matrix![1, 3, 3, 7, 0, 0];
-    assert_eq!(vector.x, 1);
-    assert_eq!(vector.y, 3);
-    assert_eq!(vector.z, 3);
-    assert_eq!(vector.w, 7);
-    assert_eq!(vector.a, 0);
-    assert_eq!(vector.b, 0);
+    let v = matrix![1, 3, 3, 7, 0, 0];
+    assert_eq!(v.x, 1);
+    assert_eq!(v.y, 3);
+    assert_eq!(v.z, 3);
+    assert_eq!(v.w, 7);
+    assert_eq!(v.a, 0);
+    assert_eq!(v.b, 0);
 }
 
 #[test]
 fn row_vector_components_mut() {
-    let mut vector = matrix![1, 2, 3, 4, 5, 6];
-    vector.x = 1;
-    vector.y = 3;
-    vector.z = 3;
-    vector.w = 7;
-    vector.a = 0;
-    vector.b = 0;
-    assert_eq!(vector[0], 1);
-    assert_eq!(vector[1], 3);
-    assert_eq!(vector[2], 3);
-    assert_eq!(vector[3], 7);
-    assert_eq!(vector[4], 0);
-    assert_eq!(vector[5], 0);
+    let mut v = matrix![1, 2, 3, 4, 5, 6];
+    v.x = 1;
+    v.y = 3;
+    v.z = 3;
+    v.w = 7;
+    v.a = 0;
+    v.b = 0;
+    assert_eq!(v[0], 1);
+    assert_eq!(v[1], 3);
+    assert_eq!(v[2], 3);
+    assert_eq!(v[3], 7);
+    assert_eq!(v[4], 0);
+    assert_eq!(v[5], 0);
 }
 
 #[test]
 fn vector_components() {
-    let vector = matrix![1; 3; 3; 7; 0; 0];
-    assert_eq!(vector.x, 1);
-    assert_eq!(vector.y, 3);
-    assert_eq!(vector.z, 3);
-    assert_eq!(vector.w, 7);
-    assert_eq!(vector.a, 0);
-    assert_eq!(vector.b, 0);
+    let v = matrix![1; 3; 3; 7; 0; 0];
+    assert_eq!(v.x, 1);
+    assert_eq!(v.y, 3);
+    assert_eq!(v.z, 3);
+    assert_eq!(v.w, 7);
+    assert_eq!(v.a, 0);
+    assert_eq!(v.b, 0);
 }
 
 #[test]
 fn vector_components_mut() {
-    let mut vector = matrix![1; 2; 3; 4; 5; 6];
-    vector.x = 1;
-    vector.y = 3;
-    vector.z = 3;
-    vector.w = 7;
-    vector.a = 0;
-    vector.b = 0;
-    assert_eq!(vector[0], 1);
-    assert_eq!(vector[1], 3);
-    assert_eq!(vector[2], 3);
-    assert_eq!(vector[3], 7);
-    assert_eq!(vector[4], 0);
-    assert_eq!(vector[5], 0);
+    let mut v = matrix![1; 2; 3; 4; 5; 6];
+    v.x = 1;
+    v.y = 3;
+    v.z = 3;
+    v.w = 7;
+    v.a = 0;
+    v.b = 0;
+    assert_eq!(v[0], 1);
+    assert_eq!(v[1], 3);
+    assert_eq!(v[2], 3);
+    assert_eq!(v[3], 7);
+    assert_eq!(v[4], 0);
+    assert_eq!(v[5], 0);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,14 +66,14 @@ fn vector_components_mut() {
 
 #[test]
 fn row_vector_macro() {
-    let vector = row_vector![1, 3, 3, 7];
-    assert_eq!(vector, matrix![1, 3, 3, 7]);
+    let v = row_vector![1, 3, 3, 7];
+    assert_eq!(v, matrix![1, 3, 3, 7]);
 }
 
 #[test]
 fn row_vector_macro_repeat() {
-    let vector = row_vector![7; 4];
-    assert_eq!(vector, matrix![7, 7, 7, 7]);
+    let v = row_vector![7; 4];
+    assert_eq!(v, matrix![7, 7, 7, 7]);
 }
 
 #[test]
@@ -100,14 +100,14 @@ fn row_vector_from_array() {
 
 #[test]
 fn vector_macro() {
-    let vector = vector![1, 3, 3, 7];
-    assert_eq!(vector, matrix![1; 3; 3; 7]);
+    let v = vector![1, 3, 3, 7];
+    assert_eq!(v, matrix![1; 3; 3; 7]);
 }
 
 #[test]
 fn vector_macro_repeat() {
-    let vector = vector![7; 4];
-    assert_eq!(vector, matrix![7; 7; 7; 7]);
+    let v = vector![7; 4];
+    assert_eq!(v, matrix![7; 7; 7; 7]);
 }
 
 #[test]

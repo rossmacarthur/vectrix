@@ -2,29 +2,29 @@ use vectrix::{matrix, Matrix};
 
 macro_rules! for_each_op_assert_eq {
     ($a:expr, $op:tt, $b:expr, $expected:expr) => {
-        let matrix = $a $op $b;
-        assert_eq!(matrix, $expected);
+        let m = $a $op $b;
+        assert_eq!(m, $expected);
 
-        let matrix = $a $op &$b;
-        assert_eq!(matrix, $expected);
+        let m = $a $op &$b;
+        assert_eq!(m, $expected);
 
-        let matrix = &$a $op $b;
-        assert_eq!(matrix, $expected);
+        let m = &$a $op $b;
+        assert_eq!(m, $expected);
 
-        let matrix = &$a $op &$b;
-        assert_eq!(matrix, $expected);
+        let m = &$a $op &$b;
+        assert_eq!(m, $expected);
     };
 }
 
 macro_rules! for_each_op_assign_assert_eq {
     ($a:expr, $op:tt, $b:expr, $expected:expr) => {
-        let mut matrix = $a.clone();
-        matrix $op $b;
-        assert_eq!(matrix, $expected);
+        let mut m = $a.clone();
+        m $op $b;
+        assert_eq!(m, $expected);
 
-        let mut matrix = $a.clone();
-        matrix $op &$b;
-        assert_eq!(matrix, $expected);
+        let mut m = $a.clone();
+        m $op &$b;
+        assert_eq!(m, $expected);
     };
 }
 
@@ -34,30 +34,30 @@ macro_rules! for_each_op_assign_assert_eq {
 
 #[test]
 fn matrix_index_usize() {
-    let matrix: Matrix<_, 2, 3> = matrix![
+    let m: Matrix<_, 2, 3> = matrix![
         1, 3, 5;
         2, 4, 6;
     ];
-    assert_eq!(matrix[0], 1);
-    assert_eq!(matrix[1], 2);
-    assert_eq!(matrix[2], 3);
-    assert_eq!(matrix[3], 4);
-    assert_eq!(matrix[4], 5);
-    assert_eq!(matrix[5], 6);
+    assert_eq!(m[0], 1);
+    assert_eq!(m[1], 2);
+    assert_eq!(m[2], 3);
+    assert_eq!(m[3], 4);
+    assert_eq!(m[4], 5);
+    assert_eq!(m[5], 6);
 }
 
 #[test]
 fn matrix_index_tuple() {
-    let matrix: Matrix<_, 2, 3> = matrix![
+    let m: Matrix<_, 2, 3> = matrix![
         1, 3, 5;
         2, 4, 6;
     ];
-    assert_eq!(matrix[(0, 0)], 1);
-    assert_eq!(matrix[(0, 1)], 3);
-    assert_eq!(matrix[(0, 2)], 5);
-    assert_eq!(matrix[(1, 0)], 2);
-    assert_eq!(matrix[(1, 1)], 4);
-    assert_eq!(matrix[(1, 2)], 6);
+    assert_eq!(m[(0, 0)], 1);
+    assert_eq!(m[(0, 1)], 3);
+    assert_eq!(m[(0, 2)], 5);
+    assert_eq!(m[(1, 0)], 2);
+    assert_eq!(m[(1, 1)], 4);
+    assert_eq!(m[(1, 2)], 6);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
