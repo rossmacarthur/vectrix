@@ -23,19 +23,19 @@ pub struct IterMut<'a, T, const S: usize> {
 
 macro_rules! impl_iterator {
     (
-        with $stride:ty, $meth:ident
-        impl Iterator<Item = $item:ty> for $iter:ty
+        with $Stride:ty, $meth:ident
+        impl Iterator<Item = $Item:ty> for $Iter:ty
     ) => {
-        impl<'a, T, const S: usize> $iter {
-            pub(crate) fn new(stride: $stride) -> Self {
+        impl<'a, T, const S: usize> $Iter {
+            pub(crate) fn new(stride: $Stride) -> Self {
                 Self {
                     iter: stride.data.$meth().step_by(S),
                 }
             }
         }
 
-        impl<'a, T, const S: usize> Iterator for $iter {
-            type Item = $item;
+        impl<'a, T, const S: usize> Iterator for $Iter {
+            type Item = $Item;
 
             fn next(&mut self) -> Option<Self::Item> {
                 self.iter.next()
@@ -55,25 +55,25 @@ macro_rules! impl_iterator {
             }
         }
 
-        impl<'a, T, const S: usize> DoubleEndedIterator for $iter {
+        impl<'a, T, const S: usize> DoubleEndedIterator for $Iter {
             fn next_back(&mut self) -> Option<Self::Item> {
                 self.iter.next_back()
             }
         }
 
-        impl<'a, T, const S: usize> ExactSizeIterator for $iter {
+        impl<'a, T, const S: usize> ExactSizeIterator for $Iter {
             fn len(&self) -> usize {
                 self.iter.len()
             }
         }
 
-        impl<'a, T, const S: usize> FusedIterator for $iter {}
+        impl<'a, T, const S: usize> FusedIterator for $Iter {}
 
-        impl<'a, T, const S: usize> IntoIterator for $stride {
-            type Item = $item;
-            type IntoIter = $iter;
+        impl<'a, T, const S: usize> IntoIterator for $Stride {
+            type Item = $Item;
+            type IntoIter = $Iter;
 
-            fn into_iter(self) -> $iter {
+            fn into_iter(self) -> $Iter {
                 self.$meth()
             }
         }

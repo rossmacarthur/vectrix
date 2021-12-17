@@ -46,8 +46,9 @@ pub unsafe trait StrideIndex<T: ?Sized>: private::Sealed {
     ///
     /// # Safety
     ///
-    /// Calling this method with an out-of-bounds index or a dangling `stride` pointer
-    /// is *[undefined behavior]* even if the resulting reference is not used.
+    /// Calling this method with an out-of-bounds index or a dangling `stride`
+    /// pointer is *[undefined behavior]* even if the resulting reference is not
+    /// used.
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     unsafe fn get_unchecked(self, stride: *const T) -> *const Self::Output;
@@ -57,8 +58,9 @@ pub unsafe trait StrideIndex<T: ?Sized>: private::Sealed {
     ///
     /// # Safety
     ///
-    /// Calling this method with an out-of-bounds index or a dangling `stride` pointer
-    /// is *[undefined behavior]* even if the resulting reference is not used.
+    /// Calling this method with an out-of-bounds index or a dangling `stride`
+    /// pointer is *[undefined behavior]* even if the resulting reference is not
+    /// used.
     ///
     /// [undefined behavior]: https://doc.rust-lang.org/reference/behavior-considered-undefined.html
     unsafe fn get_unchecked_mut(self, stride: *mut T) -> *mut Self::Output;
@@ -125,29 +127,35 @@ unsafe impl<T, const S: usize> StrideIndex<Stride<T, S>> for usize {
     type Output = T;
 
     fn get(self, stride: &Stride<T, S>) -> Option<&Self::Output> {
-        stride.data.get(self.unstride::<S>())
+        let i = self.unstride::<S>();
+        stride.data.get(i)
     }
 
     fn get_mut(self, stride: &mut Stride<T, S>) -> Option<&mut Self::Output> {
-        stride.data.get_mut(self.unstride::<S>())
+        let i = self.unstride::<S>();
+        stride.data.get_mut(i)
     }
 
     unsafe fn get_unchecked(self, stride: *const Stride<T, S>) -> *const Self::Output {
-        (*stride).data.get_unchecked(self.unstride::<S>())
+        let i = self.unstride::<S>();
+        unsafe { (*stride).data.get_unchecked(i) }
     }
 
     unsafe fn get_unchecked_mut(self, stride: *mut Stride<T, S>) -> *mut Self::Output {
-        (*stride).data.get_unchecked_mut(self.unstride::<S>())
+        let i = self.unstride::<S>();
+        unsafe { (*stride).data.get_unchecked_mut(i) }
     }
 
     #[track_caller]
     fn index(self, stride: &Stride<T, S>) -> &Self::Output {
-        &stride.data[self.unstride::<S>()]
+        let i = self.unstride::<S>();
+        &stride.data[i]
     }
 
     #[track_caller]
     fn index_mut(self, stride: &mut Stride<T, S>) -> &mut Self::Output {
-        &mut stride.data[self.unstride::<S>()]
+        let i = self.unstride::<S>();
+        &mut stride.data[i]
     }
 }
 
@@ -157,32 +165,37 @@ macro_rules! impl_stride_index {
             type Output = Stride<T, S>;
 
             fn get(self, stride: &Stride<T, S>) -> Option<&Self::Output> {
-                stride.data.get(self.unstride::<S>()).map(Stride::new)
+                let i = self.unstride::<S>();
+                stride.data.get(i).map(Stride::new)
             }
 
             fn get_mut(self, stride: &mut Stride<T, S>) -> Option<&mut Self::Output> {
-                stride
-                    .data
-                    .get_mut(self.unstride::<S>())
-                    .map(Stride::new_mut)
+                let i = self.unstride::<S>();
+                stride.data.get_mut(i).map(Stride::new_mut)
             }
 
             unsafe fn get_unchecked(self, stride: *const Stride<T, S>) -> *const Self::Output {
-                Stride::new((*stride).data.get_unchecked(self.unstride::<S>()))
+                let i = self.unstride::<S>();
+                let slice = unsafe { (*stride).data.get_unchecked(i) };
+                Stride::new(slice)
             }
 
             unsafe fn get_unchecked_mut(self, stride: *mut Stride<T, S>) -> *mut Self::Output {
-                Stride::new_mut((*stride).data.get_unchecked_mut(self.unstride::<S>()))
+                let i = self.unstride::<S>();
+                let slice = unsafe { (*stride).data.get_unchecked_mut(i) };
+                Stride::new_mut(slice)
             }
 
             #[track_caller]
             fn index(self, stride: &Stride<T, S>) -> &Self::Output {
-                Stride::new(&stride.data[self.unstride::<S>()])
+                let i = self.unstride::<S>();
+                Stride::new(&stride.data[i])
             }
 
             #[track_caller]
             fn index_mut(self, stride: &mut Stride<T, S>) -> &mut Self::Output {
-                Stride::new_mut(&mut stride.data[self.unstride::<S>()])
+                let i = self.unstride::<S>();
+                Stride::new_mut(&mut stride.data[i])
             }
         }
     };
