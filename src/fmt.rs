@@ -3,6 +3,24 @@ use core::fmt::Write;
 
 use crate::{new, Matrix, Vector};
 
+////////////////////////////////////////////////////////////////////////////////
+// Debug
+////////////////////////////////////////////////////////////////////////////////
+
+impl<T: fmt::Debug, const M: usize, const N: usize> fmt::Debug for Matrix<T, M, N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        if M == 1 || N == 1 {
+            f.debug_list().entries(self.iter()).finish()
+        } else {
+            fmt::Debug::fmt(&self.data, f)
+        }
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Display
+////////////////////////////////////////////////////////////////////////////////
+
 #[derive(Debug, Default)]
 struct CharCounter(usize);
 
@@ -31,73 +49,62 @@ where
     F1: FnMut(&T) -> usize + Copy,
     F2: FnMut(&mut fmt::Formatter<'_>, &T, usize) -> fmt::Result + Copy,
 {
-    if M == 1 || N == 1 {
-        f.write_str("(")?;
-        for (i, d) in matrix.iter().enumerate() {
-            if i != 0 {
-                f.write_str(", ")?;
-            }
-            fmt_fn(f, d, 0)?
-        }
-        f.write_str(")")?;
-    } else {
-        let widths = matrix
-            .iter_columns()
-            .map(|col| col.iter().map(width_fn).max().unwrap_or(0));
-        let widths: Vector<usize, N> = unsafe { new::collect_unchecked(widths) };
+    let widths = matrix
+        .iter_columns()
+        .map(|col| col.iter().map(width_fn).max().unwrap_or(0));
+    let widths: Vector<usize, N> = unsafe { new::collect_unchecked(widths) };
 
-        for (i, row) in matrix.iter_rows().enumerate() {
-            let (left, right) = match i {
-                0 => ("⎛ ", " ⎞\n"),
-                i if i != M - 1 => ("⎜ ", " ⎟\n"),
-                _ => ("⎝ ", " ⎠"),
-            };
-
-            f.write_str(left)?;
-            for (i, (d, width)) in row.iter().zip(widths).enumerate() {
-                if i != 0 {
-                    f.write_str(", ")?;
-                }
-                fmt_fn(f, d, width)?;
-            }
-            f.write_str(right)?;
-        }
+    f.write_str("\n ┌")?;
+    for w in widths.iter() {
+        write!(f, " {:1$} ", "", w)?;
     }
+    f.write_str("┐\n")?;
+
+    for row in matrix.iter_rows() {
+        f.write_str(" │")?;
+        for (d, &width) in row.iter().zip(widths.iter()) {
+            f.write_str(" ")?;
+            fmt_fn(f, d, width)?;
+            f.write_str(" ")?;
+        }
+        f.write_str("│\n")?;
+    }
+
+    f.write_str(" └")?;
+    for w in widths.iter() {
+        write!(f, " {:1$} ", "", w)?;
+    }
+    f.write_str("┘\n")?;
+
     Ok(())
 }
 
-impl<T: fmt::Debug, const M: usize, const N: usize> fmt::Debug for Matrix<T, M, N> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let precision = f.precision();
-        fmt_matrix(
-            self,
-            f,
-            |d| match precision {
-                Some(places) => count_chars!("{:.1$?}", d, places),
-                None => count_chars!("{:?}", d),
-            },
-            |f, d, width| match precision {
-                Some(places) => write!(f, "{:1$.2$?}", d, width, places),
-                None => write!(f, "{:1$?}", d, width),
-            },
-        )
-    }
+macro_rules! impl_fmt {
+    ($Trait:path, $count_precision:expr, $count:expr, $fmt_precision:expr, $fmt:expr) => {
+        impl<T: $Trait, const M: usize, const N: usize> $Trait for Matrix<T, M, N> {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                let precision = f.precision();
+                fmt_matrix(
+                    self,
+                    f,
+                    |d| match precision {
+                        Some(p) => count_chars!($count_precision, d, p),
+                        None => count_chars!($count, d),
+                    },
+                    |f, d, width| match precision {
+                        Some(p) => write!(f, $fmt_precision, d, width, p),
+                        None => write!(f, $fmt, d, width),
+                    },
+                )
+            }
+        }
+    };
 }
 
-impl<T: fmt::Display, const M: usize, const N: usize> fmt::Display for Matrix<T, M, N> {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let precision = f.precision();
-        fmt_matrix(
-            self,
-            f,
-            |d| match precision {
-                Some(places) => count_chars!("{:.1$}", d, places),
-                None => count_chars!("{}", d),
-            },
-            |f, d, width| match precision {
-                Some(places) => write!(f, "{:1$.2$}", d, width, places),
-                None => write!(f, "{:1$}", d, width),
-            },
-        )
-    }
-}
+impl_fmt! { fmt::Display, "{:.1$}", "{}", "{:1$.2$}", "{:1$}" }
+impl_fmt! { fmt::LowerExp, "{:.1$e}", "{:e}", "{:1$.2$e}", "{:1$e}" }
+impl_fmt! { fmt::UpperExp, "{:.1$E}", "{:E}", "{:1$.2$E}", "{:1$E}" }
+impl_fmt! { fmt::Octal, "{:.1$o}", "{:o}", "{:1$.2$o}", "{:1$o}" }
+impl_fmt! { fmt::LowerHex, "{:.1$x}", "{:x}", "{:1$.2$x}", "{:1$x}" }
+impl_fmt! { fmt::UpperHex, "{:.1$X}", "{:X}", "{:1$.2$X}", "{:1$X}" }
+impl_fmt! { fmt::Binary, "{:.1$b}", "{:b}", "{:1$.2$b}", "{:1$b}" }

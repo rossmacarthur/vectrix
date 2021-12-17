@@ -34,33 +34,33 @@
 //! Macros are provided for easy construction of the provided types. These
 //! macros will also work in `const` contexts.
 //!
-//! The [`matrix!`] macro can be used to construct a new [`Matrix`] of any size.
-//! ```
-//! # use vectrix::*;
-//! #
-//! let matrix = matrix![
-//!     1, 3, 5;
-//!     2, 4, 6;
-//! ];
-//! ```
+//! - The [`matrix!`] macro can be used to construct a new [`Matrix`] of any
+//!   size.
+//!   ```
+//!   # use vectrix::*;
+//!   #
+//!   let matrix = matrix![
+//!       1, 3, 5;
+//!       2, 4, 6;
+//!   ];
+//!   ```
 //!
-//! In the above example `matrix` is a `Matrix<_, 2, 3>` type, having 2 rows and
-//! 3 columns.
+//!   In the above example `matrix` is a `Matrix<_, 2, 3>` type, having 2 rows and
+//!   3 columns.
 //!
-//! The [`vector!`] and [`row_vector!`] macros can be used to to construct
-//! vectors.
+//! - The [`vector!`] and [`row_vector!`] macros can be used to to construct
+//!   column and row vectors respectively.
+//!   ```
+//!   # use vectrix::*;
+//!   #
+//!   let vector = vector![1, 3, 3, 7];
+//!   //  ^^^^^^ type `Vector<_, 4>`
+//!   assert_eq!(vector, matrix![1; 3; 3; 7]);
 //!
-//! ```
-//! # use vectrix::*;
-//! #
-//! let vector = vector![1, 3, 3, 7];
-//! //  ^^^^^^ type `Vector<_, 4>`
-//! assert_eq!(vector, matrix![1; 3; 3; 7]);
-//!
-//! let vector = row_vector![1, 3, 3, 7];
-//! //  ^^^^^^ type `RowVector<_, 4>`
-//! assert_eq!(vector, matrix![1, 3, 3, 7]);
-//! ```
+//!   let vector = row_vector![1, 3, 3, 7];
+//!   //  ^^^^^^ type `RowVector<_, 4>`
+//!   assert_eq!(vector, matrix![1, 3, 3, 7]);
+//!   ```
 //!
 //! ### Constructors
 //!
@@ -80,52 +80,53 @@
 //!
 //! ### Accessing elements
 //!
-//! Two types of indexing is available:
+//! Three types of element access are available.
 //!
-//! Firstly, `usize` indexing which selects the nth element in the matrix as
-//! viewed in column-major order.
-//! ```
-//! # use vectrix::*;
-//! #
-//! let matrix = matrix![
-//!     1, 2, 3;
-//!     4, 5, 6;
-//! ];
-//! assert_eq!(matrix[1], 4);
-//! ```
+//! - `usize` indexing selects the nth element in the matrix as viewed in
+//!    column-major order.
+//!    ```
+//!    # use vectrix::*;
+//!    #
+//!    let matrix = matrix![
+//!        1, 2, 3;
+//!        4, 5, 6;
+//!    ];
+//!    assert_eq!(matrix[1], 4);
+//!    ```
 //!
-//! Secondly, `(usize, usize)` indexing which selects the element at a
-//! particular row and column position.
-//! ```
-//! # use vectrix::*;
-//! #
-//! let matrix = matrix![
-//!     1, 2, 3;
-//!     4, 5, 6;
-//! ];
-//! assert_eq!(matrix[(1, 0)], 4);
-//! ```
+//! - `(usize, usize)` indexing selects the element at a particular row and
+//!   column position.
+//!   ```
+//!   # use vectrix::*;
+//!   #
+//!   let matrix = matrix![
+//!       1, 2, 3;
+//!       4, 5, 6;
+//!   ];
+//!   assert_eq!(matrix[(1, 0)], 4);
+//!   ```
 //!
-//! Additionally, component accessors are available for small vectors using
-//! commonly recognized names.
-//! ```
-//! # use vectrix::*;
-//! #
-//! let mut vector = vector![1, 2, 3, 4, 0, 0];
-//! vector.y = 3;
-//! vector.w = 7;
-//! assert_eq!(vector.x, 1);
-//! assert_eq!(vector.y, 3);
-//! assert_eq!(vector.z, 3);
-//! assert_eq!(vector.w, 7);
-//! assert_eq!(vector.a, 0);
-//! assert_eq!(vector.b, 0);
-//! ```
+//! - Component accessors are available for small vectors using traditional
+//!   names.
+//!   ```
+//!   # use vectrix::*;
+//!   #
+//!   let mut vector = vector![1, 2, 3, 4, 0, 0];
+//!   vector.y = 3;
+//!   vector.w = 7;
+//!   assert_eq!(vector.x, 1);
+//!   assert_eq!(vector.y, 3);
+//!   assert_eq!(vector.z, 3);
+//!   assert_eq!(vector.w, 7);
+//!   assert_eq!(vector.a, 0);
+//!   assert_eq!(vector.b, 0);
+//!   ```
 //!
 //! ### Accessing a row or column
 //!
 //! You can get a reference to particular row or column using the
-//! [`.row()`][`Matrix::row`] or [`.column()`][`Matrix::column`] methods.
+//! [`.row()`][`Matrix::row`] or [`.column()`][`Matrix::column`] methods. You
+//! can get a mutable reference using the `_mut` variants.
 //!
 //! ```
 //! # use vectrix::*;
@@ -176,6 +177,66 @@
 //! ];
 //! matrix.as_mut_slice()[3] = 4;
 //! assert_eq!(matrix.as_slice(), &[1, 2, 3, 4, 5, 6]);
+//! ```
+//!
+//! ### Debug
+//!
+//! The [`Debug`][`core::fmt::Debug`] implementation will print out vectors as
+//! lists and matrices as a list of lists in column-major order.
+//!
+//! ```
+//! # use vectrix::*;
+//! #
+//! let v = vector![1.1, 2.0];
+//! let m = matrix![1, 2; 3, 4];
+//! println!("vector: {:.2?}", v);
+//! println!("matrix: {:?}", m);
+//! ```
+//!
+//! This will output:
+//!
+//! ```text
+//! vector: [1.10, 2.00]
+//! matrix: [[1, 3], [2, 4]]
+//! ```
+//!
+//! ### Display
+//!
+//! The [`Display`][`core::fmt::Display`] implementation will print out the
+//! matrix in the traditional box bracket format. Precision is supported as well
+//! as most of the other formatting traits like
+//! [`LowerHex`][`core::fmt::LowerHex`].
+//!
+//! ```
+//! # use vectrix::*;
+//! #
+//! let cv = vector![1.1, 2.0];
+//! let rv = row_vector![1.1, 2.0];
+//! let m = matrix![1, 2; 3, 4];
+//! println!("column vector: {:.2}", cv);
+//! println!("row vector: {:.1}", rv);
+//! println!("matrix: {:b}", m);
+//! ```
+//!
+//! This will output:
+//!
+//! ```text
+//! column vector:
+//!  ┌      ┐
+//!  │ 1.10 │
+//!  │ 2.00 │
+//!  └      ┘
+//!
+//! row vector:
+//!  ┌          ┐
+//!  │ 1.1  2.0 │
+//!  └          ┘
+//!
+//! matrix:
+//!  ┌         ┐
+//!  │  1   10 │
+//!  │ 11  100 │
+//!  └         ┘
 //! ```
 //!
 //! ### Operations

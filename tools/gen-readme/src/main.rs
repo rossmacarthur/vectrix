@@ -48,6 +48,10 @@ fn type_from_path(path: &[&str]) -> Option<&'static str> {
 
 fn url_from_path(path: &[&str]) -> Option<String> {
     match *path {
+        ["core", "fmt", trt] => Some(format!(
+            "https://doc.rust-lang.org/std/fmt/trait.{}.html",
+            trt,
+        )),
         ["core", "iter", "FromIterator", "from_iter"] => Some(String::from(
             "https://doc.rust-lang.org/std/iter/trait.FromIterator.html#tymethod.from_iter",
         )),
@@ -86,16 +90,18 @@ fn gen_contents() -> Result<String> {
     while let Some(event) = parser.next() {
         match event {
             Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(CowStr::Borrowed("")))) => {
-                let start = Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced("rust".into())));
+                let new_tag = Tag::CodeBlock(CodeBlockKind::Fenced("rust".into()));
+                let start = Event::Start(new_tag.clone());
                 events.push(start);
-                if let Event::Text(text) = parser.next().unwrap() {
-                    let text: String = text
-                        .lines()
-                        .filter(|line| !line.starts_with('#'))
-                        .flat_map(|line| [line, "\n"])
-                        .collect();
-                    events.push(Event::Text(text.into()));
+                let mut new_text = String::new();
+                while let Event::Text(text) = parser.next().unwrap() {
+                    for line in text.lines().filter(|line| !line.starts_with('#')) {
+                        new_text.push_str(line);
+                        new_text.push('\n');
+                    }
                 }
+                events.push(Event::Text(new_text.into()));
+                events.push(Event::End(new_tag));
             }
             Event::Text(CowStr::Borrowed("[")) => {
                 let code = match parser.next().unwrap() {
