@@ -41,9 +41,10 @@ const TYPES: &[(&str, &str)] = &[
 ];
 
 fn type_from_path(path: &[&str]) -> Option<&'static str> {
-    TYPES
-        .iter()
-        .find_map(|(n, ty)| (*n == path[0]).then(|| *ty))
+    TYPES.iter().find_map(|(n, ty)| match *n == path[0] {
+        true => Some(*ty),
+        false => None,
+    })
 }
 
 fn url_from_path(path: &[&str]) -> Option<String> {

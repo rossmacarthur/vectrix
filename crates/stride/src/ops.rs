@@ -25,7 +25,7 @@ where
     T: PartialEq<U>,
 {
     fn eq(&self, other: &[U; N]) -> bool {
-        partial_eq_slice(self, &*other)
+        partial_eq_slice(self, other)
     }
 }
 

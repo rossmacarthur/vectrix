@@ -160,7 +160,7 @@ where
     mem::forget(guard);
     // SAFETY: the loop above loops exactly M * N times which is the size of the
     // matrix, so all elements in the matrix are initialized.
-    return Ok(unsafe { matrix.assume_init() });
+    Ok(unsafe { matrix.assume_init() })
 }
 
 /// Like [`collect()`] except the caller must guarantee that the iterator will
