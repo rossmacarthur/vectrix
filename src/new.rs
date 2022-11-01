@@ -116,42 +116,51 @@ impl<T, const M: usize, const N: usize> Matrix<MaybeUninit<T>, M, N> {
 ///
 /// If `iter.next()` panics, all items already yielded by the iterator are
 /// dropped.
-pub fn collect<I, T, const M: usize, const N: usize>(iter: I) -> Result<Matrix<T, M, N>, usize>
+pub fn collect<I, T, const M: usize, const N: usize>(mut iter: I) -> Result<Matrix<T, M, N>, usize>
 where
-    I: IntoIterator<Item = T>,
+    I: Iterator<Item = T>,
 {
-    struct Guard<U> {
-        ptr: *mut U,
-        len: usize,
+    struct Guard<'a, T, const M: usize, const N: usize> {
+        matrix: &'a mut Matrix<MaybeUninit<T>, M, N>,
+        init: usize,
     }
 
-    impl<U> Drop for Guard<U> {
+    impl<T, const M: usize, const N: usize> Drop for Guard<'_, T, M, N> {
         fn drop(&mut self) {
-            let partial = ptr::slice_from_raw_parts_mut(self.ptr, self.len);
-            // SAFETY: this raw slice will contain only the initialized objects.
-            unsafe {
-                ptr::drop_in_place(partial);
+            for elem in &mut self.matrix.as_mut_slice()[..self.init] {
+                // SAFETY: this raw slice up to `self.len` will only contain
+                // the initialized objects.
+                unsafe { ptr::drop_in_place(elem.as_mut_ptr()) };
             }
         }
     }
 
     let mut matrix: Matrix<MaybeUninit<T>, M, N> = Matrix::uninit();
     let mut guard = Guard {
-        ptr: matrix.as_mut_ptr() as *mut T,
-        len: 0,
+        matrix: &mut matrix,
+        init: 0,
     };
-    for item in iter {
-        let dst = unsafe { matrix.get_unchecked_mut(guard.len) };
-        *dst = MaybeUninit::new(item);
-        guard.len += 1;
-        if guard.len == M * N {
-            mem::forget(guard);
-            // SAFETY: the condition above asserts that all elements are
-            // initialized.
-            return Ok(unsafe { matrix.assume_init() });
+
+    for _ in 0..(M * N) {
+        match iter.next() {
+            Some(item) => {
+                // SAFETY: `guard.init` starts at zero, is increased by 1 each
+                // iteration of the loop, and the loop is aborted once M * N
+                // is reached, which is the length of the matrix.
+                unsafe { guard.matrix.get_unchecked_mut(guard.init).write(item) };
+                guard.init += 1;
+            }
+            None => {
+                return Err(guard.init);
+                // <-- guard is dropped here with already initialized elements
+            }
         }
     }
-    Err(guard.len)
+
+    mem::forget(guard);
+    // SAFETY: the loop above loops exactly M * N times which is the size of the
+    // matrix, so all elements in the matrix are initialized.
+    return Ok(unsafe { matrix.assume_init() });
 }
 
 /// Like [`collect()`] except the caller must guarantee that the iterator will
@@ -160,7 +169,7 @@ pub unsafe fn collect_unchecked<I, T, const M: usize, const N: usize>(iter: I) -
 where
     I: IntoIterator<Item = T>,
 {
-    match collect(iter) {
+    match collect(iter.into_iter()) {
         Ok(matrix) => matrix,
         Err(_) => {
             // SAFETY: the caller guarantees the iterator will yield enough
@@ -183,11 +192,23 @@ impl<T, const M: usize, const N: usize> FromIterator<T> for Matrix<T, M, N> {
     where
         I: IntoIterator<Item = T>,
     {
-        collect(iter).unwrap_or_else(|len| {
-            panic!(
-                "collect iterator of length {} into `Matrix<_, {}, {}>`",
-                len, M, N
-            );
-        })
+        collect(iter.into_iter()).unwrap_or_else(|len| collect_panic::<M, N>(len))
+    }
+}
+
+#[cold]
+fn collect_panic<const M: usize, const N: usize>(len: usize) -> ! {
+    if N == 1 {
+        panic!("collect iterator of length {} into `Vector<_, {}>`", len, M);
+    } else if M == 1 {
+        panic!(
+            "collect iterator of length {} into `RowVector<_, {}>`",
+            len, N
+        );
+    } else {
+        panic!(
+            "collect iterator of length {} into `Matrix<_, {}, {}>`",
+            len, M, N
+        );
     }
 }
