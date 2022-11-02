@@ -9,18 +9,16 @@ type implemented using const generics.
 
 ## 🚀 Getting started
 
-Add the following to your Cargo manifest.
+Add this crate to your Cargo manifest.
 
-```toml
-[dependencies]
-vectrix = "0.2"
+```sh
+cargo add vectrix
 ```
 
 `no_std` is also supported by disabling the default std feature.
 
-```toml
-[dependencies]
-vectrix = { version = "0.2", default-features = false, features = ["macro"] }
+```sh
+cargo add vectrix --no-default-features --features=macro
 ```
 
 ## 🤸 Usage
@@ -32,16 +30,16 @@ columns. This type is a backed by an array of arrays. The data is stored in
 column-major order. Some convenient aliases are provided for common
 matrices, like vectors.
 
-* [`Matrix<T, M, N>`][struct.Matrix] → a generic matrix type with `M` rows and `N` columns.
-* [`Vector<T, M>`][struct.Vector] → a column vector with `M` rows.
-* [`RowVector<T, N>`][struct.RowVector] → a row vector with `N` columns.
+- [`Matrix<T, M, N>`][struct.Matrix] → a generic matrix type with `M` rows and `N` columns.
+- [`Vector<T, M>`][struct.Vector] → a column vector with `M` rows.
+- [`RowVector<T, N>`][struct.RowVector] → a row vector with `N` columns.
 
 ### Macros
 
 Macros are provided for easy construction of the provided types. These
 macros will also work in `const` contexts.
 
-* The [`matrix!`][macro.matrix] macro can be used to construct a new [`Matrix`][struct.Matrix] of any
+- The [`matrix!`][macro.matrix] macro can be used to construct a new [`Matrix`][struct.Matrix] of any
   size.
   
   ```rust
@@ -54,7 +52,7 @@ macros will also work in `const` contexts.
   In the above example `matrix` is a `Matrix<_, 2, 3>` type, having 2 rows and
   3 columns.
 
-* The [`vector!`][macro.vector] and [`row_vector!`][macro.row_vector] macros can be used to to construct
+- The [`vector!`][macro.vector] and [`row_vector!`][macro.row_vector] macros can be used to to construct
   column and row vectors respectively.
   
   ```rust
@@ -71,23 +69,23 @@ macros will also work in `const` contexts.
 
 Commonly used constructors are listed below.
 
-* [`::zero()`][struct.Matrix::zero] → constructs a new matrix filled with
+- [`::zero()`][struct.Matrix::zero] → constructs a new matrix filled with
   [`T::zero()`][Zero::zero].
-* [`::identity()`][struct.Matrix::identity] → constructs a new identity matrix.
-* [`::repeat(..)`][struct.Matrix::repeat] → constructs a new matrix filled with
+- [`::identity()`][struct.Matrix::identity] → constructs a new identity matrix.
+- [`::repeat(..)`][struct.Matrix::repeat] → constructs a new matrix filled with
   the provided value.
-* [`::repeat_with(..)`][struct.Matrix::repeat_with] → constructs a new matrix
+- [`::repeat_with(..)`][struct.Matrix::repeat_with] → constructs a new matrix
   filled with values computed by the provided closure.
-* [`::from_iter(..)`][core::iter::FromIterator::from_iter] → constructs a
+- [`::from_iter(..)`][core::iter::FromIterator::from_iter] → constructs a
   new matrix from an iterator.
-* [`::new(..)`][struct.Matrix::new] → constructs a new vector using the
+- [`::new(..)`][struct.Matrix::new] → constructs a new vector using the
   provided components.
 
 ### Accessing elements
 
 Three types of element access are available.
 
-* `usize` indexing selects the nth element in the matrix as viewed in
+- `usize` indexing selects the nth element in the matrix as viewed in
   column-major order.
   
   ```rust
@@ -98,7 +96,7 @@ Three types of element access are available.
   assert_eq!(m[1], 4);
   ```
 
-* `(usize, usize)` indexing selects the element at a particular row and
+- `(usize, usize)` indexing selects the element at a particular row and
   column position.
   
   ```rust
@@ -109,7 +107,7 @@ Three types of element access are available.
   assert_eq!(m[(1, 0)], 4);
   ```
 
-* Component accessors are available for small vectors using traditional
+- Component accessors are available for small vectors using traditional
   names.
   
   ```rust
@@ -145,25 +143,25 @@ assert_eq!(m.column(1), &[2, 5]);
 Element-wise, column-major order iteration is provided using the following
 methods.
 
-* [`.into_iter()`][struct.Matrix::into_iter] → consumes the matrix and returns
+- [`.into_iter()`][struct.Matrix::into_iter] → consumes the matrix and returns
   an owned iterator over each element.
-* [`.iter()`][struct.Matrix::iter] → returns an iterator over a reference to
+- [`.iter()`][struct.Matrix::iter] → returns an iterator over a reference to
   each element.
-* [`.iter_mut()`][struct.Matrix::iter_mut] → returns an iterator over a mutable
+- [`.iter_mut()`][struct.Matrix::iter_mut] → returns an iterator over a mutable
   reference to each element.
 
 Iteration over rows and columns is provide using the following methods.
 
-* [`.iter_rows()`][struct.Matrix::iter_rows] → returns an iterator over a
+- [`.iter_rows()`][struct.Matrix::iter_rows] → returns an iterator over a
   reference to each row.
-* [`.iter_rows_mut()`][struct.Matrix::iter_rows_mut] → returns an iterator over
+- [`.iter_rows_mut()`][struct.Matrix::iter_rows_mut] → returns an iterator over
   mutable reference to each row.
-* [`.iter_columns()`][struct.Matrix::iter_columns] → returns an iterator over a
+- [`.iter_columns()`][struct.Matrix::iter_columns] → returns an iterator over a
   reference to each column.
-* [`.iter_columns_mut()`][struct.Matrix::iter_columns_mut] → returns an
+- [`.iter_columns_mut()`][struct.Matrix::iter_columns_mut] → returns an
   iterator over a mutable reference to each column.
 
-### Slice representation
+#### Slice representation
 
 A slice view of the underlying data is provided using
 [`.as_slice()`][struct.Matrix::as_slice] and

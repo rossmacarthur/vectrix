@@ -5,7 +5,7 @@ use std::{env, fs};
 
 use anyhow::{bail, Context, Result};
 use pulldown_cmark::{CodeBlockKind, CowStr, Event, LinkType, Options, Parser, Tag};
-use pulldown_cmark_to_cmark::cmark_with_options;
+use pulldown_cmark_to_cmark::{cmark_resume_with_options, Options as Options2};
 use serde::Serialize;
 use tinytemplate::TinyTemplate;
 
@@ -15,19 +15,16 @@ const VERSION: &str = "0.2";
 /// Render Markdown events as Markdown.
 fn to_cmark<'a, I, E>(events: I) -> Result<String>
 where
-    I: Iterator<Item = E>,
+    I: IntoIterator<Item = E>,
     E: Borrow<Event<'a>>,
 {
     let mut buf = String::new();
-    cmark_with_options(
-        events,
-        &mut buf,
-        None,
-        pulldown_cmark_to_cmark::Options {
-            code_block_token_count: 3,
-            ..Default::default()
-        },
-    )?;
+    let opts = Options2 {
+        code_block_token_count: 3,
+        list_token: '-',
+        ..Default::default()
+    };
+    cmark_resume_with_options(events.into_iter(), &mut buf, None, opts)?.finalize(&mut buf)?;
     Ok(buf)
 }
 
@@ -160,6 +157,8 @@ fn gen_contents() -> Result<String> {
         }
     }
 
+    events = fix_headings(events);
+
     let mut cmark = to_cmark(events.into_iter())?;
     cmark.push_str("\n\n");
     for (url, name) in urls {
@@ -167,6 +166,29 @@ fn gen_contents() -> Result<String> {
         cmark.push_str(&format!("[{}]: {}\n", name, url));
     }
     Ok(cmark)
+}
+
+/// Increases each heading level by one.
+fn fix_headings(events: Vec<Event>) -> Vec<Event> {
+    let mut iter = events.into_iter();
+    let mut events = Vec::new();
+    while let Some(event) = iter.next() {
+        match event {
+            Event::Start(Tag::Heading(level, frag, classes)) => {
+                let tag = Tag::Heading((level as usize + 1).try_into().unwrap(), frag, classes);
+                events.push(Event::Start(tag.clone()));
+                loop {
+                    match iter.next().unwrap() {
+                        Event::End(Tag::Heading(..)) => break,
+                        event => events.push(event),
+                    }
+                }
+                events.push(Event::End(tag));
+            }
+            event => events.push(event),
+        }
+    }
+    events
 }
 
 fn main() -> Result<()> {

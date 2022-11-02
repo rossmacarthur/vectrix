@@ -1,4 +1,5 @@
-use core::cmp::{self, Ordering};
+use core::cmp;
+use core::cmp::Ordering;
 use core::hash::{Hash, Hasher};
 use core::ops::*;
 
@@ -11,13 +12,6 @@ where
     fn eq(&self, other: &Stride<U, R>) -> bool {
         self.len() == other.len() && self.iter().zip(other.iter()).all(|(a, b)| a == b)
     }
-}
-
-fn partial_eq_slice<T, U, const S: usize>(stride: &Stride<T, S>, slice: &[U]) -> bool
-where
-    T: PartialEq<U>,
-{
-    stride.len() == slice.len() && stride.iter().zip(slice.iter()).all(|(a, b)| a == b)
 }
 
 impl<T, U, const S: usize, const N: usize> PartialEq<[U; N]> for Stride<T, S>
@@ -119,4 +113,11 @@ where
     fn index_mut(&mut self, index: I) -> &mut Self::Output {
         index.index_mut(self)
     }
+}
+
+fn partial_eq_slice<T, U, const S: usize>(stride: &Stride<T, S>, slice: &[U]) -> bool
+where
+    T: PartialEq<U>,
+{
+    stride.len() == slice.len() && stride.iter().zip(slice.iter()).all(|(a, b)| a == b)
 }

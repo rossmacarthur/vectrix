@@ -78,7 +78,7 @@ unsafe impl<T, const M: usize, const N: usize> MatrixIndex<Matrix<T, M, N>> for 
 
     #[inline]
     unsafe fn get_unchecked(self, matrix: *const Matrix<T, M, N>) -> *const Self::Output {
-        // SAFETY: it is the caller's responsiblity not to call this with an
+        // SAFETY: it is the caller's responsibility not to call this with an
         // out-of-bounds index or a dangling `matrix` pointer.
         let matrix = unsafe { (*matrix).as_slice() };
         unsafe { matrix.get_unchecked(self) }
@@ -86,7 +86,7 @@ unsafe impl<T, const M: usize, const N: usize> MatrixIndex<Matrix<T, M, N>> for 
 
     #[inline]
     unsafe fn get_unchecked_mut(self, matrix: *mut Matrix<T, M, N>) -> *mut Self::Output {
-        // SAFETY: it is the caller's responsiblity not to call this with an
+        // SAFETY: it is the caller's responsibility not to call this with an
         // out-of-bounds index or a dangling `matrix` pointer.
         let matrix = unsafe { (*matrix).as_mut_slice() };
         unsafe { matrix.get_unchecked_mut(self) }
@@ -120,7 +120,7 @@ unsafe impl<T, const M: usize, const N: usize> MatrixIndex<Matrix<T, M, N>> for 
 
     #[inline]
     unsafe fn get_unchecked(self, matrix: *const Matrix<T, M, N>) -> *const Self::Output {
-        // SAFETY: it is the caller's responsiblity not to call this with an
+        // SAFETY: it is the caller's responsibility not to call this with an
         // out-of-bounds index or a dangling `matrix` pointer.
         let matrix = unsafe { (*matrix).as_slice() };
         unsafe { matrix.get_unchecked(self.1 * M + self.0) }
@@ -128,7 +128,7 @@ unsafe impl<T, const M: usize, const N: usize> MatrixIndex<Matrix<T, M, N>> for 
 
     #[inline]
     unsafe fn get_unchecked_mut(self, matrix: *mut Matrix<T, M, N>) -> *mut Self::Output {
-        // SAFETY: it is the caller's responsiblity not to call this with an
+        // SAFETY: it is the caller's responsibility not to call this with an
         // out-of-bounds index or a dangling `matrix` pointer.
         let matrix = unsafe { (*matrix).as_mut_slice() };
         unsafe { matrix.get_unchecked_mut(self.1 * M + self.0) }

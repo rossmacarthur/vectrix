@@ -3,7 +3,7 @@ name = "vectrix"
 version = "0.2.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2021"
-description = "A stack-allocated matrix type implemented with const generics."
+description = "A stack-allocated matrix type implemented with const generics"
 readme = "README.md"
 repository = "https://github.com/rossmacarthur/vectrix"
 license = "MIT OR Apache-2.0"
@@ -11,23 +11,23 @@ keywords = ["math", "matrix", "vector", "linear-algebra"]
 categories = ["mathematics", "science", "no-std"]
 include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
 
-[[bench]]
-name = "euler"
-harness = false
-
 [dependencies]
 stride = { version = "=0.2.0", path = "crates/stride" }
 vectrix-macro = { version = "=0.2.0", path = "crates/macro", optional = true }
 
 [dev-dependencies]
-criterion = "0.3.4"
-rand = "0.8.3"
+criterion = "0.4.0"
+rand = "0.8.5"
 rand_isaac = "0.3.0"
 
 [features]
 default = ["macro", "std"]
 std = []
-macro = ["vectrix-macro"]
+macro = ["dep:vectrix-macro"]
 
 [workspace]
-members = ["crates/macro", "crates/stride", "tools/gen-readme"]
+members = ["crates/*", "tools/*"]
+
+[[bench]]
+name = "euler"
+harness = false

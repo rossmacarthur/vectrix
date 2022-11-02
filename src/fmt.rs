@@ -1,7 +1,8 @@
 use core::fmt;
 use core::fmt::Write;
 
-use crate::{new, Matrix, Vector};
+use crate::new;
+use crate::{Matrix, Vector};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug

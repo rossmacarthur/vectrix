@@ -1,24 +1,23 @@
 //! This crate provides a stack-allocated, constant-size [`Matrix<T, M, N>`]
 //! type implemented using const generics.
 //!
-//! ## 🚀 Getting started
+//! # 🚀 Getting started
 //!
-//! Add the following to your Cargo manifest.
+//! Add this crate to your Cargo manifest.
 //!
-//! ```toml
-//! [dependencies]
-//! vectrix = "0.2"
+//! ```sh
+//! cargo add vectrix
 //! ```
 //!
 //! `no_std` is also supported by disabling the default std feature.
-//! ```toml
-//! [dependencies]
-//! vectrix = { version = "0.2", default-features = false, features = ["macro"] }
+//!
+//! ```sh
+//! cargo add vectrix --no-default-features --features=macro
 //! ```
 //!
-//! ## 🤸 Usage
+//! # 🤸 Usage
 //!
-//! ### Types
+//! ## Types
 //!
 //! The base [`Matrix<T, M, N>`] type represents a matrix with `M` rows and `N`
 //! columns. This type is a backed by an array of arrays. The data is stored in
@@ -29,7 +28,7 @@
 //! - [`Vector<T, M>`] → a column vector with `M` rows.
 //! - [`RowVector<T, N>`] → a row vector with `N` columns.
 //!
-//! ### Macros
+//! ## Macros
 //!
 //! Macros are provided for easy construction of the provided types. These
 //! macros will also work in `const` contexts.
@@ -62,7 +61,7 @@
 //!   assert_eq!(v, matrix![1, 3, 3, 7]);
 //!   ```
 //!
-//! ### Constructors
+//! ## Constructors
 //!
 //! Commonly used constructors are listed below.
 //!
@@ -78,7 +77,7 @@
 //! - [`::new(..)`][`Matrix::new()`] → constructs a new vector using the
 //!   provided components.
 //!
-//! ### Accessing elements
+//! ## Accessing elements
 //!
 //! Three types of element access are available.
 //!
@@ -122,7 +121,7 @@
 //!   assert_eq!(v.b, 0);
 //!   ```
 //!
-//! ### Accessing a row or column
+//! ## Accessing a row or column
 //!
 //! You can get a reference to particular row or column using the
 //! [`.row()`][`Matrix::row`] or [`.column()`][`Matrix::column`] methods. You
@@ -140,7 +139,7 @@
 //! assert_eq!(m.column(1), &[2, 5]);
 //! ```
 //!
-//! ### Iteration
+//! ## Iteration
 //!
 //! Element-wise, column-major order iteration is provided using the following
 //! methods.
@@ -179,7 +178,7 @@
 //! assert_eq!(m.as_slice(), &[1, 2, 3, 4, 5, 6]);
 //! ```
 //!
-//! ### Debug
+//! ## Debug
 //!
 //! The [`Debug`][`core::fmt::Debug`] implementation will print out vectors as
 //! lists and matrices as a list of lists in column-major order.
@@ -200,7 +199,7 @@
 //! matrix: [[1, 3], [2, 4]]
 //! ```
 //!
-//! ### Display
+//! ## Display
 //!
 //! The [`Display`][`core::fmt::Display`] implementation will print out the
 //! matrix in the traditional box bracket format. Precision is supported as well
@@ -239,7 +238,7 @@
 //!  └         ┘
 //! ```
 //!
-//! ### Operations
+//! ## Operations
 //!
 //! [`Matrix`] implements many built-in operators. With scalar operands almost
 //! all operators are implemented and they simply apply the operation to each
@@ -525,8 +524,10 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     /// Also known as *Manhattan Distance* or *Taxicab norm*. L1 Norm is the sum
     /// of the magnitudes of the vectors in a space.
     ///
-    /// Note: if the matrix is a *row vector* this method might not do what you
-    /// what you expect. For example:
+    /// # Note
+    ///
+    /// If the matrix is a *row vector* this method might not do what you what
+    /// you expect. For example:
     ///
     /// ```
     /// # use vectrix::matrix;
