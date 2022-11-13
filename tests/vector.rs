@@ -99,6 +99,17 @@ fn row_vector_from_array() {
 }
 
 #[test]
+fn row_vector_from_tuple() {
+    type V<const N: usize> = RowVector<i64, N>;
+    assert_eq!(V::from((1,)), matrix![1]);
+    assert_eq!(V::from((1, 2)), matrix![1, 2]);
+    assert_eq!(V::from((1, 2, 3)), matrix![1, 2, 3]);
+    assert_eq!(V::from((1, 2, 3, 4)), matrix![1, 2, 3, 4]);
+    assert_eq!(V::from((1, 2, 3, 4, 5)), matrix![1, 2, 3, 4, 5]);
+    assert_eq!(V::from((1, 2, 3, 4, 5, 6)), matrix![1, 2, 3, 4, 5, 6]);
+}
+
+#[test]
 fn vector_macro() {
     let v = vector![1, 3, 3, 7];
     assert_eq!(v, matrix![1; 3; 3; 7]);
@@ -130,4 +141,15 @@ fn vector_from_array() {
     assert_eq!(V::from([1, 2, 3, 4]), matrix![1; 2; 3; 4]);
     assert_eq!(V::from([1, 2, 3, 4, 5]), matrix![1; 2; 3; 4; 5]);
     assert_eq!(V::from([1, 2, 3, 4, 5, 6]), matrix![1; 2; 3; 4; 5; 6]);
+}
+
+#[test]
+fn vector_from_tuple() {
+    type V<const M: usize> = Vector<i64, M>;
+    assert_eq!(V::from((1,)), matrix![1]);
+    assert_eq!(V::from((1, 2)), matrix![1; 2]);
+    assert_eq!(V::from((1, 2, 3)), matrix![1; 2; 3]);
+    assert_eq!(V::from((1, 2, 3, 4)), matrix![1; 2; 3; 4]);
+    assert_eq!(V::from((1, 2, 3, 4, 5)), matrix![1; 2; 3; 4; 5]);
+    assert_eq!(V::from((1, 2, 3, 4, 5, 6)), matrix![1; 2; 3; 4; 5; 6]);
 }
