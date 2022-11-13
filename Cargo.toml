@@ -2,7 +2,7 @@
 members = ["crates/*", "tools/*"]
 
 [workspace.package]
-version = "0.2.0"
+version = "0.3.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2021"
 readme = "README.md"
@@ -14,7 +14,7 @@ name = "vectrix"
 description = "A stack-allocated matrix type implemented with const generics"
 keywords = ["math", "matrix", "vector", "linear-algebra"]
 categories = ["mathematics", "science", "no-std"]
-include = ["src/**/*", "LICENSE-*", "README.md"]
+include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
 
 version.workspace = true
 authors.workspace = true
@@ -24,8 +24,8 @@ repository.workspace = true
 license.workspace = true
 
 [dependencies]
-stride = { version = "=0.2.0", path = "crates/stride" }
-vectrix-macro = { version = "=0.2.0", path = "crates/macro", optional = true }
+stride = { version = "0.3.0", path = "crates/stride" }
+vectrix-macro = { version = "0.3.0", path = "crates/macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.4.0"
