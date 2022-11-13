@@ -1,15 +1,27 @@
-[package]
-name = "vectrix"
+[workspace]
+members = ["crates/*", "tools/*"]
+
+[workspace.package]
 version = "0.2.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2021"
-description = "A stack-allocated matrix type implemented with const generics"
 readme = "README.md"
 repository = "https://github.com/rossmacarthur/vectrix"
 license = "MIT OR Apache-2.0"
+
+[package]
+name = "vectrix"
+description = "A stack-allocated matrix type implemented with const generics"
 keywords = ["math", "matrix", "vector", "linear-algebra"]
 categories = ["mathematics", "science", "no-std"]
-include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
+include = ["src/**/*", "LICENSE-*", "README.md"]
+
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+readme.workspace = true
+repository.workspace = true
+license.workspace = true
 
 [dependencies]
 stride = { version = "=0.2.0", path = "crates/stride" }
@@ -24,9 +36,6 @@ rand_isaac = "0.3.0"
 default = ["macro", "std"]
 std = []
 macro = ["dep:vectrix-macro"]
-
-[workspace]
-members = ["crates/*", "tools/*"]
 
 [[bench]]
 name = "euler"
