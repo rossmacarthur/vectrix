@@ -5,12 +5,73 @@ use core::ops::{Deref, DerefMut, Mul};
 
 use stride::Stride;
 
+////////////////////////////////////////////////////////////////////////////////
+// Row
+////////////////////////////////////////////////////////////////////////////////
+
 /// A row in a [`Matrix`][crate::Matrix].
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
 #[repr(transparent)]
 pub struct Row<T, const M: usize, const N: usize> {
     data: Stride<T, M>,
 }
+
+impl<T, const M: usize, const N: usize> Row<T, M, N> {
+    pub(crate) fn new(data: &[T]) -> &Self {
+        // SAFETY: `Row` and `Stride` are both repr(transparent)
+        unsafe { &*(data as *const [T] as *const Self) }
+    }
+
+    pub(crate) fn new_mut(data: &mut [T]) -> &mut Self {
+        // SAFETY: `Row` and `Stride` are both repr(transparent)
+        unsafe { &mut *(data as *mut [T] as *mut Self) }
+    }
+}
+
+impl<T, const M: usize, const N: usize> Deref for Row<T, M, N> {
+    type Target = Stride<T, M>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
+}
+
+impl<T, const M: usize, const N: usize> DerefMut for Row<T, M, N> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
+    }
+}
+
+impl<T, U, const M: usize, const N: usize, const S: usize> PartialEq<Stride<U, S>> for Row<T, M, N>
+where
+    T: PartialEq<U>,
+{
+    fn eq(&self, other: &Stride<U, S>) -> bool {
+        self.data.eq(other)
+    }
+}
+
+impl<T, U, const M: usize, const N: usize> PartialEq<[U]> for Row<T, M, N>
+where
+    T: PartialEq<U>,
+{
+    fn eq(&self, other: &[U]) -> bool {
+        self.data.eq(other)
+    }
+}
+
+impl<T, U, const M: usize, const N: usize, const P: usize> PartialEq<[U; P]> for Row<T, M, N>
+where
+    T: PartialEq<U>,
+{
+    fn eq(&self, other: &[U; P]) -> bool {
+        self.data.eq(other)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Column
+////////////////////////////////////////////////////////////////////////////////
 
 /// A column in a [`Matrix`][crate::Matrix].
 #[derive(Debug, PartialEq, Eq, Hash, PartialOrd, Ord)]
@@ -19,82 +80,63 @@ pub struct Column<T, const M: usize, const N: usize> {
     data: Stride<T, 1>,
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Operations
-////////////////////////////////////////////////////////////////////////////////
+impl<T, const M: usize, const N: usize> Column<T, M, N> {
+    pub(crate) fn new(data: &[T]) -> &Self {
+        // SAFETY: `Column` and `Stride` are both repr(transparent)
+        unsafe { &*(data as *const [T] as *const Self) }
+    }
 
-macro_rules! impl_ops {
-    ($ty:ident<$S:tt>) => {
-        impl<T, const M: usize, const N: usize> Deref for $ty<T, M, N> {
-            type Target = Stride<T, $S>;
-
-            fn deref(&self) -> &Self::Target {
-                &self.data
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> DerefMut for $ty<T, M, N> {
-            fn deref_mut(&mut self) -> &mut Self::Target {
-                &mut self.data
-            }
-        }
-
-        impl<T, U, const M: usize, const N: usize, const S: usize> PartialEq<Stride<U, S>>
-            for $ty<T, M, N>
-        where
-            T: PartialEq<U>,
-        {
-            fn eq(&self, other: &Stride<U, S>) -> bool {
-                self.data.eq(other)
-            }
-        }
-
-        impl<T, U, const M: usize, const N: usize> PartialEq<[U]> for $ty<T, M, N>
-        where
-            T: PartialEq<U>,
-        {
-            fn eq(&self, other: &[U]) -> bool {
-                self.data.eq(other)
-            }
-        }
-
-        impl<T, U, const M: usize, const N: usize, const P: usize> PartialEq<[U; P]>
-            for $ty<T, M, N>
-        where
-            T: PartialEq<U>,
-        {
-            fn eq(&self, other: &[U; P]) -> bool {
-                self.data.eq(other)
-            }
-        }
-    };
+    pub(crate) fn new_mut(data: &mut [T]) -> &mut Self {
+        // SAFETY: `Column` and `Stride` are both repr(transparent)
+        unsafe { &mut *(data as *mut [T] as *mut Self) }
+    }
 }
 
-impl_ops! { Row<M> }
-impl_ops! { Column<1> }
+impl<T, const M: usize, const N: usize> Deref for Column<T, M, N> {
+    type Target = Stride<T, 1>;
 
-////////////////////////////////////////////////////////////////////////////////
-// Methods
-////////////////////////////////////////////////////////////////////////////////
-
-macro_rules! impl_view {
-    ($ty:ident) => {
-        impl<T, const M: usize, const N: usize> $ty<T, M, N> {
-            pub(crate) fn new(data: &[T]) -> &Self {
-                // SAFETY: `$ty` and `Stride` are both repr(transparent)
-                unsafe { &*(data as *const [T] as *const Self) }
-            }
-
-            pub(crate) fn new_mut(data: &mut [T]) -> &mut Self {
-                // SAFETY: `$ty` and `Stride` are both repr(transparent)
-                unsafe { &mut *(data as *mut [T] as *mut Self) }
-            }
-        }
-    };
+    fn deref(&self) -> &Self::Target {
+        &self.data
+    }
 }
 
-impl_view! { Row }
-impl_view! { Column }
+impl<T, const M: usize, const N: usize> DerefMut for Column<T, M, N> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.data
+    }
+}
+
+impl<T, U, const M: usize, const N: usize, const S: usize> PartialEq<Stride<U, S>>
+    for Column<T, M, N>
+where
+    T: PartialEq<U>,
+{
+    fn eq(&self, other: &Stride<U, S>) -> bool {
+        self.data.eq(other)
+    }
+}
+
+impl<T, U, const M: usize, const N: usize> PartialEq<[U]> for Column<T, M, N>
+where
+    T: PartialEq<U>,
+{
+    fn eq(&self, other: &[U]) -> bool {
+        self.data.eq(other)
+    }
+}
+
+impl<T, U, const M: usize, const N: usize, const P: usize> PartialEq<[U; P]> for Column<T, M, N>
+where
+    T: PartialEq<U>,
+{
+    fn eq(&self, other: &[U; P]) -> bool {
+        self.data.eq(other)
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// General
+////////////////////////////////////////////////////////////////////////////////
 
 impl<T, const M: usize, const N: usize> Row<T, M, N> {
     /// Returns the dot product between a row and column.
