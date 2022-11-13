@@ -1,12 +1,12 @@
 [package]
 name = "stride"
 description = "A strided slice type"
+readme = "README.md"
 keywords = ["stride", "slice", "memory"]
 categories = ["data-structures", "no-std"]
 
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
-readme.workspace = true
 repository.workspace = true
 license.workspace = true
