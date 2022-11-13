@@ -3,6 +3,10 @@ use core::slice;
 
 use crate::Stride;
 
+////////////////////////////////////////////////////////////////////////////////
+// Immutable iteration
+////////////////////////////////////////////////////////////////////////////////
+
 /// Immutable stride iterator.
 ///
 /// This struct is created by the [`iter()`][`Stride::iter()`] method on
@@ -11,6 +15,62 @@ use crate::Stride;
 pub struct Iter<'a, T, const S: usize> {
     iter: StepBy<slice::Iter<'a, T>>,
 }
+
+impl<'a, T, const S: usize> Iter<'a, T, S> {
+    pub(crate) fn new(stride: &'a Stride<T, S>) -> Self {
+        Self {
+            iter: stride.data.iter().step_by(S),
+        }
+    }
+}
+
+impl<'a, T, const S: usize> Iterator for Iter<'a, T, S> {
+    type Item = &'a T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter.next()
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.len();
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.len()
+    }
+
+    fn last(mut self) -> Option<Self::Item> {
+        self.next_back()
+    }
+}
+
+impl<'a, T, const S: usize> DoubleEndedIterator for Iter<'a, T, S> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.iter.next_back()
+    }
+}
+
+impl<'a, T, const S: usize> ExactSizeIterator for Iter<'a, T, S> {
+    fn len(&self) -> usize {
+        self.iter.len()
+    }
+}
+
+impl<'a, T, const S: usize> FusedIterator for Iter<'a, T, S> {}
+
+impl<'a, T, const S: usize> IntoIterator for &'a Stride<T, S> {
+    type Item = &'a T;
+    type IntoIter = Iter<'a, T, S>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        self.iter()
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Mutable iteration
+////////////////////////////////////////////////////////////////////////////////
 
 /// Mutable stride iterator.
 ///
@@ -21,71 +81,54 @@ pub struct IterMut<'a, T, const S: usize> {
     iter: StepBy<slice::IterMut<'a, T>>,
 }
 
-macro_rules! impl_iterator {
-    (
-        with $Stride:ty, $meth:ident
-        impl Iterator<Item = $Item:ty> for $Iter:ty
-    ) => {
-        impl<'a, T, const S: usize> $Iter {
-            pub(crate) fn new(stride: $Stride) -> Self {
-                Self {
-                    iter: stride.data.$meth().step_by(S),
-                }
-            }
+impl<'a, T, const S: usize> IterMut<'a, T, S> {
+    pub(crate) fn new(stride: &'a mut Stride<T, S>) -> Self {
+        Self {
+            iter: stride.data.iter_mut().step_by(S),
         }
-
-        impl<'a, T, const S: usize> Iterator for $Iter {
-            type Item = $Item;
-
-            fn next(&mut self) -> Option<Self::Item> {
-                self.iter.next()
-            }
-
-            fn size_hint(&self) -> (usize, Option<usize>) {
-                let len = self.len();
-                (len, Some(len))
-            }
-
-            fn count(self) -> usize {
-                self.len()
-            }
-
-            fn last(mut self) -> Option<Self::Item> {
-                self.next_back()
-            }
-        }
-
-        impl<'a, T, const S: usize> DoubleEndedIterator for $Iter {
-            fn next_back(&mut self) -> Option<Self::Item> {
-                self.iter.next_back()
-            }
-        }
-
-        impl<'a, T, const S: usize> ExactSizeIterator for $Iter {
-            fn len(&self) -> usize {
-                self.iter.len()
-            }
-        }
-
-        impl<'a, T, const S: usize> FusedIterator for $Iter {}
-
-        impl<'a, T, const S: usize> IntoIterator for $Stride {
-            type Item = $Item;
-            type IntoIter = $Iter;
-
-            fn into_iter(self) -> $Iter {
-                self.$meth()
-            }
-        }
-    };
+    }
 }
 
-impl_iterator! {
-    with &'a Stride<T, S>, iter
-    impl Iterator<Item = &'a T> for Iter<'a, T, S>
+impl<'a, T, const S: usize> Iterator for IterMut<'a, T, S> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.iter.next()
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.len();
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.len()
+    }
+
+    fn last(mut self) -> Option<Self::Item> {
+        self.next_back()
+    }
 }
 
-impl_iterator! {
-    with &'a mut Stride<T, S>, iter_mut
-    impl Iterator<Item = &'a mut T> for IterMut<'a, T, S>
+impl<'a, T, const S: usize> DoubleEndedIterator for IterMut<'a, T, S> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.iter.next_back()
+    }
+}
+
+impl<'a, T, const S: usize> ExactSizeIterator for IterMut<'a, T, S> {
+    fn len(&self) -> usize {
+        self.iter.len()
+    }
+}
+
+impl<'a, T, const S: usize> FusedIterator for IterMut<'a, T, S> {}
+
+impl<'a, T, const S: usize> IntoIterator for &'a mut Stride<T, S> {
+    type Item = &'a mut T;
+    type IntoIter = IterMut<'a, T, S>;
+
+    fn into_iter(self) -> IterMut<'a, T, S> {
+        self.iter_mut()
+    }
 }
