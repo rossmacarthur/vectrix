@@ -9,7 +9,7 @@ use crate::new;
 use crate::{Column, Matrix, Row, Zero};
 
 ////////////////////////////////////////////////////////////////////////////////
-// T iteration
+// Element iteration
 ////////////////////////////////////////////////////////////////////////////////
 
 /// An iterator that moves out of a matrix.
@@ -96,12 +96,12 @@ impl<T, const M: usize, const N: usize> Iterator for IntoIter<T, M, N> {
     }
 
     fn size_hint(&self) -> (usize, Option<usize>) {
-        let len = self.len();
+        let len = self.alive.len();
         (len, Some(len))
     }
 
     fn count(self) -> usize {
-        self.len()
+        self.alive.len()
     }
 
     fn last(mut self) -> Option<Self::Item> {
@@ -122,8 +122,7 @@ impl<T, const M: usize, const N: usize> DoubleEndedIterator for IntoIter<T, M, N
 
 impl<T, const M: usize, const N: usize> ExactSizeIterator for IntoIter<T, M, N> {
     fn len(&self) -> usize {
-        // Will never underflow due to the invariant `alive.start <= alive.end`.
-        self.alive.end - self.alive.start
+        self.alive.len()
     }
 }
 
@@ -183,172 +182,243 @@ where
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Immutable row/column iteration
+// Immutable row iteration
 ////////////////////////////////////////////////////////////////////////////////
 
-macro_rules! impl_view {
-    (
-        $(#[$meta:meta])*
-        impl Iterator<Item = $Item:ident> for $View:ident
-        where
-            Dimension = $D:ident,
-            Method = $meth:ident,
-    ) => {
-        $(#[$meta])*
-        pub struct $View<'a, T, const M: usize, const N: usize> {
-            matrix: &'a Matrix<T, M, N>,
-            alive: Range<usize>,
-        }
-
-        impl<'a, T, const M: usize, const N: usize> $View<'a, T, M, N> {
-            pub(crate) fn new(matrix: &'a Matrix<T, M, N>) -> Self {
-                Self {
-                    matrix,
-                    alive: 0..$D,
-                }
-            }
-        }
-
-        impl<'a, T, const M: usize, const N: usize> Iterator for $View<'a, T, M, N> {
-            type Item = &'a $Item<T, M, N>;
-
-            fn next(&mut self) -> Option<Self::Item> {
-                self.alive.next().map(|i| self.matrix.$meth(i))
-            }
-
-            fn size_hint(&self) -> (usize, Option<usize>) {
-                let len = self.len();
-                (len, Some(len))
-            }
-
-            fn count(self) -> usize {
-                self.len()
-            }
-
-            fn last(mut self) -> Option<Self::Item> {
-                self.next_back()
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> DoubleEndedIterator for $View<'_, T, M, N> {
-            fn next_back(&mut self) -> Option<Self::Item> {
-                self.alive.next_back().map(|i| self.matrix.$meth(i))
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> ExactSizeIterator for $View<'_, T, M, N> {
-            fn len(&self) -> usize {
-                self.alive.end - self.alive.start
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> FusedIterator for $View<'_, T, M, N> {}
-    };
+/// An iterator over the rows in a matrix.
+pub struct IterRows<'a, T, const M: usize, const N: usize> {
+    matrix: &'a Matrix<T, M, N>,
+    alive: Range<usize>,
 }
 
-impl_view! {
-    /// An iterator over rows in a matrix.
-    impl Iterator<Item = Row> for IterRows
-    where
-        Dimension = M,
-        Method = row,
+impl<'a, T, const M: usize, const N: usize> IterRows<'a, T, M, N> {
+    pub(crate) fn new(matrix: &'a Matrix<T, M, N>) -> Self {
+        Self {
+            matrix,
+            alive: 0..M,
+        }
+    }
 }
-impl_view! {
-    /// An iterator over columns in a matrix.
-    impl Iterator<Item = Column> for IterColumns
-    where
-        Dimension = N,
-        Method = column,
+
+impl<'a, T, const M: usize, const N: usize> Iterator for IterRows<'a, T, M, N> {
+    type Item = &'a Row<T, M, N>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.alive.next().map(|i| self.matrix.row(i))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.alive.len();
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.alive.len()
+    }
+
+    fn last(mut self) -> Option<Self::Item> {
+        self.next_back()
+    }
 }
+
+impl<T, const M: usize, const N: usize> DoubleEndedIterator for IterRows<'_, T, M, N> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.alive.next_back().map(|i| self.matrix.row(i))
+    }
+}
+
+impl<T, const M: usize, const N: usize> ExactSizeIterator for IterRows<'_, T, M, N> {
+    fn len(&self) -> usize {
+        self.alive.len()
+    }
+}
+
+impl<T, const M: usize, const N: usize> FusedIterator for IterRows<'_, T, M, N> {}
 
 ////////////////////////////////////////////////////////////////////////////////
-// Mutable row/column iteration
+// Immutable column iteration
 ////////////////////////////////////////////////////////////////////////////////
 
-macro_rules! impl_view_mut {
-    (
-        $(#[$meta:meta])*
-        impl Iterator<Item = $Item:ident> for $View:ident
-        where
-            Dimension = $D:ident,
-            Method = $meth:ident,
-    ) => {
-        $(#[$meta])*
-        pub struct $View<'a, T, const M: usize, const N: usize> {
-            // We need to use a raw pointer here because the compiler doesn't
-            // know that we are yielding mutable references to *different* data
-            // each time.
-            matrix: *mut Matrix<T, M, N>,
-            alive: Range<usize>,
-            marker: PhantomData<&'a mut Matrix<T, M, N>>,
-        }
-
-        impl<'a, T, const M: usize, const N: usize> $View<'a, T, M, N> {
-            pub(crate) fn new(matrix: &'a mut Matrix<T, M, N>) -> Self {
-                Self {
-                    matrix: matrix as *mut Matrix<T, M, N>,
-                    alive: 0..$D,
-                    marker: PhantomData,
-                }
-            }
-        }
-
-        impl<'a, T, const M: usize, const N: usize> Iterator for $View<'a, T, M, N> {
-            type Item = &'a mut $Item<T, M, N>;
-
-            fn next(&mut self) -> Option<Self::Item> {
-                self.alive.next().map(|i| {
-                    // SAFETY: we yield a different row/column each time and
-                    // `self.matrix`'s lifetime is asserted by the `PhantomData`.
-                    unsafe { (*self.matrix).$meth(i) }
-                })
-            }
-
-            fn size_hint(&self) -> (usize, Option<usize>) {
-                let len = self.len();
-                (len, Some(len))
-            }
-
-            fn count(self) -> usize {
-                self.len()
-            }
-
-            fn last(mut self) -> Option<Self::Item> {
-                self.next_back()
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> DoubleEndedIterator for $View<'_, T, M, N> {
-            fn next_back(&mut self) -> Option<Self::Item> {
-                self.alive.next_back().map(|i| {
-                    // SAFETY: we yield a different row/column each time and
-                    // `self.matrix`'s lifetime is asserted by the `PhantomData`.
-                    unsafe { (*self.matrix).$meth(i) }
-                })
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> ExactSizeIterator for $View<'_, T, M, N> {
-            fn len(&self) -> usize {
-                self.alive.end - self.alive.start
-            }
-        }
-
-        impl<T, const M: usize, const N: usize> FusedIterator for $View<'_, T, M, N> {}
-    };
+/// An iterator over the columns in a matrix.
+pub struct IterColumns<'a, T, const M: usize, const N: usize> {
+    matrix: &'a Matrix<T, M, N>,
+    alive: Range<usize>,
 }
 
-impl_view_mut! {
-    /// A mutable iterator over rows in a matrix.
-    impl Iterator<Item = Row> for IterRowsMut
-    where
-        Dimension = M,
-        Method = row_mut,
+impl<'a, T, const M: usize, const N: usize> IterColumns<'a, T, M, N> {
+    pub(crate) fn new(matrix: &'a Matrix<T, M, N>) -> Self {
+        Self {
+            matrix,
+            alive: 0..N,
+        }
+    }
 }
-impl_view_mut! {
-    /// A mutable iterator over columns in a matrix.
-    impl Iterator<Item = Column> for IterColumnsMut
-    where
-        Dimension = N,
-        Method = column_mut,
+
+impl<'a, T, const M: usize, const N: usize> Iterator for IterColumns<'a, T, M, N> {
+    type Item = &'a Column<T, M, N>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.alive.next().map(|i| self.matrix.column(i))
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.alive.len();
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.alive.len()
+    }
+
+    fn last(mut self) -> Option<Self::Item> {
+        self.next_back()
+    }
 }
+
+impl<T, const M: usize, const N: usize> DoubleEndedIterator for IterColumns<'_, T, M, N> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.alive.next_back().map(|i| self.matrix.column(i))
+    }
+}
+
+impl<T, const M: usize, const N: usize> ExactSizeIterator for IterColumns<'_, T, M, N> {
+    fn len(&self) -> usize {
+        self.alive.len()
+    }
+}
+
+impl<T, const M: usize, const N: usize> FusedIterator for IterColumns<'_, T, M, N> {}
+
+////////////////////////////////////////////////////////////////////////////////
+// Mutable row iteration
+////////////////////////////////////////////////////////////////////////////////
+
+/// A mutable iterator over the rows in a matrix.
+pub struct IterRowsMut<'a, T, const M: usize, const N: usize> {
+    // We need to use a raw pointer here because the compiler doesn't
+    // know that we are yielding mutable references to *different* data
+    // each time.
+    matrix: *mut Matrix<T, M, N>,
+    alive: Range<usize>,
+    marker: PhantomData<&'a mut Matrix<T, M, N>>,
+}
+
+impl<'a, T, const M: usize, const N: usize> IterRowsMut<'a, T, M, N> {
+    pub(crate) fn new(matrix: &'a mut Matrix<T, M, N>) -> Self {
+        Self {
+            matrix: matrix as *mut Matrix<T, M, N>,
+            alive: 0..M,
+            marker: PhantomData,
+        }
+    }
+}
+
+impl<'a, T, const M: usize, const N: usize> Iterator for IterRowsMut<'a, T, M, N> {
+    type Item = &'a mut Row<T, M, N>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.alive.next().map(|i| {
+            // SAFETY: we yield a different row each time and `self.matrix`'s
+            // lifetime is asserted by the `PhantomData`.
+            unsafe { (*self.matrix).row_mut(i) }
+        })
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.alive.len();
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.alive.len()
+    }
+
+    fn last(mut self) -> Option<Self::Item> {
+        self.next_back()
+    }
+}
+
+impl<T, const M: usize, const N: usize> DoubleEndedIterator for IterRowsMut<'_, T, M, N> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.alive.next_back().map(|i| {
+            // SAFETY: we yield a different row each time and `self.matrix`'s
+            // lifetime is asserted by the `PhantomData`.
+            unsafe { (*self.matrix).row_mut(i) }
+        })
+    }
+}
+
+impl<T, const M: usize, const N: usize> ExactSizeIterator for IterRowsMut<'_, T, M, N> {
+    fn len(&self) -> usize {
+        self.alive.len()
+    }
+}
+
+impl<T, const M: usize, const N: usize> FusedIterator for IterRowsMut<'_, T, M, N> {}
+
+////////////////////////////////////////////////////////////////////////////////
+// Mutable column iteration
+////////////////////////////////////////////////////////////////////////////////
+
+/// A mutable iterator over the columns in a matrix.
+pub struct IterColumnsMut<'a, T, const M: usize, const N: usize> {
+    // We need to use a raw pointer here because the compiler doesn't
+    // know that we are yielding mutable references to *different* data
+    // each time.
+    matrix: *mut Matrix<T, M, N>,
+    alive: Range<usize>,
+    marker: PhantomData<&'a mut Matrix<T, M, N>>,
+}
+
+impl<'a, T, const M: usize, const N: usize> IterColumnsMut<'a, T, M, N> {
+    pub(crate) fn new(matrix: &'a mut Matrix<T, M, N>) -> Self {
+        Self {
+            matrix: matrix as *mut Matrix<T, M, N>,
+            alive: 0..N,
+            marker: PhantomData,
+        }
+    }
+}
+
+impl<'a, T, const M: usize, const N: usize> Iterator for IterColumnsMut<'a, T, M, N> {
+    type Item = &'a mut Column<T, M, N>;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.alive.next().map(|i| {
+            // SAFETY: we yield a different column each time and `self.matrix`'s
+            // lifetime is asserted by the `PhantomData`.
+            unsafe { (*self.matrix).column_mut(i) }
+        })
+    }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        let len = self.alive.len();
+        (len, Some(len))
+    }
+
+    fn count(self) -> usize {
+        self.alive.len()
+    }
+
+    fn last(mut self) -> Option<Self::Item> {
+        self.next_back()
+    }
+}
+
+impl<T, const M: usize, const N: usize> DoubleEndedIterator for IterColumnsMut<'_, T, M, N> {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.alive.next_back().map(|i| {
+            // SAFETY: we yield a different column each time and `self.matrix`'s
+            // lifetime is asserted by the `PhantomData`.
+            unsafe { (*self.matrix).column_mut(i) }
+        })
+    }
+}
+
+impl<T, const M: usize, const N: usize> ExactSizeIterator for IterColumnsMut<'_, T, M, N> {
+    fn len(&self) -> usize {
+        self.alive.len()
+    }
+}
+
+impl<T, const M: usize, const N: usize> FusedIterator for IterColumnsMut<'_, T, M, N> {}
