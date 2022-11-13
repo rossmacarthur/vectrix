@@ -28,6 +28,8 @@ where
     T: PartialEq<U>,
 {
     fn eq(&self, other: &&[U; N]) -> bool {
+        // https://github.com/rust-lang/rust-clippy/issues/9841
+        #[allow(clippy::explicit_auto_deref)]
         partial_eq_slice(self, *other)
     }
 }
