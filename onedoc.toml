@@ -1,0 +1,36 @@
+[links]
+# Types
+"Matrix<T, M, N>" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html"
+"Matrix" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html"
+"Vector<T, M>" = "https://docs.rs/vectrix/latest/vectrix/type.Vector.html"
+"RowVector<T, N>" = "https://docs.rs/vectrix/latest/vectrix/type.RowVector.html"
+
+# Macros
+"matrix!" = "https://docs.rs/vectrix/latest/vectrix/macro.matrix.html"
+"vector!" = "https://docs.rs/vectrix/latest/vectrix/macro.vector.html"
+"row_vector!" = "https://docs.rs/vectrix/latest/vectrix/macro.row_vector.html"
+
+# Methods
+"::zero()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.zero"
+"T::zero()" = "https://docs.rs/vectrix/latest/vectrix/trait.Zero.html#tymethod.zero"
+"::identity()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.identity"
+"::repeat(..)" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.repeat"
+"::repeat_with(..)" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.repeat_with"
+"::from_iter(..)" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.from_iter"
+"::new(..)" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.new"
+".row()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.row"
+".column()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.column"
+".into_iter()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.into_iter"
+".iter()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.iter"
+".iter_mut()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.iter_mut"
+".iter_rows()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.iter_rows"
+".iter_rows_mut()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.iter_rows_mut"
+".iter_columns()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.iter_columns"
+".iter_columns_mut()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.iter_columns_mut"
+".as_slice()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.as_slice"
+".as_mut_slice()" = "https://docs.rs/vectrix/latest/vectrix/struct.Matrix.html#method.as_mut_slice"
+
+# Standard library types
+"Debug" = "https://doc.rust-lang.org/stable/std/fmt/trait.Debug.html"
+"Display" = "https://doc.rust-lang.org/stable/std/fmt/trait.Display.html"
+"LowerHex" = "https://doc.rust-lang.org/stable/std/fmt/trait.LowerHex.html"
