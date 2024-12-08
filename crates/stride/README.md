@@ -2,9 +2,9 @@
 
 # stride
 
-[![Crates.io Version](https://img.shields.io/crates/v/stride.svg)](https://crates.io/crates/stride)
-[![Docs.rs Latest](https://img.shields.io/badge/docs.rs-latest-blue.svg)](https://docs.rs/stride)
-[![Build Status](https://img.shields.io/github/actions/workflow/status/rossmacarthur/vectrix/build.yaml?branch=trunk)](https://github.com/rossmacarthur/vectrix/actions/workflows/build.yaml?query=branch%3Atrunk)
+[![Crates.io Version](https://badgers.space/crates/version/stride)](https://crates.io/crates/stride)
+[![Docs.rs Latest](https://badgers.space/badge/docs.rs/latest/blue)](https://docs.rs/stride)
+[![Build Status](https://badgers.space/github/checks/rossmacarthur/vectrix?label=build)](https://github.com/rossmacarthur/vectrix/actions/workflows/build.yaml)
 
 This crate provides a slice-like `Stride<T, S>` type where elements are
 spaced a constant `S` elements in memory.
