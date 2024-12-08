@@ -538,6 +538,7 @@ impl<T, const M: usize, const N: usize> Matrix<T, M, N> {
     /// let column_vector = matrix![1; 2; 3];
     /// assert_eq!(column_vector.l1_norm(), 6);
     /// ```
+    #[doc(alias("manhattan", "taxicab"))]
     pub fn l1_norm(&self) -> T
     where
         T: Copy + Ord + Abs + Zero + Sum<T>,

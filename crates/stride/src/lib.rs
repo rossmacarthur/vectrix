@@ -122,7 +122,7 @@ impl<T, const S: usize> Stride<T, S> {
     /// assert_eq!(Stride::<_, 3>::new(data).len(), 2);
     /// ```
     pub const fn len(&self) -> usize {
-        (self.data.len() + S - 1) / S
+        self.data.len().div_ceil(S)
     }
 
     /// Returns `true` if the strided slice has a length of 0.

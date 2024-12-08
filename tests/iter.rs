@@ -51,10 +51,10 @@ fn matrix_into_iter_fuse() {
     let m = matrix![1, 3, 3, 7];
     let mut iter = m.into_iter();
     for _ in 0..4 {
-        assert!(matches!(iter.next(), Some(_)));
+        assert!(iter.next().is_some());
     }
     for _ in 0..10 {
-        assert!(matches!(iter.next(), None));
+        assert!(iter.next().is_none());
     }
 }
 
@@ -103,10 +103,10 @@ fn matrix_iter_rows_fuse() {
     let m = matrix![1; 3; 3; 7];
     let mut iter = m.iter_rows();
     for _ in 0..4 {
-        assert!(matches!(iter.next(), Some(_)));
+        assert!(iter.next().is_some());
     }
     for _ in 0..10 {
-        assert!(matches!(iter.next(), None));
+        assert!(iter.next().is_none());
     }
 }
 
@@ -115,10 +115,10 @@ fn matrix_iter_columns_fuse() {
     let m = matrix![1, 3, 3, 7];
     let mut iter = m.iter_columns();
     for _ in 0..4 {
-        assert!(matches!(iter.next(), Some(_)));
+        assert!(iter.next().is_some());
     }
     for _ in 0..10 {
-        assert!(matches!(iter.next(), None));
+        assert!(iter.next().is_none());
     }
 }
 
