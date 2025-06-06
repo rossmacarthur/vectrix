@@ -3,11 +3,11 @@ use vectrix::{matrix, Matrix};
 #[test]
 fn into_iter_debug() {
     let mut into_iter = matrix![1, 3; 3, 7].into_iter();
-    assert_eq!(format!("{:?}", into_iter), "IntoIter([1, 3, 3, 7])");
+    assert_eq!(format!("{into_iter:?}"), "IntoIter([1, 3, 3, 7])");
     into_iter.next();
-    assert_eq!(format!("{:?}", into_iter), "IntoIter([3, 3, 7])");
+    assert_eq!(format!("{into_iter:?}"), "IntoIter([3, 3, 7])");
     into_iter.next_back();
-    assert_eq!(format!("{:?}", into_iter), "IntoIter([3, 3])");
+    assert_eq!(format!("{into_iter:?}"), "IntoIter([3, 3])");
 }
 
 #[test]

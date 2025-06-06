@@ -82,16 +82,16 @@
 //! Three types of element access are available.
 //!
 //! - `usize` indexing selects the nth element in the matrix as viewed in
-//!    column-major order.
-//!    ```
-//!    # use vectrix::*;
-//!    #
-//!    let m = matrix![
-//!        1, 2, 3;
-//!        4, 5, 6;
-//!    ];
-//!    assert_eq!(m[1], 4);
-//!    ```
+//!   column-major order.
+//!   ```
+//!   # use vectrix::*;
+//!   #
+//!   let m = matrix![
+//!       1, 2, 3;
+//!       4, 5, 6;
+//!   ];
+//!   assert_eq!(m[1], 4);
+//!   ```
 //!
 //! - `(usize, usize)` indexing selects the element at a particular row and
 //!   column position.
@@ -278,7 +278,6 @@
 //! ```
 
 #![no_std]
-#![warn(unsafe_op_in_unsafe_fn)]
 
 #[cfg(feature = "std")]
 extern crate std;

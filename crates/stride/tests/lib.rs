@@ -6,13 +6,13 @@ use stride::Stride;
 #[test]
 fn stride_debug() {
     let stride = Stride::<_, 1>::new(&[1, 2, 3, 4, 5]);
-    assert_eq!(format!("{:?}", stride), "[1, 2, 3, 4, 5]");
+    assert_eq!(format!("{stride:?}"), "[1, 2, 3, 4, 5]");
 
     let stride = Stride::<_, 2>::new(&[1, 2, 3, 4, 5]);
-    assert_eq!(format!("{:?}", stride), "[1, 3, 5]");
+    assert_eq!(format!("{stride:?}"), "[1, 3, 5]");
 
     let stride = Stride::<_, 3>::new(&[1, 2, 3, 4, 5]);
-    assert_eq!(format!("{:?}", stride), "[1, 4]");
+    assert_eq!(format!("{stride:?}"), "[1, 4]");
 }
 
 #[test]

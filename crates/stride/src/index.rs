@@ -138,12 +138,12 @@ unsafe impl<T, const S: usize> StrideIndex<Stride<T, S>> for usize {
 
     unsafe fn get_unchecked(self, stride: *const Stride<T, S>) -> *const Self::Output {
         let i = self.unstride::<S>();
-        unsafe { (*stride).data.get_unchecked(i) }
+        unsafe { (&*stride).data.get_unchecked(i) }
     }
 
     unsafe fn get_unchecked_mut(self, stride: *mut Stride<T, S>) -> *mut Self::Output {
         let i = self.unstride::<S>();
-        unsafe { (*stride).data.get_unchecked_mut(i) }
+        unsafe { (&mut *stride).data.get_unchecked_mut(i) }
     }
 
     #[track_caller]
@@ -176,13 +176,13 @@ macro_rules! impl_stride_index {
 
             unsafe fn get_unchecked(self, stride: *const Stride<T, S>) -> *const Self::Output {
                 let i = self.unstride::<S>();
-                let slice = unsafe { (*stride).data.get_unchecked(i) };
+                let slice = unsafe { (&*stride).data.get_unchecked(i) };
                 Stride::new(slice)
             }
 
             unsafe fn get_unchecked_mut(self, stride: *mut Stride<T, S>) -> *mut Self::Output {
                 let i = self.unstride::<S>();
-                let slice = unsafe { (*stride).data.get_unchecked_mut(i) };
+                let slice = unsafe { (&mut *stride).data.get_unchecked_mut(i) };
                 Stride::new_mut(slice)
             }
 

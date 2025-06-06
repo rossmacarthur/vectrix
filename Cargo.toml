@@ -1,6 +1,13 @@
 [workspace]
 members = ["crates/*"]
 
+[workspace.lints.rust]
+elided-lifetimes-in-paths = "warn"
+unsafe_op_in_unsafe_fn = "warn"
+
+[workspace.lints.clippy]
+needless_borrow = "allow"
+
 [workspace.package]
 version = "0.3.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
@@ -36,6 +43,9 @@ rand_isaac = "0.3.0"
 default = ["macro", "std"]
 std = []
 macro = ["dep:vectrix-macro"]
+
+[lints]
+workspace = true
 
 [[bench]]
 name = "euler"

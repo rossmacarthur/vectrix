@@ -294,7 +294,7 @@ impl<T, const S: usize> Stride<T, S> {
     /// assert_eq!(iterator.next(), Some(&5));
     /// assert_eq!(iterator.next(), None);
     /// ```
-    pub fn iter(&self) -> Iter<T, S> {
+    pub fn iter(&self) -> Iter<'_, T, S> {
         Iter::new(self)
     }
 
@@ -312,7 +312,7 @@ impl<T, const S: usize> Stride<T, S> {
     /// }
     /// assert_eq!(slice, &[2, 1, 4, 2, 6, 3]);
     /// ```
-    pub fn iter_mut(&mut self) -> IterMut<T, S> {
+    pub fn iter_mut(&mut self) -> IterMut<'_, T, S> {
         IterMut::new(self)
     }
 }

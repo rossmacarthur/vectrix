@@ -13,7 +13,7 @@ struct Input {
 }
 
 impl Parse for Input {
-    fn parse(input: ParseStream) -> Result<Self> {
+    fn parse(input: ParseStream<'_>) -> Result<Self> {
         let matrix = Matrix::parse_terminated_with(input, Vector::parse_separated_nonempty)?;
         Ok(Self { matrix })
     }
