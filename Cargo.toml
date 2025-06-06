@@ -9,7 +9,7 @@ unsafe_op_in_unsafe_fn = "warn"
 needless_borrow = "allow"
 
 [workspace.package]
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2021"
 readme = "README.md"
@@ -31,8 +31,8 @@ repository.workspace = true
 license.workspace = true
 
 [dependencies]
-stride = { version = "0.3.0", path = "crates/stride" }
-vectrix-macro = { version = "0.3.0", path = "crates/macro", optional = true }
+stride = { version = "0.4.0", path = "crates/stride" }
+vectrix-macro = { version = "0.4.0", path = "crates/macro", optional = true }
 
 [dev-dependencies]
 criterion = "0.4.0"
