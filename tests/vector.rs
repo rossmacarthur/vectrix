@@ -153,3 +153,117 @@ fn vector_from_tuple() {
     assert_eq!(V::from((1, 2, 3, 4, 5)), matrix![1; 2; 3; 4; 5]);
     assert_eq!(V::from((1, 2, 3, 4, 5, 6)), matrix![1; 2; 3; 4; 5; 6]);
 }
+
+#[test]
+fn vector_swizzle() {
+    let v = vector![1];
+    assert_eq!(v.xx(), matrix![1; 1]);
+    assert_eq!(v.xxx(), matrix![1; 1; 1]);
+
+    let v = vector![1, 2];
+    assert_eq!(v.xx(), matrix![1; 1]);
+    assert_eq!(v.xy(), matrix![1; 2]);
+    assert_eq!(v.yx(), matrix![2; 1]);
+    assert_eq!(v.yy(), matrix![2; 2]);
+    assert_eq!(v.xxx(), matrix![1; 1; 1]);
+    assert_eq!(v.xxy(), matrix![1; 1; 2]);
+    assert_eq!(v.xyx(), matrix![1; 2; 1]);
+    assert_eq!(v.xyy(), matrix![1; 2; 2]);
+    assert_eq!(v.yxx(), matrix![2; 1; 1]);
+    assert_eq!(v.yxy(), matrix![2; 1; 2]);
+    assert_eq!(v.yyx(), matrix![2; 2; 1]);
+    assert_eq!(v.yyy(), matrix![2; 2; 2]);
+
+    let v = vector![1, 2, 3];
+    assert_eq!(v.xx(), matrix![1; 1]);
+    assert_eq!(v.xy(), matrix![1; 2]);
+    assert_eq!(v.xz(), matrix![1; 3]);
+    assert_eq!(v.yx(), matrix![2; 1]);
+    assert_eq!(v.yy(), matrix![2; 2]);
+    assert_eq!(v.yz(), matrix![2; 3]);
+    assert_eq!(v.zx(), matrix![3; 1]);
+    assert_eq!(v.zy(), matrix![3; 2]);
+    assert_eq!(v.zz(), matrix![3; 3]);
+    assert_eq!(v.xxx(), matrix![1; 1; 1]);
+    assert_eq!(v.xxy(), matrix![1; 1; 2]);
+    assert_eq!(v.xxz(), matrix![1; 1; 3]);
+    assert_eq!(v.xyx(), matrix![1; 2; 1]);
+    assert_eq!(v.xyy(), matrix![1; 2; 2]);
+    assert_eq!(v.xyz(), matrix![1; 2; 3]);
+    assert_eq!(v.xzx(), matrix![1; 3; 1]);
+    assert_eq!(v.xzy(), matrix![1; 3; 2]);
+    assert_eq!(v.xzz(), matrix![1; 3; 3]);
+    assert_eq!(v.yxx(), matrix![2; 1; 1]);
+    assert_eq!(v.yxy(), matrix![2; 1; 2]);
+    assert_eq!(v.yxz(), matrix![2; 1; 3]);
+    assert_eq!(v.yyx(), matrix![2; 2; 1]);
+    assert_eq!(v.yyy(), matrix![2; 2; 2]);
+    assert_eq!(v.yyz(), matrix![2; 2; 3]);
+    assert_eq!(v.yzx(), matrix![2; 3; 1]);
+    assert_eq!(v.yzy(), matrix![2; 3; 2]);
+    assert_eq!(v.yzz(), matrix![2; 3; 3]);
+    assert_eq!(v.zxx(), matrix![3; 1; 1]);
+    assert_eq!(v.zxy(), matrix![3; 1; 2]);
+    assert_eq!(v.zxz(), matrix![3; 1; 3]);
+    assert_eq!(v.zyx(), matrix![3; 2; 1]);
+    assert_eq!(v.zyy(), matrix![3; 2; 2]);
+    assert_eq!(v.zyz(), matrix![3; 2; 3]);
+    assert_eq!(v.zzx(), matrix![3; 3; 1]);
+    assert_eq!(v.zzy(), matrix![3; 3; 2]);
+    assert_eq!(v.zzz(), matrix![3; 3; 3]);
+}
+
+#[test]
+fn row_vector_swizzle() {
+    let v = row_vector![1, 2];
+    assert_eq!(v.xx(), matrix![1, 1]);
+    assert_eq!(v.xy(), matrix![1, 2]);
+    assert_eq!(v.yx(), matrix![2, 1]);
+    assert_eq!(v.yy(), matrix![2, 2]);
+    assert_eq!(v.xxx(), matrix![1, 1, 1]);
+    assert_eq!(v.xxy(), matrix![1, 1, 2]);
+    assert_eq!(v.xyx(), matrix![1, 2, 1]);
+    assert_eq!(v.xyy(), matrix![1, 2, 2]);
+    assert_eq!(v.yxx(), matrix![2, 1, 1]);
+    assert_eq!(v.yxy(), matrix![2, 1, 2]);
+    assert_eq!(v.yyx(), matrix![2, 2, 1]);
+    assert_eq!(v.yyy(), matrix![2, 2, 2]);
+
+    let v = row_vector![1, 2, 3];
+    assert_eq!(v.xx(), matrix![1, 1]);
+    assert_eq!(v.xy(), matrix![1, 2]);
+    assert_eq!(v.xz(), matrix![1, 3]);
+    assert_eq!(v.yx(), matrix![2, 1]);
+    assert_eq!(v.yy(), matrix![2, 2]);
+    assert_eq!(v.yz(), matrix![2, 3]);
+    assert_eq!(v.zx(), matrix![3, 1]);
+    assert_eq!(v.zy(), matrix![3, 2]);
+    assert_eq!(v.zz(), matrix![3, 3]);
+    assert_eq!(v.xxx(), matrix![1, 1, 1]);
+    assert_eq!(v.xxy(), matrix![1, 1, 2]);
+    assert_eq!(v.xxz(), matrix![1, 1, 3]);
+    assert_eq!(v.xyx(), matrix![1, 2, 1]);
+    assert_eq!(v.xyy(), matrix![1, 2, 2]);
+    assert_eq!(v.xyz(), matrix![1, 2, 3]);
+    assert_eq!(v.xzx(), matrix![1, 3, 1]);
+    assert_eq!(v.xzy(), matrix![1, 3, 2]);
+    assert_eq!(v.xzz(), matrix![1, 3, 3]);
+    assert_eq!(v.yxx(), matrix![2, 1, 1]);
+    assert_eq!(v.yxy(), matrix![2, 1, 2]);
+    assert_eq!(v.yxz(), matrix![2, 1, 3]);
+    assert_eq!(v.yyx(), matrix![2, 2, 1]);
+    assert_eq!(v.yyy(), matrix![2, 2, 2]);
+    assert_eq!(v.yyz(), matrix![2, 2, 3]);
+    assert_eq!(v.yzx(), matrix![2, 3, 1]);
+    assert_eq!(v.yzy(), matrix![2, 3, 2]);
+    assert_eq!(v.yzz(), matrix![2, 3, 3]);
+    assert_eq!(v.zxx(), matrix![3, 1, 1]);
+    assert_eq!(v.zxy(), matrix![3, 1, 2]);
+    assert_eq!(v.zxz(), matrix![3, 1, 3]);
+    assert_eq!(v.zyx(), matrix![3, 2, 1]);
+    assert_eq!(v.zyy(), matrix![3, 2, 2]);
+    assert_eq!(v.zyz(), matrix![3, 2, 3]);
+    assert_eq!(v.zzx(), matrix![3, 3, 1]);
+    assert_eq!(v.zzy(), matrix![3, 3, 2]);
+    assert_eq!(v.zzz(), matrix![3, 3, 3]);
+}
