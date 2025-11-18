@@ -47,6 +47,10 @@ assert_eq!(stride, &[1, 3, 5]);
 assert_eq!(data, &[1, 2, 3, 4, 5, 6]);
 ```
 
+## 🦀 MSRV
+
+This crate supports Rust 1.83 and above.
+
 ## License
 
 This project is distributed under the terms of both the MIT license and the Apache License (Version 2.0).

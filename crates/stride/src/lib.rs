@@ -37,6 +37,10 @@
 //! assert_eq!(stride, &[1, 3, 5]);
 //! assert_eq!(data, &[1, 2, 3, 4, 5, 6]);
 //! ```
+//!
+//! # 🦀 MSRV
+//!
+//! This crate supports Rust 1.83 and above.
 
 #![no_std]
 #![warn(unsafe_op_in_unsafe_fn)]

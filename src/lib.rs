@@ -15,6 +15,10 @@
 //! cargo add vectrix --no-default-features --features=macro
 //! ```
 //!
+//! # 🦀 MSRV
+//!
+//! This crate supports Rust 1.83 and above.
+//!
 //! # 🤸 Usage
 //!
 //! ## Types

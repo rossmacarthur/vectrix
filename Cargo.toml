@@ -13,6 +13,7 @@ version = "0.4.0"
 authors = ["Ross MacArthur <ross@macarthur.io>"]
 edition = "2021"
 readme = "README.md"
+rust-version = "1.83"
 repository = "https://github.com/rossmacarthur/vectrix"
 license = "MIT OR Apache-2.0"
 
@@ -26,6 +27,7 @@ include = ["benches/**/*", "src/**/*", "LICENSE-*", "README.md"]
 version.workspace = true
 authors.workspace = true
 edition.workspace = true
+rust-version.workspace = true
 readme.workspace = true
 repository.workspace = true
 license.workspace = true
