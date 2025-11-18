@@ -3,7 +3,7 @@
 use std::ops::{Add, AddAssign, Mul};
 
 use criterion::{criterion_group, criterion_main, Criterion};
-use rand::distributions::Standard;
+use rand::distr::StandardUniform;
 use rand::prelude::*;
 use rand_isaac::IsaacRng;
 use vectrix::{Vector, Zero};
@@ -20,11 +20,11 @@ where
 {
     fn random(size: usize) -> Self
     where
-        Standard: Distribution<T>,
+        StandardUniform: Distribution<T>,
     {
         let mut rng = IsaacRng::seed_from_u64(0);
         Self {
-            acc: vec![Vector::repeat_with(|| rng.gen()); size],
+            acc: vec![Vector::repeat_with(|| rng.random()); size],
             vel: vec![Vector::zero(); size],
             pos: vec![Vector::zero(); size],
         }
